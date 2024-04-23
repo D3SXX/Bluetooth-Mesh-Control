@@ -17,7 +17,7 @@ const StatusPage = () => {
   return (
     <div>
      <NavBar></NavBar>
-     <div className="stats shadow">
+     <div className="stats shadow mt-2 ml-2">
     {renderedElements}
   
 </div>
