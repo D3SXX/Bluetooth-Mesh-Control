@@ -7,7 +7,7 @@ def add_bind(data):
                 bind_data = json.loads(data)
                 command = f'connect\n'
                 extra_commands = ['menu config',f'target {bind_data["elementValue"]}',f'appkey-add {bind_data["appKeyIndex"]}', f'bind {bind_data["elementIndex"]} {bind_data["appKeyIndex"]} {bind_data["modelValue"]}','back','disconnect']
-                extra_timeouts = [0,2,2,1,1,2]
+                extra_timeouts = [0,3,2,1,1,2]
                 output = open("logs/add-bind.txt","w")
                 output.write(send_command(command=command,timeout=4,extra_commands=extra_commands,extra_timeouts=extra_timeouts))
                 return "Success"
