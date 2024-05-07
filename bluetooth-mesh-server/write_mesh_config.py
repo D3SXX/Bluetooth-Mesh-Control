@@ -26,6 +26,20 @@ def add_pub(data):
                 output.write(send_command(command=command,timeout=5,extra_commands=extra_commands,extra_timeouts=extra_timeouts))
                 return "Success"
         except Exception as e:
-                print("Failed to add_pub! ->")
+                print("Failed to add pub! ->")
+                print(e)
+                return "Failed"
+
+def add_sub(data):
+        try:
+                pub_data = json.loads(data)
+                command = f'connect\n'
+                extra_commands = ['menu config',f'target {pub_data["elementValue"]}', f'appkey-add {pub_data["appKeyIndex"]}',f'sub-add {pub_data["elementValue"]} {pub_data["address"][2:]} {pub_data["modelValue"]}','back','disconnect']
+                extra_timeouts = [0,2,2,1,1,2]
+                output = open("logs/add-sub.txt","w")
+                output.write(send_command(command=command,timeout=5,extra_commands=extra_commands,extra_timeouts=extra_timeouts))
+                return "Success"
+        except Exception as e:
+                print("Failed to add sub! ->")
                 print(e)
                 return "Failed"

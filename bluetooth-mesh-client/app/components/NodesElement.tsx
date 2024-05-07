@@ -319,7 +319,7 @@ const NodesElement = () => {
           <div className="join-item collapse collapse-arrow border border-base-300">
             <input type="checkbox" className="peer" />
             <div className="collapse-title bg-white text-black">
-              Publish Configuration
+              Subscribe & Publish Configuration
             </div>
             <div className='collapse-content'>
               <div>Publish                 <select className="select max-w-xs"
@@ -332,7 +332,7 @@ const NodesElement = () => {
                 <select className="select max-w-xs" onChange={(e) => setSelectedPublishModelValue(e.target.value)}>
                   <option disabled selected>model</option>
                   {/* selectedElementIndex < node.composition.elements.length prevents crash that happens when on any node selected element has more models that the one on any other node, ideally every node should have separate selectedIndex*/}
-                  {selectedPublishElementIndex && node.composition.elements[selectedPublishElementIndex].models.map((model, modelIndex) => (
+                  {selectedPublishElementIndex && selectedPublishElementIndex < node.composition.elements.length && node.composition.elements[selectedPublishElementIndex].models.map((model, modelIndex) => (
                     <option key={modelIndex} value={model}>model {model}</option>
                   ))}
                 </select><br></br>
@@ -361,8 +361,11 @@ const NodesElement = () => {
                   ))}
                 </select>
                 <button className="btn bg-transparent ml-1"><Link href="/keys">Edit</Link></button>
+                <div>
                 <div className="inline-flex">
+                  {selectedPublishModelValue && <RegularButton command='add-sub' requestData={JSON.stringify({"elementValue":node.configuration.elements[selectedPublishElementIndex].unicastAddress,"address":inputPublishAddressValue,"appKeyIndex":selectedPublishAppKeyIndex,"modelValue":selectedPublishModelValue,"cid":node.composition.cid})} text='Subscribe' />}
                   {selectedPublishModelValue && <RegularButton command='add-pub' requestData={JSON.stringify({"elementValue":node.configuration.elements[selectedPublishElementIndex].unicastAddress,"address":inputPublishAddressValue,"appKeyIndex":selectedPublishAppKeyIndex,"publicationPeriod":inputPublishPublicationPeriod,"retransmissionCount":inputPublishRetransmissionCount,"modelValue":selectedPublishModelValue,"cid":node.composition.cid})} text='Publish' />}
+                </div>
                 </div>
               </div>
             </div>

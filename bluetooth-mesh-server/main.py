@@ -3,7 +3,7 @@ from reset_mesh_config import reset_mesh_config
 from create_terminal import resolve_terminal_request
 from read_mesh_config import get_nodes_data
 from write_keys_config import add_appkey, edit_appkey, remove_appkey
-from write_mesh_config import add_bind, add_pub
+from write_mesh_config import add_bind, add_pub, add_sub
 from update_data import get_latest_data
 from multiprocessing import Process, Queue
 import json
@@ -149,6 +149,8 @@ def resolve_request(request,set_data):
                         return add_bind(set_data)
                 case "add-pub":
                         return add_pub(set_data)
+                case "add-sub":
+                        return add_sub(set_data)
         return "Failed to find the data"
 
 
