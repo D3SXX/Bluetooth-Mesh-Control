@@ -91,7 +91,8 @@ const NodesElement = () => {
   const [inputPublishPublicationPeriod,setInputPublishPublicationPeriod] = useState(0);
   const [inputPublishRetransmissionCount,setInputPublishRetransmissionCount] = useState(0);
   const [selectedPublishModelValue, setSelectedPublishModelValue] = useState(null);
-
+  
+  //const [resetNodeState, setResetNodeState] = useState(false);
   const [allowAddressInput, setAllowAddressInput] = useState(false);
   const [suggestAddressInput, setSuggestAddressInput] = useState("Type here...");
   const fetcher = (request: string) => async (url: string) => {
@@ -209,7 +210,7 @@ const NodesElement = () => {
           <div className="collapse-title bg-white text-black" data-tooltip-id={`tooltip-netkey`} data-ripple-light="true">
             Network Keys
           </div>
-          <div className='collapse-content text-black '>
+          <div className='collapse-content  text-black '>
             <div className="overflow-x-auto">
               <table className="table">
                 <thead>
@@ -266,6 +267,7 @@ const NodesElement = () => {
                 </tbody>
               </table>
             </div>
+          </div>
           </div>
           <div className="join-item collapse collapse-arrow border border-base-300">
             <input type="checkbox" className="peer" />
@@ -355,11 +357,15 @@ const NodesElement = () => {
                 </div>
               </div>
             </div>
-
+            <div className='join-item inline-block'>
+          <RegularButton command="" requestData ="" text="Reset node" style="btn btn-outline btn-error bg-transparent w-full"></RegularButton>
+          </div>
           </div>
 
         </div>
-      </div>
+        
+      
+      
     </div>
   ));
   return (

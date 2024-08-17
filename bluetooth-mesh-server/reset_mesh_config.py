@@ -15,3 +15,5 @@ def reset_mesh_config():
         f.write(prov_db_file.read())
         f.close()
         print("reset_mesh_config: Finished job")
+
+def reset

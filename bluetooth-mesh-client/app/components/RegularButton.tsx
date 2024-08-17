@@ -17,7 +17,7 @@ const fetcher = (request: string) => async (url: string) => {
         return res.text();
       };
 
-const RegularButton = ({ command,requestData=command, text="" }: { command: string;requestData?:string; text?:string }) => {
+const RegularButton = ({ command,requestData=command, text="", style="btn ml-2" }: { command: string;requestData?:string; text?:string, style:string }) => {
         const [outputData, setOutputData] = useState<string | null>(null);
 
         const call = async (command: string,requestData:string) => {
@@ -32,7 +32,7 @@ const RegularButton = ({ command,requestData=command, text="" }: { command: stri
 
         return (
 <div>
-      <button onClick={()=>call(command,requestData)} className="btn ml-2">{text || ""}</button>
+      <button onClick={()=>call(command,requestData)} className = {style}>{text || ""}</button>
       {outputData && (
         <Toast message={outputData} timeout={10000}></Toast>
       )}
