@@ -3,22 +3,36 @@ import requests
 import yaml
 import re
 import json
-def get_latest_data():
-        print("Trying to fecth the latest company_identifiers.yaml")
+
+
+def fetch_yaml(link,title):
         try:
-                response = requests.get("https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/company_identifiers/company_identifiers.yaml")
+                response = requests.get(link)
                 response.raise_for_status()
                 data = response.text
-                f = open("resources/company_identifiers/list.yaml","w")
+                print(".",end="")
+                f = open(f"resources/company_identifiers/{title}.yaml","w")
                 f.write(data)
                 f.close()
+                print(".",end="")
                 pattern = re.compile(r'[^\x09\x0A\x0D\x20-\x7E]') # https://yaml.org/spec/1.1/#id868524
                 data_object = yaml.safe_load(pattern.sub('', data))
-                f = open("resources/company_identifiers/list.json","w")
+                f = open(f"resources/company_identifiers/{title}.json","w")
                 f.write(json.dumps(data_object))
-                print("Success!")
+                f.close()
+                print(".",end="")
+                print(" Success!")
         except Exception as e:
-                print("Failed to fetch the file")
+                print(" Fail!")
                 print(e)
                 
+                          
+def get_latest_data():
+        
+        title_arr = ["company_identifiers","mmdl_model_uuids","mesh_model_uuids"]
+        link_arr = ["https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/company_identifiers/company_identifiers.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mmdl_model_uuids.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mesh_model_uuids.yaml"]
+        for i, link in enumerate(link_arr):
+                print(f"Trying to fecth the latest {title_arr[i]} data",end="")
+                fetch_yaml(link,title_arr[i])
+        
 get_latest_data()

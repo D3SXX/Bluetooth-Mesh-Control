@@ -43,6 +43,7 @@ interface nodeObject {
         elementIndex: number;
         location: string;
         models: string[];
+        model_names: string[];
       }[];
     };
     IVindex: number;
@@ -146,23 +147,8 @@ const NodesElement = () => {
   const compositionIndexes = ["cidName", "pid", "vid", "crpl"];
   const nonceTitles = ["Initialisation Vector Index", "Sequence Number"];
   const nonceIndexes = ["IVindex", "sequenceNumber"]
-  const modelNumbers = [
-    '0000', '0001', '0002', '0003',
-    '1000', '1001', '1002', '1003', '1004',
-    '1005', '1006', '1007', '1008', '1009',
-    '1010'
-  ];
-
-  const modelNames = [
-    'Configuration Server', 'Configuration Client', 'Health Server', 'Health Client',
-    'Generic OnOff Server', 'Generic OnOff Client', 'Generic Level Server',
-    'Generic Level Client', 'Generic Default Transition Time Server',
-    'Generic Default Transition Time Client', 'Generic Power OnOff Server',
-    'Generic Power OnOff Setup Server', 'Generic Power OnOff Client',
-    'Generic Power Level Server', 'Generic Power Level Setup Server'
-  ];
   const addressTypes = ['everyone', 'group address', 'unicast address', 'virtual address'];
-  // Models were taken from https://www.bluetooth.com/specifications/specs/mesh-model-1-1/
+
   const renderedElements = obj.nodes.map((node,nodeIndex) => (
     <div key={node.deviceKey} className='bg-white join join-vertical me-2 mb-2'>
       <div className='join-item text-center mt-1 mb-1 font-bold border-b-2 text-lg' data-tooltip-id={`tooltip-nodeid-${nodeIndex}`} data-ripple-light="true">Node {nodeIndex + 1}</div>
@@ -271,8 +257,8 @@ const NodesElement = () => {
                       <td>{element.location}</td>
                       <td>
                         {node.composition.elements[elementIndex].models.map((model, modelIndex) =>
-                          <span>{model} {modelNumbers.indexOf(model) >= 0 && (
-                            <span>({modelNames[modelNumbers.indexOf(model)]})</span>
+                          <span>{model} {element.model_names[modelIndex] && (
+                            <span>({element.model_names[modelIndex]})</span>
                           )}<br></br></span>)}
                       </td>
                     </tr>
