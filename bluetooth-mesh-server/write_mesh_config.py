@@ -1,7 +1,7 @@
 import os
 import json
 from send_command import send_command
-
+from modify_mesh_config import remove_node_from_config
 def add_bind(data):
         try:
                 bind_data = json.loads(data)
@@ -43,3 +43,20 @@ def add_sub(data):
                 print("Failed to add sub! ->")
                 print(e)
                 return "Failed"
+
+def reset_node(data):
+        try:
+                data = json.loads(data)
+                command = f"connect\n"
+                extra_commands = ["menu config", f'target {data["unicastAddress"]}',"node-reset"]
+                extra_timeouts = [0,2,4]
+                output = open("logs/reset-node.txt","w")
+                output.write(send_command(command=command,timeout=8,extra_commands=extra_commands,extra_timeouts=extra_timeouts))
+                remove_node_from_config(data)
+                return "Success"
+        except Exception as e:
+                print("Failed to reset node! ->")
+                print(e)
+                return "Failed"
+                
+                

@@ -358,7 +358,7 @@ const NodesElement = () => {
               </div>
             </div>
             <div className='join-item inline-block'>
-          <RegularButton command="" requestData ="" text="Reset node" style="btn btn-outline btn-error bg-transparent w-full"></RegularButton>
+          <RegularButton command="reset-node" requestData ={JSON.stringify({"unicastAddress":node.configuration.elements[0].unicastAddress, "type":"unicastAddress"})} text="Reset node" style="btn btn-outline btn-error bg-transparent w-full"></RegularButton>
           </div>
           </div>
 

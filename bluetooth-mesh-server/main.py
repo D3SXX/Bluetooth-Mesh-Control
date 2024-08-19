@@ -1,9 +1,9 @@
 from send_command import  send_command
-from reset_mesh_config import reset_mesh_config
+from modify_mesh_config import reset_mesh_config
 from create_terminal import resolve_terminal_request
 from read_mesh_config import get_nodes_data
 from write_keys_config import add_appkey, edit_appkey, remove_appkey
-from write_mesh_config import add_bind, add_pub, add_sub
+from write_mesh_config import add_bind, add_pub, add_sub, reset_node
 from update_data import get_latest_data
 from multiprocessing import Process, Queue
 import json
@@ -18,7 +18,7 @@ import os
 data = {
         "local":{
                 "meshctl-version":None,
-                "app-version":"0.11",
+                "app-version":"0.12",
                 "adapter":{
                         "default-adapter":None,
                         "available-list":{}
@@ -151,6 +151,8 @@ def resolve_request(request,set_data):
                         return add_pub(set_data)
                 case "add-sub":
                         return add_sub(set_data)
+                case "reset-node":
+                        return reset_node(set_data)
         return "Failed to find the data"
 
 
