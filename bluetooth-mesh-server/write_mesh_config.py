@@ -46,14 +46,24 @@ def add_sub(data):
 
 def reset_node(data):
         try:
+                # Get data from json
                 data = json.loads(data)
-                command = f"connect\n"
+                
+                # Connect to the mesh network and execute commands to remove the node
+                command = f"connect\n" # Note: Make a check for send_command function to see if it has actually connected to the mesh network
                 extra_commands = ["menu config", f'target {data["unicastAddress"]}',"node-reset"]
                 extra_timeouts = [0,2,4]
+                
+                # Log output for debugging
                 output = open("logs/reset-node.txt","w")
+                
+                # Call send_command
                 output.write(send_command(command=command,timeout=8,extra_commands=extra_commands,extra_timeouts=extra_timeouts))
+                
+                # Remove the datapoint of the node from config
                 remove_node_from_config(data)
-                return "Success"
+                
+                return "Success" # Note: Make condition check for Fail
         except Exception as e:
                 print("Failed to reset node! ->")
                 print(e)
