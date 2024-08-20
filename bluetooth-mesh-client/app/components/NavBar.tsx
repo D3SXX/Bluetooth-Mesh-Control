@@ -3,9 +3,11 @@ import DataElement from "@/app/components/DataElement";
 import "@/app/components/SideBar"
 import SideBar from '@/app/components/SideBar';
 import ActionButton from './ActionButton';
+import Link from 'next/link';
 
 const NavBar = () => {
   const elements = [(<DataElement command="status" interval = {0}></DataElement>),(<DataElement command="default-adapter" interval = {0} text="Default Adapter: "></DataElement>)];
+  const linksForElements = ["","/status"];
   return (
     
 
@@ -15,7 +17,7 @@ const NavBar = () => {
   </div>
   <div className="flex-1">
   {
-        elements.map(element => <a className="btn btn-ghost text-xl">{element}</a>)
+        elements.map((element, index) => <Link href={linksForElements[index]}><button className="btn btn-ghost text-xl">{element}</button></Link>)
       }
   </div>
   <div className="flex-none">
