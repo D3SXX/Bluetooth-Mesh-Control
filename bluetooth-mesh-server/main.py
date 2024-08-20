@@ -18,7 +18,7 @@ import os
 data = {
         "local":{
                 "meshctl-version":None,
-                "app-version":"0.12",
+                "app-version":"0.13",
                 "adapter":{
                         "default-adapter":None,
                         "available-list":{}

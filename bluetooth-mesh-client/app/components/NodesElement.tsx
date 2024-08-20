@@ -53,13 +53,13 @@ interface nodeObject {
 }
 
 const tooltipText = {
-  "Company ID": "1",
-  "Product ID": "2",
-  "Version ID": "3",
-  relay: "",
-  proxy: "",
-  friend: "",
-  lpn: "",
+  "Company ID": "Identifier of the manufacturer",
+  "Product ID": "Identifier of the product",
+  "Version ID": "Identifier of the version",
+  relay: "Ability to receive and retransmit messages to enable larger networks",
+  proxy: "Ability to receive and retransmit Messages between GATT and advertising bearers",
+  friend: "Ability to help a Node supporting the Low Power feature to operate efficiently",
+  lpn: "Ability to operate with reduced receiver duty cycles in a mesh network by working with a Friend node",
   nonce: "A nonce is a unique number used once to prevent replay attacks in communications security.",
   IVindex: "The IV Index is a 32-bit value which is shared by all Nodes in a network",
   sequenceNumber: "The sequence number is a unique identifier for messages that ensures proper sequencing and dublicate prevention",
@@ -76,7 +76,8 @@ const tooltipText = {
   publishSecondRow: "",
   publishThirdRow: ""
 }
- //IVIndex desctiption was taken from https://www.bluetooth.com/learn-about-bluetooth/feature-enhancements/mesh/mesh-glossary/#nonce
+
+// Many descriptions are taken from https://www.bluetooth.com/learn-about-bluetooth/feature-enhancements/mesh/mesh-glossary/
 
 const NodesElement = () => {
   // For binding (bind <ele_idx> <app_idx> <mod_id> [cid])
@@ -167,7 +168,7 @@ const NodesElement = () => {
             </thead>
             <tbody>
               {compositionTitles.map((title, titleIndex) => (
-                <tr>
+                <tr className='hover'>
                   <th>{title}</th>
                   <td><TooltipElement tooltipText={tooltipText[title]} label={node.composition[compositionIndexes[titleIndex]]} labelStyle="flex" tooltipID={title}></TooltipElement></td>
                 </tr>
@@ -175,21 +176,25 @@ const NodesElement = () => {
             </tbody>
           </table>
         </div>
-        <div className='stats'>
-          {Object.entries(node.composition.features).map(([key, value]) => (
-            <div className='stat'>
-              <div className='stat-value text-sm'>
-                {key}
+        <div className='join-item flex justify-center items-center'>
+          <div className='stats '>
+            {Object.entries(node.composition.features).map(([key, value]) => (
+              <div className='stat hover:bg-zinc-100' data-tooltip-id={`tooltip-${key}-${nodeIndex}`}>
+                <div className='stat-value text-sm'>
+                  {key}
+                </div>
+                <Tooltip id={`tooltip-${key}-${nodeIndex}`}>
+                  <div>{tooltipText[key]}</div>
+                </Tooltip>
+                <div className='stat-desc'>
+                  {value ? (<span className='text-green-600'>Available</span>) : (<span className='text-red-600'>Unavailable</span>)}
+                </div>
               </div>
-              <div className='stat-desc'>
-                {value ? (<span className='text-green-600'>Available</span>) : (<span className='text-red-600'>Unavailable</span>)}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         <div className='join-item'>
           <TooltipElement tooltipText={tooltipText.nonce} label="Nonce" labelStyle="mt-3 mb-1 font-bold border-b-2 border-base-200 flex items-center justify-center" tooltipID="nonce"></TooltipElement>
-          <div className='overflow-x-auto'>
             <table className='table'>
               <thead>
               </thead>
@@ -197,13 +202,12 @@ const NodesElement = () => {
                 {nonceTitles.map((nonceTitle, nonceIndex) => (
                   <tr className='hover' key={nonceIndex}>
                     <th>{nonceTitle}</th>
-                    <td><TooltipElement tooltipText={tooltipText[nonceIndexes[nonceIndex]]} label={node[nonceIndexes[nonceIndex]]} labelStyle="flex" tooltipID={nonceTitle}></TooltipElement></td>
+                    <td><TooltipElement tooltipText={tooltipText[nonceIndexes[nonceIndex]]} label={node[nonceIndexes[nonceIndex]]} labelStyle="flex " tooltipID={nonceTitle}></TooltipElement></td>
                   </tr>
 
                 ))}
               </tbody>
             </table>
-          </div>
         </div>
         <div className="join-item collapse collapse-arrow border border-base-300 ">
           <input type="checkbox" className="peer" />
