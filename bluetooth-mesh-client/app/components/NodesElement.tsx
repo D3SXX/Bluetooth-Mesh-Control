@@ -49,7 +49,7 @@ interface nodeObject {
     IVindex: number;
     sequenceNumber: number;
   }[];
-  
+
 }
 
 const tooltipText = {
@@ -82,17 +82,17 @@ const tooltipText = {
 const NodesElement = () => {
   // For binding (bind <ele_idx> <app_idx> <mod_id> [cid])
   const [selectedBindElementIndex, setSelectedBindElementIndex] = useState(-1);
-  const [selectedBindAppKeyIndex,setSelectedBindAppKeyIndex] = useState(null);
+  const [selectedBindAppKeyIndex, setSelectedBindAppKeyIndex] = useState(null);
   const [selectedBindModelValue, setSelectedBindModelValue] = useState(null);
-  
+
   // For publishing (pub-set <ele_addr> <pub_addr> <app_idx> <per (step|res)> <re-xmt (cnt|per)> <mod id> [cid])
   const [selectedPublishElementIndex, setSelectedPublishElementIndex] = useState(null);
   const [inputPublishAddressValue, setInputPublishAddressValue] = useState(null);
-  const [selectedPublishAppKeyIndex,setSelectedPublishAppKeyIndex] = useState(null);
-  const [inputPublishPublicationPeriod,setInputPublishPublicationPeriod] = useState(0);
-  const [inputPublishRetransmissionCount,setInputPublishRetransmissionCount] = useState(0);
+  const [selectedPublishAppKeyIndex, setSelectedPublishAppKeyIndex] = useState(null);
+  const [inputPublishPublicationPeriod, setInputPublishPublicationPeriod] = useState(0);
+  const [inputPublishRetransmissionCount, setInputPublishRetransmissionCount] = useState(0);
   const [selectedPublishModelValue, setSelectedPublishModelValue] = useState(null);
-  
+
   //const [resetNodeState, setResetNodeState] = useState(false);
   const [allowAddressInput, setAllowAddressInput] = useState(false);
   const [suggestAddressInput, setSuggestAddressInput] = useState("Type here...");
@@ -151,17 +151,17 @@ const NodesElement = () => {
   const nonceIndexes = ["IVindex", "sequenceNumber"]
   const addressTypes = ['everyone', 'group address', 'unicast address', 'virtual address'];
 
-  const renderedElements = obj.nodes.map((node,nodeIndex) => (
+  const renderedElements = obj.nodes.map((node, nodeIndex) => (
     <div key={node.deviceKey} className='bg-white join join-vertical me-2 mb-2'>
-      <div className='join-item text-center mt-1 mb-1 font-bold border-b-2 text-lg' data-tooltip-id={`tooltip-nodeid-${nodeIndex}`} data-ripple-light="true">Node {nodeIndex + 1}</div>
+      <div className='join-item text-center mt-1 font-bold border-b-2 text-lg' data-tooltip-id={`tooltip-nodeid-${nodeIndex}`} data-ripple-light="true">Node {nodeIndex + 1}</div>
       {/* Add useful icons based on models*/}
       <Tooltip id={`tooltip-nodeid-${nodeIndex}`}>
         <div>{node.deviceKey}</div>
       </Tooltip>
 
-      <div className='join-item'>
+      <div className='join-item '>
         <div className="overflow-x-auto">
-          <table className="table">
+          <table className="table border-b border-base-200">
             <thead>
               <tr></tr>
               <tr></tr>
@@ -176,7 +176,7 @@ const NodesElement = () => {
             </tbody>
           </table>
         </div>
-        <div className='join-item flex justify-center items-center'>
+        <div className='join-item flex border-b border-base-200 justify-center items-center'>
           <div className='stats '>
             {Object.entries(node.composition.features).map(([key, value]) => (
               <div className='stat hover:bg-zinc-100' data-tooltip-id={`tooltip-${key}-${nodeIndex}`}>
@@ -193,23 +193,23 @@ const NodesElement = () => {
             ))}
           </div>
         </div>
-        <div className='join-item'>
-          <TooltipElement tooltipText={tooltipText.nonce} label="Nonce" labelStyle="mt-3 mb-1 font-bold border-b-2 border-base-200 flex items-center justify-center" tooltipID="nonce"></TooltipElement>
-            <table className='table'>
-              <thead>
-              </thead>
-              <tbody>
-                {nonceTitles.map((nonceTitle, nonceIndex) => (
-                  <tr className='hover' key={nonceIndex}>
-                    <th>{nonceTitle}</th>
-                    <td><TooltipElement tooltipText={tooltipText[nonceIndexes[nonceIndex]]} label={node[nonceIndexes[nonceIndex]]} labelStyle="flex " tooltipID={nonceTitle}></TooltipElement></td>
-                  </tr>
+        <div className='join-item mt-2 border-base-200'>
+          <TooltipElement tooltipText={tooltipText.nonce} label="Nonce" labelStyle=" font-bold mb-2 border-base-200 flex items-center justify-center" tooltipID="nonce"></TooltipElement>
+          <table className='table border-t-2 border-base-200'>
+            <thead>
+            </thead>
+            <tbody>
+              {nonceTitles.map((nonceTitle, nonceIndex) => (
+                <tr className='hover' key={nonceIndex}>
+                  <th>{nonceTitle}</th>
+                  <td><TooltipElement tooltipText={tooltipText[nonceIndexes[nonceIndex]]} label={node[nonceIndexes[nonceIndex]]} labelStyle="flex " tooltipID={nonceTitle}></TooltipElement></td>
+                </tr>
 
-                ))}
-              </tbody>
-            </table>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div className="join-item collapse collapse-arrow border border-base-300 ">
+        <div className="join-item collapse collapse-arrow border-t-2 border-base-300">
           <input type="checkbox" className="peer" />
           <div className="collapse-title bg-white text-black" data-tooltip-id={`tooltip-netkey`} data-ripple-light="true">
             Network Keys
@@ -240,7 +240,7 @@ const NodesElement = () => {
             </div>
           </div>
         </div>
-        <div className="join-item collapse collapse-arrow border border-base-300">
+        <div className="join-item collapse collapse-arrow border-t-2 border-base-300">
           <input type="checkbox" className="peer" />
           <div className="collapse-title bg-white text-black">
             Available Elements
@@ -272,104 +272,108 @@ const NodesElement = () => {
               </table>
             </div>
           </div>
+        </div>
+        <div className="join-item collapse collapse-arrow border-t-2 border-base-300">
+          <input type="checkbox" className="peer" />
+          <div className="collapse-title bg-white text-black">
+            Bind Configuration
           </div>
-          <div className="join-item collapse collapse-arrow border border-base-300">
-            <input type="checkbox" className="peer" />
-            <div className="collapse-title bg-white text-black">
-              Bind Configuration
-            </div>
-            <div className='collapse-content'>
-              <div>Bind                 <select className="select max-w-xs"
-                onChange={(e) => setSelectedBindElementIndex(parseInt(e.target.value))}>
-                <option disabled selected>element</option>
-                {node.configuration.elements.map((element, elementIndex) => (
-                  <option key={elementIndex} value={elementIndex}>element {element.unicastAddress}</option>
+          <div className='collapse-content'>
+            <div><div className='mb-2'>Bind                 <select className="select max-w-xs"
+              onChange={(e) => setSelectedBindElementIndex(parseInt(e.target.value))}>
+              <option disabled selected>element</option>
+              {node.configuration.elements.map((element, elementIndex) => (
+                <option key={elementIndex} value={elementIndex}>element {element.unicastAddress}</option>
+              ))}
+            </select>
+              <select className="select max-w-xs" onChange={(e) => setSelectedBindModelValue(e.target.value)}>
+                <option disabled selected>model</option>
+                {/* selectedElementIndex < node.composition.elements.length prevents crash that happens when on any node selected element has more models that the one on any other node, ideally every node should have separate selectedIndex*/}
+                {(selectedBindElementIndex > -1 && selectedBindElementIndex < node.composition.elements.length) && node.composition.elements[selectedBindElementIndex].models.map((model, modelIndex) => (
+                  <option key={modelIndex} value={model}>model {model}</option>
                 ))}
-              </select>
-                <select className="select max-w-xs" onChange={(e) => setSelectedBindModelValue(e.target.value)}>
-                  <option disabled selected>model</option>
-                  {/* selectedElementIndex < node.composition.elements.length prevents crash that happens when on any node selected element has more models that the one on any other node, ideally every node should have separate selectedIndex*/}
-                  {(selectedBindElementIndex > -1 && selectedBindElementIndex < node.composition.elements.length) && node.composition.elements[selectedBindElementIndex].models.map((model, modelIndex) => (
-                    <option key={modelIndex} value={model}>model {model}</option>
-                  ))}
-                </select><br></br>
+              </select><br></br>
+            </div>
+              <div className=' border-t border-base-300 '>
                 To <select className="select max-w-xs" onChange={(e) => setSelectedBindAppKeyIndex(e.target.value)}>
                   <option disabled selected>application key</option>
-                  {obj.appKeys.map((appKey, index)=> (
+                  {obj.appKeys.map((appKey, index) => (
                     <option key={appKey.index} value={appKey.index}>application key {appKey.index}: {appKey.key}</option>
                   ))}
                 </select>
-                
-                <button className="btn bg-transparent ml-1"><Link href="/keys">Edit</Link></button>
+
+                <button className="btn bg-transparent ml-1 mt-2 mb-2"><Link href="/keys">Edit</Link></button>
                 <div className="inline-flex">
-                  {selectedBindElementIndex > -1 && <RegularButton command='add-bind' requestData={JSON.stringify({"elementValue":node.configuration.elements[selectedBindElementIndex].unicastAddress,"elementIndex":selectedBindElementIndex,"appKeyIndex":selectedBindAppKeyIndex,"modelValue":selectedBindModelValue,"cid":node.composition.cid})} text='Bind' />}
+                  {selectedBindElementIndex > -1 && <RegularButton command='add-bind' requestData={JSON.stringify({ "elementValue": node.configuration.elements[selectedBindElementIndex].unicastAddress, "elementIndex": selectedBindElementIndex, "appKeyIndex": selectedBindAppKeyIndex, "modelValue": selectedBindModelValue, "cid": node.composition.cid })} text='Bind' />}
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="join-item collapse collapse-arrow border border-base-300">
-            <input type="checkbox" className="peer" />
-            <div className="collapse-title bg-white text-black">
-              Subscribe & Publish Configuration
-            </div>
-            <div className='collapse-content'>
-              <div>Publish                 <select className="select max-w-xs"
-                onChange={(e) => setSelectedPublishElementIndex(e.target.value)}>
-                <option disabled selected>element</option>
-                {node.configuration.elements.map((element, elementIndex) => (
-                  <option key={elementIndex} value={elementIndex}>element {element.unicastAddress}</option>
+        </div>
+        <div className="join-item collapse collapse-arrow border-t-2 border-base-300">
+          <input type="checkbox" className="peer" />
+          <div className="collapse-title bg-white text-black">
+            Subscribe & Publish Configuration
+          </div>
+          <div className='collapse-content'>
+            <div><div>Publish                 <select className="select max-w-xs"
+              onChange={(e) => setSelectedPublishElementIndex(e.target.value)}>
+              <option disabled selected>element</option>
+              {node.configuration.elements.map((element, elementIndex) => (
+                <option key={elementIndex} value={elementIndex}>element {element.unicastAddress}</option>
+              ))}
+            </select>
+              <select className="select max-w-xs" onChange={(e) => setSelectedPublishModelValue(e.target.value)}>
+                <option disabled selected>model</option>
+                {/* selectedElementIndex < node.composition.elements.length prevents crash that happens when on any node selected element has more models that the one on any other node, ideally every node should have separate selectedIndex*/}
+                {selectedPublishElementIndex && selectedPublishElementIndex < node.composition.elements.length && node.composition.elements[selectedPublishElementIndex].models.map((model, modelIndex) => (
+                  <option key={modelIndex} value={model}>model {model}</option>
                 ))}
-              </select>
-                <select className="select max-w-xs" onChange={(e) => setSelectedPublishModelValue(e.target.value)}>
-                  <option disabled selected>model</option>
-                  {/* selectedElementIndex < node.composition.elements.length prevents crash that happens when on any node selected element has more models that the one on any other node, ideally every node should have separate selectedIndex*/}
-                  {selectedPublishElementIndex && selectedPublishElementIndex < node.composition.elements.length && node.composition.elements[selectedPublishElementIndex].models.map((model, modelIndex) => (
-                    <option key={modelIndex} value={model}>model {model}</option>
+              </select><br></br></div>
+              <div className='inline-flex items-center mb-2 mt-2 border-b border-t border-base-300'>
+                To
+                <select className="select max-w-xs " onChange={handleAddressSelection}>
+                  <option disabled selected>Address</option>
+                  {addressTypes.map((element, elementIndex) => (
+                    <option key={elementIndex} value={elementIndex}>{element}</option>
                   ))}
-                </select><br></br>
-                <div className='inline-flex items-center'>
-                  To
-                  <select className="select max-w-xs " onChange={handleAddressSelection}>
-                    <option disabled selected>Address</option>
-                    {addressTypes.map((element, elementIndex) => (
-                      <option key={elementIndex} value={elementIndex}>{element}</option>
-                    ))}
-                  </select>
-                  {allowAddressInput && <input type="text" value={inputPublishAddressValue} onChange={(e) => setInputPublishAddressValue(e.target.value)} placeholder={suggestAddressInput} className="input w-full max-w-xs " />}
-                  <TooltipElement label="" tooltipID="publish-info-2"></TooltipElement>
-                </div>
-                <br></br>
-                <div>
+                </select>
+                {allowAddressInput && <input type="text" value={inputPublishAddressValue} onChange={(e) => setInputPublishAddressValue(e.target.value)} placeholder={suggestAddressInput} className="input w-full max-w-xs " />}
+                <TooltipElement label="" tooltipID="publish-info-2"></TooltipElement>
+              </div>
+              <br></br>
+              <div>
                 Set <input type="text" onChange={(e) => setInputPublishPublicationPeriod(e.target.value)} placeholder="publication period (default is 0)" className="input w-full max-w-xs" />
-                </div>
-                <div>
+              </div>
+              <div className='mb-2 mt-2 border-b border-t border-base-300'>
                 and <input type="text" onChange={(e) => setInputPublishRetransmissionCount(e.target.value)} placeholder="retransmission count (default is 0)" className="input w-full max-w-xs" />
-                </div>
+              </div>
+              <div>
                 Use <select className="select max-w-xs" onChange={(e) => setSelectedPublishAppKeyIndex(e.target.value)}>
                   <option disabled selected>application key</option>
-                  {obj.appKeys.map((appKey, index)=> (
+                  {obj.appKeys.map((appKey, index) => (
                     <option key={appKey.index} value={appKey.index}>application key {appKey.index}: {appKey.key}</option>
                   ))}
                 </select>
                 <button className="btn bg-transparent ml-1"><Link href="/keys">Edit</Link></button>
-                <div>
-                <div className="inline-flex">
-                  {selectedPublishModelValue && <RegularButton command='add-sub' requestData={JSON.stringify({"elementValue":node.configuration.elements[selectedPublishElementIndex].unicastAddress,"address":inputPublishAddressValue,"appKeyIndex":selectedPublishAppKeyIndex,"modelValue":selectedPublishModelValue,"cid":node.composition.cid})} text='Subscribe' />}
-                  {selectedPublishModelValue && <RegularButton command='add-pub' requestData={JSON.stringify({"elementValue":node.configuration.elements[selectedPublishElementIndex].unicastAddress,"address":inputPublishAddressValue,"appKeyIndex":selectedPublishAppKeyIndex,"publicationPeriod":inputPublishPublicationPeriod,"retransmissionCount":inputPublishRetransmissionCount,"modelValue":selectedPublishModelValue,"cid":node.composition.cid})} text='Publish' />}
-                </div>
+              </div>
+              <div className='flex justify-center items-center'>
+                <div className="inline-flex mt-2 mb-2">
+                  {selectedPublishModelValue && <RegularButton command='add-sub' requestData={JSON.stringify({ "elementValue": node.configuration.elements[selectedPublishElementIndex].unicastAddress, "address": inputPublishAddressValue, "appKeyIndex": selectedPublishAppKeyIndex, "modelValue": selectedPublishModelValue, "cid": node.composition.cid })} text='Subscribe' />}
+                  {selectedPublishModelValue && <RegularButton command='add-pub' requestData={JSON.stringify({ "elementValue": node.configuration.elements[selectedPublishElementIndex].unicastAddress, "address": inputPublishAddressValue, "appKeyIndex": selectedPublishAppKeyIndex, "publicationPeriod": inputPublishPublicationPeriod, "retransmissionCount": inputPublishRetransmissionCount, "modelValue": selectedPublishModelValue, "cid": node.composition.cid })} text='Publish' />}
                 </div>
               </div>
             </div>
-            <div className='join-item inline-block'>
-          <RegularButton command="reset-node" requestData ={JSON.stringify({"unicastAddress":node.configuration.elements[0].unicastAddress, "type":"unicastAddress"})} text="Reset node" style="btn btn-outline btn-error bg-transparent w-full"></RegularButton>
           </div>
+          <div className='join-item inline-block'>
+            <RegularButton command="reset-node" requestData={JSON.stringify({ "unicastAddress": node.configuration.elements[0].unicastAddress, "type": "unicastAddress" })} text="Reset node" style="btn btn-outline btn-error bg-transparent w-full"></RegularButton>
           </div>
-
         </div>
-        
-      
-      
+
+      </div>
+
+
+
     </div>
   ));
   return (
