@@ -4,6 +4,7 @@ from create_terminal import resolve_terminal_request
 from read_mesh_config import get_nodes_data
 from write_keys_config import add_appkey, edit_appkey, remove_appkey
 from write_mesh_config import add_bind, add_pub, add_sub, reset_node
+from get_controller import get_controller_data, get_controller_list
 from update_data import get_latest_data
 from multiprocessing import Process, Queue
 import json
@@ -16,18 +17,18 @@ import time
 import os
 
 data = {
-        "local":{
-                "meshctl-version":None,
-                "app-version":"0.13",
-                "adapter":{
-                        "default-adapter":None,
-                        "available-list":{}
-                },
+        "Local":{
+                "Meshctl-version":None,
+                "App-version":"0.13",
+                "Adapter":{
+                        "Default-adapter":None,
+                        "Available-list":{}
+                }
         },
-        "nodes":{
-                "unprovisioned-devices":{}
+        "Nodes":{
+                "Unprovisioned-devices":{}
         },
-        "requests":{
+        "Requests":{
                 
         }
 }
@@ -40,54 +41,58 @@ def resolve_request(request,set_data):
         print("Resolving: " + request)
         match request:
                 case "meshctl-version":
-                        if not data["local"]["meshctl-version"]:
+                        if not data["Local"]["Meshctl-version"]:
                                 output = send_command("version",0)
                                 pattern = r"Version\s+(\d+\.\d+)"
                                 match = re.search(pattern, output)
-                                data["local"]["meshctl-version"] = match.group(1)
-                        return data["local"]["meshctl-version"]
+                                data["Local"]["Meshctl-version"] = match.group(1)
+                        return data["Local"]["Meshctl-version"]
                 case "app-version":
-                        return data["local"]["app-version"]
+                        return data["Local"]["App-version"]
                 case "status": 
                         return "Server is Working"
                 case "default-adapter":
                         try:
-                                if not data["local"]["adapter"]["default-adapter"]:
-                                        output = send_command("list",0)
-                                        pattern = r"Controller (\S+)\s+\S+\s+(?:#\d+\s+)?\[default\]"
-                                        match = re.search(pattern, output)
-                                        if match:
-                                                data["local"]["adapter"]["default-adapter"] = match.group(1)
-                                        else:
-                                                return "Unknown"
-                                return data["local"]["adapter"]["default-adapter"]
+                                if not data["Local"]["Adapter"]["Default-adapter"]:
+                                        output_obj = get_controller_data()
+                                        for key in output_obj:
+                                                data["Local"]["Adapter"][key] = output_obj[key]
+                                return data["Local"]["Adapter"]["Default-adapter"]      
                         except Exception as e:
+                                print(e)
                                 return "Error"
                 case "set-list-adapters":
                         if set_data:
                                 address = set_data[:set_data.rfind(":")]
-                                data["local"]["adapter"]["default-adapter"] = address
+                                data["Local"]["Adapter"]["Default-adapter"] = address
                                 print(address)
                                 print(send_command(f"select {address}",0))
                         return "True"
                 case "list-adapters":
-                        output = send_command("list",0)
-                        pattern = r"Controller (\S+)\s+\S+(?!\s+\[default\])"
-                        matches = re.findall(pattern, output)
-                        if matches:
-                                for match in matches:
-                                        data["local"]["adapter"]["available-list"][match] = "Available"
-                                default = data["local"]["adapter"]["default-adapter"]
-                                data["local"]["adapter"]["available-list"][default] = "Default"
+                        data["Local"]["Adapter"]["Available-list"] = get_controller_list()
+                        data["Local"]["Adapter"]["Available-list"][data["Local"]["Adapter"]["Default-adapter"]] = "Default"
+                        if data["Local"]["Adapter"]["Available-list"]:
+                                print(json.dumps(data["Local"]["Adapter"]))
+                                return data["Local"]["Adapter"]["Available-list"]
                         else:
-                                "No adapters were found"
+                                print("No adapters were found")
                                 return "Fail"
-                        return data["local"]["adapter"]["available-list"]
+                case "adapter-info":
+                        try:
+                                if not data["Local"]["Adapter"]["Default-adapter"]:
+                                        output_obj = get_controller_data()
+                                        for key in output_obj:
+                                                data["Local"]["Adapter"][key] = output_obj[key]
+                                return data["Local"]["Adapter"]
+                        except Exception as e:
+                                print(e)
+                                return "Error"                        
                 case "scan-unprovisioned-nodes":
                         global lock_calls
                         if "lock_calls" in globals() and lock_calls == True:
                                 return "Cannot Scan while provisioniong"
                         output = send_command("discover-unprovisioned on",10)
+                        send_command("discover-unprovisioned off",0.1)
                         f = open("logs/scan-unprovisioned-nodes.txt","w")
                         f.write(output)
                         f.close()
@@ -106,13 +111,13 @@ def resolve_request(request,set_data):
                                         for match in device_info_matches:
                                                 mac_address = match[0]
                                                 device_name = match[1]
-                                                data["nodes"]["unprovisioned-devices"][uuid_list[i]] = {"device-name":device_name,"mac-address":mac_address}
+                                                data["Nodes"]["Unprovisioned-devices"][uuid_list[i]] = {"device-name":device_name,"mac-address":mac_address}
                                                 i += 1
                                 else:
-                                        data["nodes"]["unprovisioned-devices"][uuid_list[i]] = {"device-name":"Unknown","mac-address":"Unknown"}
-                        if(data["nodes"]["unprovisioned-devices"]):
-                                print(data["nodes"]["unprovisioned-devices"])
-                                return data["nodes"]["unprovisioned-devices"]
+                                        data["Nodes"]["Unprovisioned-devices"][uuid_list[i]] = {"device-name":"Unknown","mac-address":"Unknown"}
+                        if(data["Nodes"]["Unprovisioned-devices"]):
+                                print(data["Nodes"]["Unprovisioned-devices"])
+                                return data["Nodes"]["Unprovisioned-devices"]
                         else:
                                 return "No devices were found."       
                 case "provision":

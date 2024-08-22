@@ -118,8 +118,8 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ command, title, }) => {
   }, [lines]);
 
   return (
-    <div tabIndex={0} className="collapse bg-base-100" ref={collapseRef} >
-      <input type="checkbox" /> 
+    <div tabIndex={0} className="collapse collapse-arrow bg-base-100" ref={collapseRef} >
+      <input type="checkbox" defaultChecked /> 
       <div className="collapse-title text-xl font-medium">
         {title}
       </div>
