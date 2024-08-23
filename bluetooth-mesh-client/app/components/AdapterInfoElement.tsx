@@ -17,7 +17,7 @@ const fetcher = (request: string) => async (url: string) => {
 const AdapterInfoElement = () => {
 
   const key = `/api/data/adapter-info`;
-  const { data, error, isLoading } = useSWR(key, fetcher("adapter-info"), { refreshInterval: 0 });
+  const { data, error, isLoading } = useSWR(key, fetcher("adapter-info"), { refreshInterval: 1 });
 
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>

@@ -81,15 +81,15 @@ const KeysElement = () => {
   const [inputAppKeyAddValue, setInputAppKeyAddValue] = useState('');
   const [inputAppKeyEditValue, setInputAppKeyEditValue] = useState('');
 
-  const handleAddAppKeyValueChange = (event) =>{
+  const handleAddAppKeyValueChange = (event: { target: { value: React.SetStateAction<string>; }; }) =>{
     setInputAppKeyAddValue(event.target.value);
   }
 
-  const handleEditAppKeyValueChange = (event) =>{
+  const handleEditAppKeyValueChange = (event: { target: { value: React.SetStateAction<string>; }; }) =>{
     setInputAppKeyEditValue(event.target.value);
   }
 
-  const handleappKeyModal = (option) => {
+  const handleappKeyModal = (option: React.SetStateAction<number>) => {
     setappKeyModalSelected(option);
     const contentFirst = document.getElementById(`appKeyConfigContent-1`);
     const contentSecond = document.getElementById(`appKeyConfigContent-2`);

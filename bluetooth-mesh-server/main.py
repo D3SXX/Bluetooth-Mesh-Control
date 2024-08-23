@@ -19,7 +19,7 @@ import os
 data = {
         "Local":{
                 "Meshctl-version":None,
-                "App-version":"0.13",
+                "App-version":"0.14",
                 "Adapter":{
                         "Default-adapter":None,
                         "Available-list":{}
@@ -33,6 +33,10 @@ data = {
         }
 }
 
+def init_controller_data():
+        output_obj = get_controller_data()
+        for key in output_obj:
+                data["Local"]["Adapter"][key] = output_obj[key]
 
 def resolve_request(request,set_data):
         global provision_output
@@ -54,13 +58,27 @@ def resolve_request(request,set_data):
                 case "default-adapter":
                         try:
                                 if not data["Local"]["Adapter"]["Default-adapter"]:
-                                        output_obj = get_controller_data()
-                                        for key in output_obj:
-                                                data["Local"]["Adapter"][key] = output_obj[key]
+                                        init_controller_data()
                                 return data["Local"]["Adapter"]["Default-adapter"]      
                         except Exception as e:
                                 print(e)
                                 return "Error"
+                case "power-status":
+                        if not "Powered" in data["Local"]["Adapter"]:
+                                init_controller_data()
+                        if data["Local"]["Adapter"]["Powered"] == "yes":
+                                return "true"
+                        else:
+                                return "false"
+                case "power-toggle":
+                        if data["Local"]["Adapter"]["Powered"] == "yes":
+                                data["Local"]["Adapter"]["Powered"] = "no"
+                                send_command("power off",0)
+                                return "false"
+                        else:
+                                data["Local"]["Adapter"]["Powered"] = "yes"
+                                send_command("power on",0)
+                                return "true"                             
                 case "set-list-adapters":
                         if set_data:
                                 address = set_data[:set_data.rfind(":")]
@@ -80,9 +98,7 @@ def resolve_request(request,set_data):
                 case "adapter-info":
                         try:
                                 if not data["Local"]["Adapter"]["Default-adapter"]:
-                                        output_obj = get_controller_data()
-                                        for key in output_obj:
-                                                data["Local"]["Adapter"][key] = output_obj[key]
+                                        init_controller_data()
                                 return data["Local"]["Adapter"]
                         except Exception as e:
                                 print(e)
