@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import useSWR from 'swr';
 import Image from 'next/image'
 
@@ -24,20 +24,43 @@ const imageOff = {
   filter: " invert(0%) sepia(95%) saturate(20%) hue-rotate(39deg) brightness(93%) contrast(107%)",
 }
 
-const ReactIcon = ({iconOn,iconOff,enableBlink,forceState, command, interval}: { iconOn:string,iconOff:string,enableBlink:boolean,forceState?: boolean, command:string, interval:number}) => {
+const ReactIcon = ({iconOn,iconOff,enableBlink, command, interval}: { iconOn:string,iconOff:string,enableBlink:boolean,forceState?: boolean, command:string, interval:number}) => {
+  const [blinkingState, setBlinkingState] = useState(false);
+  const [isBlinking, setIsBlinking] = useState(false);
+  useEffect(() => {
+    if (enableBlink) {
+      const blinkInterval = setInterval(() => {
+        setBlinkingState((prevState) => !prevState);
+      }, 750);
+      setIsBlinking(true);
+      return () => clearInterval(blinkInterval);
+    } else {
+      setIsBlinking(false);
+      setBlinkingState(false);
+    }
+  }, [enableBlink]);
+  
+  
         const key = `/api/data/${command}`;
         const { data, error, isLoading } = useSWR(key, fetcher(command), { refreshInterval: interval});
         if (error) return <div>failed to load</div>
         if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
-        let state = (data == "true")
-        state = forceState ? forceState : state;  
-
-  return (
-    <div>
-      {state && <div><Image src={iconOn} style={imageOn} width={26} height={26} alt={'ON'}/></div>}
-      {!state && <div><Image src={iconOff} style={imageOff} width={26} height={26} alt={'OFF'}/></div>}
-    </div>
-  )
-}
+        let state = (data == "true");
+        const finalState = state && isBlinking ? blinkingState : state;
+        console.log(`icon: ${iconOn} \n data: ${data} \n state (from SWR data): ${state} \n finalState: ${finalState}`)
+        return (
+          <div>
+            {finalState ? (
+              <div>
+                <Image src={iconOn} style={imageOn} width={26} height={26} alt={'ON'} />
+              </div>
+            ) : (
+              <div>
+                <Image src={iconOff} style={imageOff} width={26} height={26} alt={'OFF'} />
+              </div>
+            )}
+          </div>
+        );
+      };
 
 export default ReactIcon

@@ -64,21 +64,24 @@ def resolve_request(request,set_data):
                                 print(e)
                                 return "Error"
                 case "power-status":
-                        if not "Powered" in data["Local"]["Adapter"]:
-                                init_controller_data()
+                        init_controller_data()
                         if data["Local"]["Adapter"]["Powered"] == "yes":
                                 return "true"
                         else:
                                 return "false"
                 case "power-toggle":
                         if data["Local"]["Adapter"]["Powered"] == "yes":
-                                data["Local"]["Adapter"]["Powered"] = "no"
                                 send_command("power off",0)
                                 return "false"
                         else:
-                                data["Local"]["Adapter"]["Powered"] = "yes"
                                 send_command("power on",0)
-                                return "true"                             
+                                return "true"
+                case "discovery-status":
+                        init_controller_data()
+                        if data["Local"]["Adapter"]["Discovering"] == "yes":
+                                return "true"
+                        else:
+                                return "false"                              
                 case "set-list-adapters":
                         if set_data:
                                 address = set_data[:set_data.rfind(":")]
