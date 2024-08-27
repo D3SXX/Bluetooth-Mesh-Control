@@ -81,7 +81,11 @@ def resolve_request(request,set_data):
                         if data["Local"]["Adapter"]["Discovering"] == "yes":
                                 return "true"
                         else:
-                                return "false"                              
+                                return "false"
+                case "unprovisioned-scan-toggle":
+                        return "true"
+                case "unprovisioned-scan-status":
+                        return "sd"                              
                 case "set-list-adapters":
                         if set_data:
                                 address = set_data[:set_data.rfind(":")]
