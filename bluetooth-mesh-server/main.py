@@ -5,6 +5,7 @@ from read_mesh_config import get_nodes_data
 from write_keys_config import add_appkey, edit_appkey, remove_appkey
 from write_mesh_config import add_bind, add_pub, add_sub, reset_node
 from get_controller import get_controller_data, get_controller_list
+from scan_unprovisioned import start_discover, stop_discover
 from update_data import get_latest_data
 from multiprocessing import Process, Queue
 import json
@@ -26,7 +27,8 @@ data = {
                 }
         },
         "Nodes":{
-                "Unprovisioned-devices":{}
+                "Unprovisioned-devices":{},
+                "Unprovisioned-nodes":[]
         },
         "Requests":{
                 
@@ -83,9 +85,13 @@ def resolve_request(request,set_data):
                         else:
                                 return "false"
                 case "unprovisioned-scan-toggle":
+                        if set_data == "true":
+                                start_discover(data)
+                        else:
+                                stop_discover()
                         return "true"
                 case "unprovisioned-scan-status":
-                        return "sd"                              
+                        return data["Nodes"]["Unprovisioned-nodes"]                          
                 case "set-list-adapters":
                         if set_data:
                                 address = set_data[:set_data.rfind(":")]
