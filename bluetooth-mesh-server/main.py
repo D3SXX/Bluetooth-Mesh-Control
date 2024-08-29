@@ -6,6 +6,7 @@ from write_keys_config import add_appkey, edit_appkey, remove_appkey
 from write_mesh_config import add_bind, add_pub, add_sub, reset_node
 from get_controller import get_controller_data, get_controller_list
 from scan_unprovisioned import start_discover, stop_discover
+from provision_node import start_provision
 from update_data import get_latest_data
 from multiprocessing import Process, Queue
 import json
@@ -23,8 +24,10 @@ data = {
                 "App-version":"0.14",
                 "Adapter":{
                         "Default-adapter":None,
-                        "Available-list":{}
-                }
+                        "Available-list":{},
+                        "Discovering":None
+                },
+                "Provisioning-status":False
         },
         "Nodes":{
                 "Unprovisioned-devices":{},
@@ -41,7 +44,9 @@ def init_controller_data():
                 data["Local"]["Adapter"][key] = output_obj[key]
 
 def resolve_request(request,set_data):
-        global provision_output
+        global provision_output, provision_terminal_output
+        if not "provision_terminal_output" in globals():
+                provision_terminal_output = []
         if not "provision_output" in globals():
                 provision_output = ""
         print("Resolving: " + request)
@@ -85,13 +90,28 @@ def resolve_request(request,set_data):
                         else:
                                 return "false"
                 case "unprovisioned-scan-toggle":
+                        if data["Local"]["Provisioning-status"] == True:
+                                print("Cannot toggle unprovisioned scan: Provisioning status == true")
+                                return "false"
                         if set_data == "true":
                                 start_discover(data)
                         else:
                                 stop_discover()
-                        return "true"
+                        return resolve_request("discovery-status","")
                 case "unprovisioned-scan-status":
-                        return data["Nodes"]["Unprovisioned-nodes"]                          
+                        return {"Status":"true" if data["Local"]["Adapter"]["Discovering"] == "yes" else "false","data":data["Nodes"]["Unprovisioned-nodes"]}
+                case "provision-start":
+                        print(f"Trying to provision UUID: {set_data}..",end="")
+                        print("Cleaning previous output..",end="")
+                        provision_terminal_output = []
+                        print("Turning off discovery")
+                        stop_discover()
+                        print("Calling start_provision()")
+                        data["Local"]["Provisioning-status"] = True
+                        start_provision(set_data,provision_terminal_output, data)
+                        return "true"
+                case "get-provisioning-data":
+                        return {"status":data["Local"]["Provisioning-status"], "data":provision_terminal_output}                          
                 case "set-list-adapters":
                         if set_data:
                                 address = set_data[:set_data.rfind(":")]

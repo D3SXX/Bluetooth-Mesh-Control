@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
+import TerminalOutputElement from './TerminalOutputElement';
 
 const fetcher = (request: string) => async (url: string) => {
   const apiUrl = `http://127.0.0.1:10000${url}`;
@@ -24,17 +25,22 @@ const ProvisionElement = () => {
   const [scanStatus, setScanStatus] = useState(false);
   const [unprovisionedNodes, setUnprovisionedNodes] = useState<UnprovisionedNode[]>([]);
 
+  const provision = async (uuid: string) => {
+    setScanStatus(false)
+    await fetcher(`${uuid}`)(`/api/data/provision-start`)
+  }
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-
-    if (scanStatus) {
       intervalId = setInterval(async () => {
         try {
           const data = await fetcher('true')('/api/data/unprovisioned-scan-status');
           let obj;
           try {
             obj = JSON.parse(data);
-            setUnprovisionedNodes(obj);
+            setUnprovisionedNodes(obj["data"]);
+            const state = obj["Status"] == "true";
+            setScanStatus(state);
           } catch (error) {
             console.error('Error parsing JSON:', error);
           }
@@ -42,7 +48,7 @@ const ProvisionElement = () => {
           console.error('Error during scan:', error);
         }
       }, 1000);
-    }
+    
 
     return () => {
       if (intervalId) clearInterval(intervalId);
@@ -59,8 +65,8 @@ const ProvisionElement = () => {
   };
 
   return (
-    <div>
-      <div className='bg-white collapse collapse-open border-base-300 border'>
+    <div className='join join-horizontal flex justify-between'>
+      <div className='bg-white collapse collapse-open border-base-300 border join-item w-1/2 mr-2'>
         <div className="collapse-title text-xl font-medium flex items-center justify-between">
           <div className="flex items-center">
             <span>Enable Scan</span>
@@ -69,6 +75,7 @@ const ProvisionElement = () => {
               className="toggle ml-2"
               checked={scanStatus}
               onChange={handleCheckboxChange}
+              id="scan-toggle"
             />
           </div>
           {scanStatus && <span className="loading loading-spinner loading-md ml-auto"></span>}
@@ -88,10 +95,13 @@ const ProvisionElement = () => {
                     </div>
                     <dialog id={`modal-${index}`} className="modal">
                       <div className="modal-box">
-                        <h3 className="font-bold text-lg">Do you want to provision this node?</h3>
-                        <div className="py-4 flex items-center justify-center space-x-4">
-                        <form method="dialog"><button className="btn btn-error">Cancel</button></form>
-                          <div className="btn btn-outline btn-success">Provision {node.UUID}</div>
+                        <h3 className="font-bold text-lg">Provision</h3>
+                        <div className="py-4 text-lg font-normal">
+                          <div className='mb-2'>Do you want to provision this node?</div>
+                          <div>
+                        <form method="dialog" className="w-full flex justify-between"><button className="btn btn-error">Cancel</button>
+                          <button className="btn btn-outline btn-success" onClick={() => provision(node.UUID)}>Provision {node.UUID}</button></form>
+                          </div>
                         </div>
                       </div>
                       <form method="dialog" className="modal-backdrop">
@@ -102,10 +112,13 @@ const ProvisionElement = () => {
                 ))}
               </div>
             ) : (
-              <div className='text-gray-500'>No unprovisioned nodes found.</div>
+              <div className='text-gray-500'>Unprovisioned nodes list is empty.</div>
             )}
           </div>
         </div>
+      </div>
+      <div className='join-item w-1/2'>
+      <TerminalOutputElement></TerminalOutputElement>
       </div>
     </div>
   );

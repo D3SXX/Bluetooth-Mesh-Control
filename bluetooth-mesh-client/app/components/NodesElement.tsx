@@ -262,7 +262,7 @@ const NodesElement = () => {
                       <td>{element.location}</td>
                       <td>
                         {node.composition.elements[elementIndex].models.map((model, modelIndex) =>
-                          <span>{model} {element.model_names[modelIndex] && (
+                          <span>{model} {element.model_names && (
                             <span>({element.model_names[modelIndex]})</span>
                           )}<br></br></span>)}
                       </td>

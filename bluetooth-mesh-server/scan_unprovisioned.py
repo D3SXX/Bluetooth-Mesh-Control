@@ -20,7 +20,6 @@ def terminal_read_output(process, obj):
         
 def add_undiscovered_node(obj):
     global terminal_output, arr
-    print("Found new node!")
     address, name, OOB, UUID = "", "", "", ""
     for entry in terminal_output:
         if "Device UUID:" in entry:
@@ -34,16 +33,23 @@ def add_undiscovered_node(obj):
             for i in range(3, len(str_arr)):
                 name += f"{str_arr[i]} "
             name = name[:-1]
-    print(f"Address: {address} | Name: {name} | OOB: {OOB} | UUID: {UUID}")
-    obj["Nodes"]["Unprovisioned-nodes"].append({"address":address,"name":name,"OOB":OOB,"UUID":UUID})
+    node_exists = any(node["address"] == address or node["UUID"] == UUID for node in obj["Nodes"]["Unprovisioned-nodes"])
+    if not node_exists:
+        print(f"Found new node: Address: {address} | Name: {name} | OOB: {OOB} | UUID: {UUID}")
+        obj["Nodes"]["Unprovisioned-nodes"].append({"address":address,"name":name,"OOB":OOB,"UUID":UUID})
+    else:
+        print("add_undiscovered_node() - Skipped simular node")
 
 def stop_discover():
     global process, terminal_output
-    process.terminate()
-    print("force_close() - Trying to close process")
-    output_thread.join(timeout=0.1)
-    print("force_close() - Closed thread")
-    print(terminal_output)
+    try:
+        process.terminate()
+        print("stop_discover() - Trying to close process")
+        output_thread.join(timeout=0.1)
+        print("stop_discover() - Closed thread")
+    except Exception as e:
+        print(f"Got an error for stop_discover(): {e}")
+    #print(terminal_output)
 
 def start_discover(obj):
     global process, output_thread

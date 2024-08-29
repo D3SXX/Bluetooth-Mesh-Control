@@ -1,6 +1,43 @@
 import os
 import json
 
+
+def default_node():
+    return {
+        "deviceKey": "unknown",
+        "configuration": {
+            "netKeys": ["unknown"],
+            "elements": [
+                {
+                    "elementIndex": "unknown",
+                    "unicastAddress": "unknown"
+                }
+            ]
+        },
+        "composition": {
+            "cid": "unknown",
+            "pid": "unknown",
+            "vid": "unknown",
+            "crpl": "unknown",
+            "features": {
+                "relay": "unknown",
+                "proxy": "unknown",
+                "friend": "unknown",
+                "lpn": "unknown"
+            },
+            "elements": [
+                {
+                    "elementIndex": "unknown",
+                    "location": "unknown",
+                    "models": ["unknown"]
+                }
+            ]
+        },
+        "IVindex": "unknown",
+        "sequenceNumber": "unknown"
+    }
+
+
 def get_nodes_data():
         home_path = os.path.expanduser('~')
         meshctl_path = home_path + "/.config/meshctl/"
@@ -11,6 +48,10 @@ def get_nodes_data():
         returned_obj["appKeys"] = mesh_info["appKeys"]
         returned_obj =  add_company(returned_obj)
         returned_obj = add_model_name(returned_obj)
+        default = default_node()
+        for i, node in enumerate(returned_obj["nodes"]):
+                if "composition" not in node:
+                     returned_obj["nodes"][i]["composition"] = default["composition"] 
         return json.dumps(returned_obj)
         
 def add_company(data):
