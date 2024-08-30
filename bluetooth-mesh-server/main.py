@@ -111,7 +111,10 @@ def resolve_request(request,set_data):
                         start_provision(set_data,provision_terminal_output, data)
                         return "true"
                 case "get-provisioning-data":
-                        return {"status":data["Local"]["Provisioning-status"], "data":provision_terminal_output}                          
+                        return {"status":data["Local"]["Provisioning-status"], "data":provision_terminal_output}
+                case "reset_unprovisioned_list":
+                        data["Nodes"]["Unprovisioned-nodes"] = []
+                        return "true"                          
                 case "set-list-adapters":
                         if set_data:
                                 address = set_data[:set_data.rfind(":")]

@@ -30,6 +30,11 @@ const ProvisionElement = () => {
     await fetcher(`${uuid}`)(`/api/data/provision-start`)
   }
 
+  const reset_unprovisioned_list = async() => {
+    setScanStatus(false)
+    await fetcher(`true`)(`/api/data/reset_unprovisioned_list`)
+  }
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
       intervalId = setInterval(async () => {
@@ -66,10 +71,10 @@ const ProvisionElement = () => {
 
   return (
     <div className='join join-horizontal flex justify-between'>
-      <div className='bg-white collapse collapse-open border-base-300 border join-item w-1/2 mr-2'>
+      <div className='bg-white collapse collapse-open border-base-300 border  w-1/2 mr-2'>
         <div className="collapse-title text-xl font-medium flex items-center justify-between">
-          <div className="flex items-center">
-            <span>Enable Scan</span>
+          <div className="flex items-center ml-2">
+            <span>Toggle Scan</span>
             <input
               type="checkbox"
               className="toggle ml-2"
@@ -78,7 +83,10 @@ const ProvisionElement = () => {
               id="scan-toggle"
             />
           </div>
-          {scanStatus && <span className="loading loading-spinner loading-md ml-auto"></span>}
+          <div className='ml-2 items-center flex'>
+          {unprovisionedNodes.length > 0 && <div className='btn btn-ghost text-xl' onClick={reset_unprovisioned_list}>&#x2672;</div>}
+          {scanStatus && <div className='items-center flex'>Scanning<span className="loading loading-spinner loading-md ml-2"></span></div>}
+          </div>
         </div>
         <div className="collapse-content">
           {scanStatus && unprovisionedNodes.length <= 0 && <div className='text-gray-500'>Scanning for unprovisioned nodes...</div>}
@@ -117,7 +125,7 @@ const ProvisionElement = () => {
           </div>
         </div>
       </div>
-      <div className='join-item w-1/2'>
+      <div className='w-1/2'>
       <TerminalOutputElement></TerminalOutputElement>
       </div>
     </div>
