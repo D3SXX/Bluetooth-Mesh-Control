@@ -33,8 +33,14 @@ def add_undiscovered_node(obj):
             for i in range(3, len(str_arr)):
                 name += f"{str_arr[i]} "
             name = name[:-1]
-    node_exists = any(node["address"] == address or node["UUID"] == UUID for node in obj["Nodes"]["Unprovisioned-nodes"])
-    if not node_exists:
+    same_node = False
+    for i, node in enumerate(obj["Nodes"]["Unprovisioned-nodes"]):
+        if node["name"] == name and node["address"] == address and node["UUID"] == UUID:
+            same_node = True
+        elif node["name"] == name and node["address"] == address:
+            node["UUID"] = UUID
+            print(f"Updated UUID for node {name} {address}")
+    if not same_node:
         print(f"Found new node: Address: {address} | Name: {name} | OOB: {OOB} | UUID: {UUID}")
         obj["Nodes"]["Unprovisioned-nodes"].append({"address":address,"name":name,"OOB":OOB,"UUID":UUID})
     else:

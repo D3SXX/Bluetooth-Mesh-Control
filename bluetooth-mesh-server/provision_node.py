@@ -3,6 +3,8 @@ import threading
 import re
 import time
 
+terminate_provision_event = threading.Event()
+
 def terminal_read_output(provision_process, obj, data):
     global terminal_output, past_output
     if "past_output" not in globals():
@@ -29,10 +31,12 @@ def stop_provision(obj, data, msg):
     print(f"stop_provision() - call msg: {msg}")
     obj.append(msg)
     try:
-        provision_process.terminate()
-        print("stop_provision() - Trying to close provision_process")
-        output_thread.join(timeout=0.1)
-        print("stop_provision() - Closed thread")
+        if not terminate_provision_event.is_set():
+            terminate_provision_event.set()
+            provision_process.terminate()
+            print("stop_provision() - Trying to close provision_process")
+            output_thread.join(timeout=0.1)
+            print("stop_provision() - Closed thread")
     except Exception as e:
         print(f"stop_provision() - error: {e}")
     data["Local"]["Provisioning-status"] = False
@@ -42,14 +46,20 @@ def start_provision(UUID, obj, data):
     try:
         provision_process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         
-        provision_process.stdin.write(f"provision {UUID}" + "\n")
+        provision_process.stdin.write(f"provision {UUID}\n")
         provision_process.stdin.flush()
 
         # Start a thread to continuously read the output
         output_thread = threading.Thread(target=terminal_read_output, args=(provision_process,obj,data))
         output_thread.start()
         print(f"Started provisioning for node {UUID}")
-        time.sleep(60)
-        stop_provision(obj,data,"Reached 60 seconds timeout, try again...")
+        timeout_thread = threading.Thread(target=timeout_terminate, args=(obj,data, 60))
+        timeout_thread.start()
+        timeout_thread.join()
     except FileNotFoundError:
         print("meshctl command not found. Make sure it's installed and accessible.")
+
+def timeout_terminate(obj,data, timeout):
+    global terminate_event
+    if not terminate_event.wait(timeout):
+        return stop_provision(obj,data, False)

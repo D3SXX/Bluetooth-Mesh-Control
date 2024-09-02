@@ -6,7 +6,7 @@ from write_keys_config import add_appkey, edit_appkey, remove_appkey
 from write_mesh_config import add_bind, add_pub, add_sub, reset_node
 from get_controller import get_controller_data, get_controller_list
 from scan_unprovisioned import start_discover, stop_discover
-from provision_node import start_provision
+from provision_node import start_provision,stop_provision
 from update_data import get_latest_data
 from multiprocessing import Process, Queue
 import json
@@ -21,7 +21,7 @@ import os
 data = {
         "Local":{
                 "Meshctl-version":None,
-                "App-version":"0.14",
+                "App-version":"0.15",
                 "Adapter":{
                         "Default-adapter":None,
                         "Available-list":{},
@@ -101,6 +101,9 @@ def resolve_request(request,set_data):
                 case "unprovisioned-scan-status":
                         return {"Status":"true" if data["Local"]["Adapter"]["Discovering"] == "yes" else "false","data":data["Nodes"]["Unprovisioned-nodes"]}
                 case "provision-start":
+                        if data["Local"]["Provisioning-status"] == True:
+                                print("Cannot start provisioning, previous process is still active")
+                                return "false"
                         print(f"Trying to provision UUID: {set_data}..",end="")
                         print("Cleaning previous output..",end="")
                         provision_terminal_output = []

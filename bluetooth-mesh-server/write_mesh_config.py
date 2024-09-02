@@ -2,6 +2,8 @@ import os
 import json
 from send_command import send_command
 from modify_mesh_config import remove_node_from_config
+from remove_node import start_node_remove
+
 def add_bind(data):
         try:
                 bind_data = json.loads(data)
@@ -48,22 +50,17 @@ def reset_node(data):
         try:
                 # Get data from json
                 data = json.loads(data)
+
+                data["msg"] = False
+
+                # Try to remove node from meshctl 
+                start_node_remove(data)
                 
-                # Connect to the mesh network and execute commands to remove the node
-                command = f"connect\n" # Note: Make a check for send_command function to see if it has actually connected to the mesh network
-                extra_commands = ["menu config", f'target {data["unicastAddress"]}',"node-reset"]
-                extra_timeouts = [0,2,4]
+                # Remove the datapoint of the node from config if meshctl has removed it
+                if data["msg"]:
+                        remove_node_from_config(data)
                 
-                # Log output for debugging
-                output = open("logs/reset-node.txt","w")
-                
-                # Call send_command
-                output.write(send_command(command=command,timeout=8,extra_commands=extra_commands,extra_timeouts=extra_timeouts))
-                
-                # Remove the datapoint of the node from config
-                remove_node_from_config(data)
-                
-                return "Success" # Note: Make condition check for Fail
+                return f'Successfuly removed node {data["unicastAddress"]}' if data["msg"] == True else f'Could not remove node {data["unicastAddress"]}, try again..' 
         except Exception as e:
                 print("Failed to reset node! ->")
                 print(e)

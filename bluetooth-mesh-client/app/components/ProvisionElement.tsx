@@ -52,7 +52,7 @@ const ProvisionElement = () => {
         } catch (error) {
           console.error('Error during scan:', error);
         }
-      }, 1000);
+      }, 750);
     
 
     return () => {
