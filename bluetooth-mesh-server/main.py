@@ -1,7 +1,7 @@
 from send_command import  send_command
 from modify_mesh_config import reset_mesh_config
 from create_terminal import resolve_terminal_request
-from read_mesh_config import get_nodes_data
+from read_mesh_config import get_nodes_data, get_keys_data
 from write_keys_config import add_appkey, edit_appkey, remove_appkey
 from write_mesh_config import add_bind, add_pub, add_sub, reset_node
 from get_controller import get_controller_data, get_controller_list
@@ -193,10 +193,7 @@ def resolve_request(request,set_data):
                                 return "Failed"
                 case "get-keys-data":
                         try:
-                                home_path = os.path.expanduser('~')
-                                meshctl_path = home_path + "/.config/meshctl/"
-                                f = open(meshctl_path+"prov_db.json","r")
-                                return f.read()
+                                return get_keys_data()
                         except Exception as e:
                                 return "Failed" + e
                 case "add-appkey":

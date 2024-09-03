@@ -378,7 +378,15 @@ const NodesElement = () => {
   ));
   return (
     <div>
-      {renderedElements}
+      {renderedElements.length > 0 && (renderedElements)}
+      {renderedElements.length == 0 && <div className='collapse border-base-300 bg-white border collapse-open'>
+        <div className="collapse-title">
+        Could not find any provisioned nodes...
+        </div>
+        <div className='collapse-content'>
+        <Link className='btn bg-white' href={'/provision'}>Provision new nodes</Link>
+        </div>
+        </div>}
     </div>
   )
 }

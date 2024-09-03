@@ -37,21 +37,31 @@ def default_node():
         "sequenceNumber": "unknown"
     }
 
-
-def get_nodes_data():
+def load_config():
         home_path = os.path.expanduser('~')
         meshctl_path = home_path + "/.config/meshctl/"
         f = open(meshctl_path+"prov_db.json","r")
-        mesh_info = json.loads(f.read())
+        return json.loads(f.read())           
+
+def get_keys_data():
+        keys_info = load_config()
         returned_obj = {}
-        returned_obj["nodes"] = mesh_info["nodes"]
-        returned_obj["appKeys"] = mesh_info["appKeys"]
+        returned_obj["appKeys"] = keys_info["appKeys"] if "appKeys" in keys_info else []
+        returned_obj["netKeys"] = keys_info["netKeys"] if "netKeys" in keys_info else []
+        returned_obj["nodes"] = keys_info["nodes"] if "nodes" in keys_info else []
+        return json.dumps(returned_obj)
+
+def get_nodes_data():
+        mesh_info = load_config()
+        returned_obj = {}
+        returned_obj["nodes"] = mesh_info["nodes"] if "nodes" in mesh_info else []
+        returned_obj["appKeys"] = mesh_info["appKeys"] if "appKeys" in mesh_info else []
         returned_obj =  add_company(returned_obj)
         returned_obj = add_model_name(returned_obj)
         default = default_node()
         for i, node in enumerate(returned_obj["nodes"]):
                 if "composition" not in node:
-                     returned_obj["nodes"][i]["composition"] = default["composition"] 
+                     returned_obj["nodes"][i]["composition"] = default["composition"]
         return json.dumps(returned_obj)
         
 def add_company(data):
