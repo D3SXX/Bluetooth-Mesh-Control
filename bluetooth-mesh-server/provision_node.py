@@ -19,7 +19,7 @@ def terminal_read_output(provision_process, obj, data):
             obj.append(cleared_output)
             past_output = output
             if "Provision success." in cleared_output:
-                stop_provision(data,obj, "Successfully provisioned node!")
+                stop_provision(obj,data, "Successfully provisioned node!")
                 data["Nodes"]["Unprovisioned-nodes"] = []
             if "Failed to connect:" in cleared_output or "Stale services? Remove device and re-discover" in cleared_output:
                 stop_provision(obj,data, "Failed to connect, try again...")
@@ -60,6 +60,6 @@ def start_provision(UUID, obj, data):
         print("meshctl command not found. Make sure it's installed and accessible.")
 
 def timeout_terminate(obj,data, timeout):
-    global terminate_event
-    if not terminate_event.wait(timeout):
-        return stop_provision(obj,data, False)
+    global terminate_provision_event
+    if not terminate_provision_event.wait(timeout):
+        stop_provision(obj,data, "Reached 60 seconds timeout, try again...")

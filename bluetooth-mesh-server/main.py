@@ -42,6 +42,8 @@ def init_controller_data():
         output_obj = get_controller_data()
         for key in output_obj:
                 data["Local"]["Adapter"][key] = output_obj[key]
+def restart_adapter():
+        send_command("power off\npower on\n",0)
 
 def resolve_request(request,set_data):
         global provision_output, provision_terminal_output
@@ -97,6 +99,7 @@ def resolve_request(request,set_data):
                                 start_discover(data)
                         else:
                                 stop_discover()
+                                restart_adapter()
                         return resolve_request("discovery-status","")
                 case "unprovisioned-scan-status":
                         return {"Status":"true" if data["Local"]["Adapter"]["Discovering"] == "yes" else "false","data":data["Nodes"]["Unprovisioned-nodes"]}

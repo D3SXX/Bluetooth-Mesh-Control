@@ -24,7 +24,7 @@ const TerminalOutputElement = () => {
     const [terminalData, setTerminalData] = useState<TerminalData | null>(null);
 
     const key = `/api/data/get-provisioning-data`;
-    const { data, error, isLoading } = useSWR(key, fetcher("get-provisioning-dat"), { refreshInterval: 1000 });
+    const { data, error, isLoading } = useSWR(key, fetcher("get-provisioning-data"), { refreshInterval: 1000 });
 
     useEffect(() => {
         if (data) {
@@ -49,8 +49,9 @@ const TerminalOutputElement = () => {
     return (
         <div tabIndex={0} className="collapse collapse-arrow bg-base-100">
             <input type="checkbox" defaultChecked />
-            <div className="collapse-title text-xl font-medium">
-                Terminal Output
+            <div className="collapse-title text-xl font-medium inline-flex">
+                <div>Terminal Output</div>
+                {(terminalData && terminalData["status"]) && <div className='items-center flex ml-auto'>Provisioning<span className="loading loading-spinner loading-md ml-2"></span></div>}
             </div>
             <div className="collapse-content">
                 <ul className='overflow-auto h-64 bg-black rounded-lg' ref={terminalOutputRef}>
