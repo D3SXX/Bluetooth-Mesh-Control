@@ -31,7 +31,7 @@ data = {
         },
         "Nodes":{
                 "Unprovisioned-devices":{},
-                "Unprovisioned-nodes":[]
+                "Unprovisioned-nodes":{}
         },
         "Requests":{
                 
@@ -43,7 +43,8 @@ def init_controller_data():
         for key in output_obj:
                 data["Local"]["Adapter"][key] = output_obj[key]
 def restart_adapter():
-        send_command("power off\npower on\n",0)
+        send_command("power off",0.5)
+        send_command("power on",0)
 
 def resolve_request(request,set_data):
         global provision_output, provision_terminal_output

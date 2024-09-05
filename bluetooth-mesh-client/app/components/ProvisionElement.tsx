@@ -43,7 +43,11 @@ const ProvisionElement = () => {
           let obj;
           try {
             obj = JSON.parse(data);
-            setUnprovisionedNodes(obj["data"]);
+            const nodesArray = Object.entries(obj.data).map(([address, nodeInfo]) => ({
+              address,
+              ...nodeInfo
+            }));
+            setUnprovisionedNodes(nodesArray);
             const state = obj["Status"] == "true";
             setScanStatus(state);
           } catch (error) {

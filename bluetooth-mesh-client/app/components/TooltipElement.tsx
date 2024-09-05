@@ -2,7 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import { Tooltip } from 'react-tooltip'
 
-const TooltipElement = ({tooltipText,label,labelStyle,tooltipID}) => {
+const TooltipElement = ({tooltipText,label,labelStyle,tooltipID} : {tooltipText:string, label:string,labelStyle:string, tooltipID:string}) => {
   return (
     <div className={labelStyle}>
       {label}

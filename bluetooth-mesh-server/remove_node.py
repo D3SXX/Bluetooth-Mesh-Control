@@ -19,7 +19,7 @@ def terminal_read_output(remove_node_process, data):
             past_output = output
             print(output)
             if "Connection successful" in cleared_output:
-                time.sleep(2) # Without wait meshctl will error to "Failed to AcquireWrite"
+                time.sleep(3) # Without wait meshctl will error to "Failed to AcquireWrite"
                 remove_node_process.stdin.write(f'menu config\ntarget {data["unicastAddress"]}\n')
                 remove_node_process.stdin.flush()
             if "Configuring node" in cleared_output:
@@ -31,7 +31,7 @@ def terminal_read_output(remove_node_process, data):
                 stop_node_remove(data, False)
 
 def stop_node_remove(data,msg):
-    global output_thread,remove_node_process
+    global remove_node_output_thread,remove_node_process
     print(f"stop_node_remove() - call msg state: {msg}")
     data["msg"] = msg
     try:
@@ -39,14 +39,14 @@ def stop_node_remove(data,msg):
             terminate_event.set()
             remove_node_process.terminate()
             print("stop_node_remove() - Trying to close remove_node_process")
-            output_thread.join(timeout=1)
+            remove_node_output_thread.join(timeout=1)
             print("stop_node_remove() - Closed thread")
     except Exception as e:
         print(f"stop_node_remove() - error: {e}")
     return
 
 def start_node_remove(data):
-    global remove_node_process, output_thread, terminate_event
+    global remove_node_process, remove_node_output_thread, terminate_event
     terminate_event.clear()
     try:
         remove_node_process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
@@ -55,8 +55,8 @@ def start_node_remove(data):
         remove_node_process.stdin.flush()
 
         # Start a thread to continuously read the output
-        output_thread = threading.Thread(target=terminal_read_output, args=(remove_node_process,data))
-        output_thread.start()
+        remove_node_output_thread = threading.Thread(target=terminal_read_output, args=(remove_node_process,data))
+        remove_node_output_thread.start()
         print(f'Started removal of node {data["unicastAddress"]}')
 
         timeout_thread = threading.Thread(target=timeout_terminate, args=(data, 20))

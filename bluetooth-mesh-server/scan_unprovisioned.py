@@ -33,32 +33,29 @@ def add_undiscovered_node(obj):
             for i in range(3, len(str_arr)):
                 name += f"{str_arr[i]} "
             name = name[:-1]
-    same_node = False
-    for i, node in enumerate(obj["Nodes"]["Unprovisioned-nodes"]):
-        if node["name"] == name and node["address"] == address and node["UUID"] == UUID:
-            same_node = True
-        elif node["name"] == name and node["address"] == address:
-            node["UUID"] = UUID
-            print(f"Updated UUID for node {name} {address}")
-    if not same_node:
-        print(f"Found new node: Address: {address} | Name: {name} | OOB: {OOB} | UUID: {UUID}")
-        obj["Nodes"]["Unprovisioned-nodes"].append({"address":address,"name":name,"OOB":OOB,"UUID":UUID})
-    else:
-        print("add_undiscovered_node() - Skipped simular node")
+
+    print(f"Found node: Address: {address} | Name: {name} | OOB: {OOB} | UUID: {UUID}")
+    #obj["Nodes"]["Unprovisioned-nodes"].append({"address":address,"name":name,"OOB":OOB,"UUID":UUID})
+    obj["Nodes"]["Unprovisioned-nodes"][address] = {
+        "name": name,
+        "OOB": OOB,
+        "UUID": UUID
+    }
+
 
 def stop_discover():
     global process, terminal_output
     try:
         process.terminate()
         print("stop_discover() - Trying to close process")
-        output_thread.join(timeout=0.1)
+        discover_output_thread.join(timeout=0.1)
         print("stop_discover() - Closed thread")
     except Exception as e:
         print(f"Got an error for stop_discover(): {e}")
     #print(terminal_output)
 
 def start_discover(obj):
-    global process, output_thread
+    global process, discover_output_thread
     try:
         process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         
@@ -66,8 +63,8 @@ def start_discover(obj):
         process.stdin.flush()
 
         # Start a thread to continuously read the output
-        output_thread = threading.Thread(target=terminal_read_output, args=(process,obj))
-        output_thread.start()
+        discover_output_thread = threading.Thread(target=terminal_read_output, args=(process,obj))
+        discover_output_thread.start()
         print("Started discovery for unprovisioned nodes")
     except FileNotFoundError:
         print("meshctl command not found. Make sure it's installed and accessible.")
