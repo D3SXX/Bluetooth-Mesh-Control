@@ -152,7 +152,7 @@ const NodesElement = () => {
   const addressTypes = ['everyone', 'group address', 'unicast address', 'virtual address'];
 
   const renderedElements = obj.nodes.map((node, nodeIndex) => (
-    <div key={node.deviceKey} className='bg-white join join-vertical me-2 mb-2'>
+    <div key={node.deviceKey} className='bg-base-100 join join-vertical me-2 mb-2'>
       <div className='join-item text-center mt-1 font-bold border-b-2 text-lg' data-tooltip-id={`tooltip-nodeid-${nodeIndex}`} data-ripple-light="true">Node {nodeIndex + 1}</div>
       {/* Add useful icons based on models*/}
       <Tooltip id={`tooltip-nodeid-${nodeIndex}`}>
@@ -211,10 +211,10 @@ const NodesElement = () => {
         </div>
         <div className="join-item collapse collapse-arrow border-t-2 border-base-300">
           <input type="checkbox" className="peer" />
-          <div className="collapse-title bg-white text-black" data-tooltip-id={`tooltip-netkey`} data-ripple-light="true">
+          <div className="collapse-title bg-base-100" data-tooltip-id={`tooltip-netkey`} data-ripple-light="true">
             Network Keys
           </div>
-          <div className='collapse-content  text-black '>
+          <div className='collapse-content  bg-base-100 '>
             <div className="overflow-x-auto">
               <table className="table">
                 <thead>
@@ -242,10 +242,10 @@ const NodesElement = () => {
         </div>
         <div className="join-item collapse collapse-arrow border-t-2 border-base-300">
           <input type="checkbox" className="peer" />
-          <div className="collapse-title bg-white text-black">
+          <div className="collapse-title bg-base-100">
             Available Elements
           </div>
-          <div className='collapse-content  text-black '>
+          <div className='collapse-content  bg-base-100 '>
             <div className="overflow-x-auto">
               <table className="table ">
                 <thead>
@@ -275,7 +275,7 @@ const NodesElement = () => {
         </div>
         <div className="join-item collapse collapse-arrow border-t-2 border-base-300">
           <input type="checkbox" className="peer" />
-          <div className="collapse-title bg-white text-black">
+          <div className="collapse-title bg-base-100">
             Bind Configuration
           </div>
           <div className='collapse-content'>
@@ -312,7 +312,7 @@ const NodesElement = () => {
         </div>
         <div className="join-item collapse collapse-arrow border-t-2 border-base-300">
           <input type="checkbox" className="peer" />
-          <div className="collapse-title bg-white text-black">
+          <div className="collapse-title bg-base-100">
             Subscribe & Publish Configuration
           </div>
           <div className='collapse-content'>
@@ -379,12 +379,12 @@ const NodesElement = () => {
   return (
     <div>
       {renderedElements.length > 0 && (renderedElements)}
-      {renderedElements.length == 0 && <div className='collapse border-base-300 bg-white border collapse-open'>
+      {renderedElements.length == 0 && <div className='collapse border-base-300 border collapse-open'>
         <div className="collapse-title">
         Could not find any provisioned nodes...
         </div>
         <div className='collapse-content'>
-        <Link className='btn bg-white' href={'/provision'}>Provision new nodes</Link>
+        <Link className='btn bg-base-100' href={'/provision'}>Provision new nodes</Link>
         </div>
         </div>}
     </div>

@@ -75,7 +75,7 @@ const ProvisionElement = () => {
 
   return (
     <div className='join join-horizontal flex justify-between'>
-      <div className='bg-white collapse collapse-open border-base-300 border  w-1/2 mr-2'>
+      <div className='bg-base-100 collapse collapse-open border-base-300 border  w-1/2 mr-2'>
         <div className="collapse-title text-xl font-medium flex items-center justify-between">
           <div className="flex items-center ml-2">
             <span>Toggle Scan</span>

@@ -139,14 +139,14 @@ const KeysElement = () => {
   }
   return (
     <div className='w-full'>
-      <div key={1} className='bg-white join join-vertical me-2 mb-2 '>
+      <div key={1} className='bg-base-100 join join-vertical me-2 mb-2 '>
         <div className='join-item text-center mt-1 mb-1 font-bold border-b-2 text-lg'>Application Keys</div>
         <div className="join-item collapse collapse-arrow border border-t-0 border-base-300 ">
           <input type="checkbox" className="peer" />
-          <div className="collapse-title bg-white text-black">
+          <div className="collapse-title bg-base-100">
             Available Keys
           </div>
-          <div className='collapse-content text-black '>
+          <div className='collapse-content'>
             <div className="overflow-x-auto">
               <table className="table">
                 <thead>
@@ -171,10 +171,10 @@ const KeysElement = () => {
         </div>
         <div className="join-item collapse collapse-arrow border border-base-300 ">
           <input type="checkbox" className="peer" />
-          <div className="collapse-title bg-white text-black" data-tooltip-id={`tooltip-netkey`} data-ripple-light="true">
+          <div className="collapse-title bg-base-100" data-tooltip-id={`tooltip-netkey`} data-ripple-light="true">
             Assigned Keys
           </div>
-          <div className='collapse-content text-black '>
+          <div className='collapse-content bg-base-100'>
             <div className="overflow-x-auto">
               <table className="table">
                 <thead>
@@ -216,7 +216,7 @@ const KeysElement = () => {
           </div>
         </div>
 
-        <div className='join-item'><button className="btn bg-white w-full" onClick={() => document.getElementById('appKeyConfigModal').showModal()}>Edit keys configuration</button>
+        <div className='join-item'><button className="btn bg-base-100 w-full" onClick={() => document.getElementById('appKeyConfigModal').showModal()}>Edit keys configuration</button>
           <dialog id="appKeyConfigModal" className="modal">
             <div className="modal-box min-h-56">
               <h3 className="font-bold text-lg"><ul className="menu menu-vertical lg:menu-horizontal bg-base-200 rounded-box w-full">
@@ -283,14 +283,14 @@ const KeysElement = () => {
           </dialog></div>
 
       </div>
-      <div key={2} className='bg-white join join-vertical me-2 mb-2'>
+      <div key={2} className='bg-base-100 join join-vertical me-2 mb-2'>
         <div className='join-item text-center mt-1 mb-1 font-bold border-b-2 text-lg' data-tooltip-id={`tooltip-nodeid-${1}`} data-ripple-light="true">Network Keys</div>
         <div className="join-item collapse collapse-arrow border border-t-0 border-base-300 ">
           <input type="checkbox" className="peer" />
-          <div className="collapse-title bg-white text-black">
+          <div className="collapse-title bg-base-100">
             Available Keys
           </div>
-          <div className='collapse-content text-black '>
+          <div className='collapse-content '>
             <div className="overflow-x-auto">
               <table className="table">
                 <thead>
@@ -315,10 +315,10 @@ const KeysElement = () => {
         </div>
         <div className="join-item collapse collapse-arrow border border-base-300 ">
           <input type="checkbox" className="peer" />
-          <div className="collapse-title bg-white text-black" data-tooltip-id={`tooltip-netkey`} data-ripple-light="true">
+          <div className="collapse-title bg-base-100" data-tooltip-id={`tooltip-netkey`} data-ripple-light="true">
             Assigned Keys
           </div>
-          <div className='collapse-content text-black '>
+          <div className='collapse-content'>
             <div className="overflow-x-auto">
               <table className="table">
                 <thead>
