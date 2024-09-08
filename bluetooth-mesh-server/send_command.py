@@ -26,8 +26,8 @@ def send_command(command,timeout=2,extra_commands=[], extra_timeouts=[]):
             return output.strip()
         else:
             print("Error executing meshctl command:", error.strip())
-            return None
+            return error.strip()
 
     except FileNotFoundError:
         print("meshctl command not found. Make sure it's installed and accessible.")
-        return None
+        return error.strip()

@@ -6,6 +6,7 @@ import TooltipElement from './TooltipElement';
 import RegularButton from './RegularButton';
 import Toast from './Toast';
 import { json } from 'stream/consumers';
+import NoProvisionedNodes from './NoProvisionedNodes';
 
 interface DataInterface {
   $schema: string;
@@ -137,8 +138,11 @@ const KeysElement = () => {
   catch{
     return <div>Failed to load, try to add new nodes..</div>
   }
-  return (
-    <div className='w-full'>
+
+  let renderedElements;
+
+  if ("appKeys" in obj){
+    renderedElements = (<div className='w-full'>
       <div key={1} className='bg-base-100 join join-vertical me-2 mb-2 '>
         <div className='join-item text-center mt-1 mb-1 font-bold border-b-2 text-lg'>Application Keys</div>
         <div className="join-item collapse collapse-arrow border border-t-0 border-base-300 ">
@@ -345,8 +349,14 @@ const KeysElement = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>)
+  }
+
+  return (
+    <div>
+    {renderedElements ? renderedElements : <NoProvisionedNodes />}
+  </div>
+  )
 }
 
 export default KeysElement

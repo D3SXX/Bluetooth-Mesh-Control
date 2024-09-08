@@ -20,14 +20,20 @@ import os
 
 data = {
         "Local":{
-                "Meshctl-version":None,
-                "App-version":"0.16",
+                "Meshctl-version":"Unknown",
+                "App-version":"0.17",
                 "Adapter":{
-                        "Default-adapter":None,
+                        "Default-adapter":"Unknown",
                         "Available-list":{},
-                        "Discovering":None
+                        "Discovering":None,
+                        "Powered": False
                 },
                 "Provisioning-status":False
+        },
+        "Error":{
+                "Error-status":None,
+                "Error":"",
+                "Extra-error-data":""
         },
         "Nodes":{
                 "Unprovisioned-devices":{},
@@ -38,6 +44,18 @@ data = {
         }
 }
 
+def check_meshctl():
+        check = send_command("",0)
+        if "Failed to parse local node configuration file" in check:
+                print("check_meshctl() - got config error")
+                data["Error"]["Error-status"] = True
+                data["Error"]["Error"] = "config"
+                try:
+                        data["Error"]["Extra-error-data"] = open("resources/reset_config/prov_db.json","r").read()
+                except:
+                        print("check_meshctl() - Cannot open default prov_db.json")
+        else:
+                data["Error"]["Error-status"] = False
 def init_controller_data():
         output_obj = get_controller_data()
         for key in output_obj:
@@ -54,8 +72,20 @@ def resolve_request(request,set_data):
                 provision_output = ""
         print("Resolving: " + request)
         match request:
+                case "error-state":
+                        return data["Error"]
+                case "set-config":
+                        req = []
+                        try:
+                                req = json.loads(set_data)
+                        except Exception as e:
+                                print(e)
+                                return ""
+                        reset_mesh_config(prov_db=req["Message"])
+                        check_meshctl()
+                        return ""
                 case "meshctl-version":
-                        if not data["Local"]["Meshctl-version"]:
+                        if data["Local"]["Meshctl-version"] == "Unknown" and not data["Error"]["Error-status"]:
                                 output = send_command("version",0)
                                 pattern = r"Version\s+(\d+\.\d+)"
                                 match = re.search(pattern, output)
@@ -67,13 +97,15 @@ def resolve_request(request,set_data):
                         return "Server is Working"
                 case "default-adapter":
                         try:
-                                if not data["Local"]["Adapter"]["Default-adapter"]:
+                                if not data["Local"]["Adapter"]["Default-adapter"]  == "Unknown" and not data["Error"]["Error-status"]:
                                         init_controller_data()
                                 return data["Local"]["Adapter"]["Default-adapter"]      
                         except Exception as e:
                                 print(e)
                                 return "Error"
                 case "power-status":
+                        if data["Error"]["Error-status"]:
+                                return "false"
                         init_controller_data()
                         if data["Local"]["Adapter"]["Powered"] == "yes":
                                 return "true"
@@ -194,12 +226,12 @@ def resolve_request(request,set_data):
                         try:
                                 return get_nodes_data()
                         except:
-                                return "Failed"
+                                return {}
                 case "get-keys-data":
                         try:
                                 return get_keys_data()
                         except Exception as e:
-                                return "Failed" + e
+                                return {}
                 case "add-appkey":
                         return add_appkey(set_data)
                 case "edit-appkey":
@@ -216,6 +248,8 @@ def resolve_request(request,set_data):
                         return reset_node(set_data)
         return "Failed to find the data"
 
+
+check_meshctl()
 
 # app instance
 app = Flask(__name__)

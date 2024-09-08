@@ -66,7 +66,7 @@ def get_nodes_data():
         
 def add_company(data):
         try:
-                with open("resources/company_identifiers/company_identifiers.json", "r") as file:
+                with open("resources/sig_data/company_identifiers.json", "r") as file:
                         company_identifiers = json.load(file)
                         for node in data["nodes"]:
                                 cid = node["composition"]["cid"]
@@ -81,8 +81,8 @@ def add_company(data):
         
 def add_model_name(data):
         try:
-                mmdl_file = open("resources/company_identifiers/mmdl_model_uuids.json", "r")
-                mesh_file = open("resources/company_identifiers/mesh_model_uuids.json", "r")
+                mmdl_file = open("resources/sig_data/mmdl_model_uuids.json", "r")
+                mesh_file = open("resources/sig_data/mesh_model_uuids.json", "r")
                 mmdl_models = json.load(mmdl_file)
                 mesh_models = json.load(mesh_file)
                 for node in data["nodes"]:

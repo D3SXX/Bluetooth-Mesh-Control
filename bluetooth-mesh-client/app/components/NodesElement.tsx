@@ -5,6 +5,7 @@ import { Tooltip } from 'react-tooltip'
 import TooltipElement from './TooltipElement';
 import Link from 'next/link';
 import RegularButton from './RegularButton';
+import NoProvisionedNodes from './NoProvisionedNodes';
 
 interface nodeObject {
   appKeys: {
@@ -151,7 +152,10 @@ const NodesElement = () => {
   const nonceIndexes = ["IVindex", "sequenceNumber"]
   const addressTypes = ['everyone', 'group address', 'unicast address', 'virtual address'];
 
-  const renderedElements = obj.nodes.map((node, nodeIndex) => (
+  let renderedElements;
+
+  if ("nodes" in obj){
+  renderedElements = obj.nodes.map((node, nodeIndex) => (
     <div key={node.deviceKey} className='bg-base-100 join join-vertical me-2 mb-2'>
       <div className='join-item text-center mt-1 font-bold border-b-2 text-lg' data-tooltip-id={`tooltip-nodeid-${nodeIndex}`} data-ripple-light="true">Node {nodeIndex + 1}</div>
       {/* Add useful icons based on models*/}
@@ -376,18 +380,11 @@ const NodesElement = () => {
 
     </div>
   ));
+}
   return (
     <div>
-      {renderedElements.length > 0 && (renderedElements)}
-      {renderedElements.length == 0 && <div className='collapse border-base-300 border collapse-open'>
-        <div className="collapse-title">
-        Could not find any provisioned nodes...
-        </div>
-        <div className='collapse-content'>
-        <Link className='btn bg-base-100' href={'/provision'}>Provision new nodes</Link>
-        </div>
-        </div>}
-    </div>
+    {renderedElements ? renderedElements : <NoProvisionedNodes />}
+  </div>
   )
 }
 
