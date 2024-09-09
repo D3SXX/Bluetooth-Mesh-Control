@@ -76,7 +76,7 @@ const ProvisionElement = () => {
   return (
     <div className='join join-horizontal flex justify-between'>
       <div className='bg-base-100 collapse collapse-open border-base-300 border  w-1/2 mr-2'>
-        <div className="collapse-title text-xl font-medium flex items-center justify-between">
+        <div className="collapse-title text-xl font-medium flex items-center justify-between ">
           <div className="flex items-center ml-2">
             <span>Toggle Scan</span>
             <input
@@ -87,7 +87,7 @@ const ProvisionElement = () => {
               id="scan-toggle"
             />
           </div>
-          <div className='ml-2 items-center flex'>
+          <div className='ml-2 items-center flex '>
           {unprovisionedNodes.length > 0 && <div className='btn btn-ghost text-xl' onClick={reset_unprovisioned_list}>&#x2672;</div>}
           {scanStatus && <div className='items-center flex'>Scanning<span className="loading loading-spinner loading-md ml-2"></span></div>}
           </div>
@@ -99,11 +99,11 @@ const ProvisionElement = () => {
               <div>
                 {unprovisionedNodes.map((node, index) => (
                   <div key={index} onClick={() => document.getElementById(`modal-${index}`).showModal()} className="btn h-fit btn-ghost stats shadow w-full mb-1 mt-1">
-                    <div className="join join-horizontal flex items-center">
-                      <div className="stat join-item ">Name: {node.name}</div>
-                      <div className="stat join-item">Address: {node.address}</div>
-                      <div className="stat join-item">UUID: {node.UUID}</div>
-                      <div className="stat join-item">OOB: {node.OOB}</div>
+                    <div className="join join-horizontal flex items-center flex-wrap justify-center text-center ">
+                      <div className="stat join-item w-full sm:w-auto">Name:<br/><div className='font-normal mt-1'>{node.name}</div></div>
+                      <div className="stat join-item w-full sm:w-auto">Address:<br/><div className='font-normal mt-1'>{node.address}</div></div>
+                      <div className="stat join-item w-full sm:w-auto">UUID:<br/><div className='font-normal mt-1'>{node.UUID}</div></div>
+                      <div className="stat join-item w-full sm:w-auto">OOB:<br/><div className='font-normal mt-1'>{node.OOB}</div></div>
                     </div>
                     <dialog id={`modal-${index}`} className="modal">
                       <div className="modal-box">

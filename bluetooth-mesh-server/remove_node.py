@@ -18,8 +18,7 @@ def terminal_read_output(remove_node_process, data):
             cleared_output = ansi_escape_pattern.sub('', output)
             past_output = output
             print(output)
-            if "Connection successful" in cleared_output:
-                time.sleep(3) # Without wait meshctl will error to "Failed to AcquireWrite"
+            if "Mesh session is open" in cleared_output:
                 remove_node_process.stdin.write(f'menu config\ntarget {data["unicastAddress"]}\n')
                 remove_node_process.stdin.flush()
             if "Configuring node" in cleared_output:
@@ -59,7 +58,7 @@ def start_node_remove(data):
         remove_node_output_thread.start()
         print(f'Started removal of node {data["unicastAddress"]}')
 
-        timeout_thread = threading.Thread(target=timeout_terminate, args=(data, 20))
+        timeout_thread = threading.Thread(target=timeout_terminate, args=(data, 30))
         timeout_thread.start()
 
         timeout_thread.join()

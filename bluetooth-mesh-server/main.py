@@ -152,7 +152,7 @@ def resolve_request(request,set_data):
                 case "get-provisioning-data":
                         return {"status":data["Local"]["Provisioning-status"], "data":provision_terminal_output}
                 case "reset_unprovisioned_list":
-                        data["Nodes"]["Unprovisioned-nodes"] = []
+                        data["Nodes"]["Unprovisioned-nodes"] = {}
                         return "true"                          
                 case "set-list-adapters":
                         if set_data:

@@ -154,7 +154,7 @@ const NodesElement = () => {
 
   let renderedElements;
 
-  if ("nodes" in obj){
+  if ("nodes" in obj && obj.nodes.length > 0){
   renderedElements = obj.nodes.map((node, nodeIndex) => (
     <div key={node.deviceKey} className='bg-base-100 join join-vertical me-2 mb-2'>
       <div className='join-item text-center mt-1 font-bold border-b-2 text-lg' data-tooltip-id={`tooltip-nodeid-${nodeIndex}`} data-ripple-light="true">Node {nodeIndex + 1}</div>
@@ -370,7 +370,7 @@ const NodesElement = () => {
             </div>
           </div>
           <div className='join-item inline-block'>
-            <RegularButton command="reset-node" requestData={JSON.stringify({ "unicastAddress": node.configuration.elements[0].unicastAddress, "type": "unicastAddress" })} text="Reset node" style="btn btn-outline btn-error bg-transparent w-full"></RegularButton>
+            <RegularButton command="reset-node" requestData={JSON.stringify({ "unicastAddress": node.configuration.elements[0].unicastAddress, "type": "unicastAddress" })} text="Reset node" style="btn btn-outline btn-error bg-transparent w-full" timeout={30}></RegularButton>
           </div>
         </div>
 
@@ -381,6 +381,7 @@ const NodesElement = () => {
     </div>
   ));
 }
+console.log(renderedElements)
   return (
     <div>
     {renderedElements ? renderedElements : <NoProvisionedNodes />}
