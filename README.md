@@ -41,7 +41,7 @@ npm install ./bluetooth-mesh-client
 4. Install Python dependencies:
 
 ```ruby
-sudo apt install python3-yaml python3-flask-cors
+sudo apt install python3-yaml python3-flask-cors python3-requests
 ```
 
 #### Running the Application

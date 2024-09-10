@@ -1,3 +1,3 @@
 echo "Trying to start Python server"
 cd bluetooth-mesh-server
-python main.py
+python3 main.py

@@ -59,9 +59,7 @@ const RegularButton = ({ command, requestData = command, text = "", style = "btn
         {text || ""}
       </button>
       {(isCalled && timeout) && (
-        <div>
           <progress className="progress progress-primary w-100" value={progressValue} max={timeout * 10}></progress>
-        </div>
       )}
       {outputData && (
         <Toast message={outputData} timeout={10000}></Toast>
