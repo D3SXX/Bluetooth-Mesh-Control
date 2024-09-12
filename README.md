@@ -35,7 +35,9 @@ sudo apt update && sudo apt install npm
 3. Install client dependencies:
 
 ```ruby
-npm install ./bluetooth-mesh-client
+cd bluetooth-mesh-client
+npm install
+cd ..
 ```
 
 4. Install Python dependencies:

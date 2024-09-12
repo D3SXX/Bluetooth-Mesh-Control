@@ -5,6 +5,8 @@ def reset_mesh_config(prov_db = None, local_node = None):
         print("reset_mesh_config: Called")
         home_path = os.path.expanduser('~')
         meshctl_path = home_path + "/.config/meshctl/"
+        if not os.path.exists(meshctl_path):
+            os.makedirs(meshctl_path)
         print("reset_mesh_config: using path " + meshctl_path)
         local_node_file = open("./resources/reset_config/local_node.json","r")
         prov_db_file = open("./resources/reset_config/prov_db.json","r")

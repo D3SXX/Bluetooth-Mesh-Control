@@ -23,19 +23,19 @@ def add_undiscovered_node(obj):
     address, name, OOB, UUID = "", "", "", ""
     for entry in terminal_output:
         if "Device UUID:" in entry:
-            UUID = entry.split(" ")[2]
+            UUID = entry.split(" ")[-1]
         if "OOB:" in entry:
-            OOB = entry.split(" ")[1]
+            OOB = entry.split(" ")[-1]
         if "[NEW]" in entry:
             str_arr = entry.split(" ")
-            address = str_arr[2]
+            start_index = str_arr.index("Device")
+            address = str_arr[start_index+1]
             name = ""
-            for i in range(3, len(str_arr)):
+            for i in range(start_index+2, len(str_arr)):
                 name += f"{str_arr[i]} "
             name = name[:-1]
 
     print(f"Found node: Address: {address} | Name: {name} | OOB: {OOB} | UUID: {UUID}")
-    #obj["Nodes"]["Unprovisioned-nodes"].append({"address":address,"name":name,"OOB":OOB,"UUID":UUID})
     obj["Nodes"]["Unprovisioned-nodes"][address] = {
         "name": name,
         "OOB": OOB,
