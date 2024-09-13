@@ -2,68 +2,74 @@ import os
 import json
 from send_command import send_command
 from modify_mesh_config import remove_node_from_config
-from remove_node import start_node_remove
+from configure_node import start_configure
 
 def add_bind(data):
         try:
-                bind_data = json.loads(data)
-                command = f'connect\n'
-                extra_commands = ['menu config',f'target {bind_data["elementValue"]}',f'appkey-add {bind_data["appKeyIndex"]}', f'bind {bind_data["elementIndex"]} {bind_data["appKeyIndex"]} {bind_data["modelValue"]}','back','disconnect']
-                extra_timeouts = [0,3,2,1,1,2]
-                output = open("logs/add-bind.txt","w")
-                output.write(send_command(command=command,timeout=4,extra_commands=extra_commands,extra_timeouts=extra_timeouts))
-                return "Success"
+                data = json.loads(data)
+                
+                data["type"] = "Model App"
+                data["commandsList"] = [f'appkey-add {data["appKeyIndex"]}', f'bind {data["elementIndex"]} {data["appKeyIndex"]} {data["modelValue"]}']
+                data["terminalOutput"] = []
+
+                start_configure(data)
+
+                return f"Succesfully added bind to {data['unicastAddress']}" if data["msg"] == True else "Failed to add bind"
         except Exception as e:
                 print("Failed to add_bind! ->")
                 print(e)
-                return "Failed"
+                return f"Failed: {e}"
 
 def add_pub(data):
         try:
-                pub_data = json.loads(data)
-                command = f'connect\n'
-                extra_commands = ['menu config',f'target {pub_data["elementValue"]}', f'appkey-add {pub_data["appKeyIndex"]}',f'pub-set {pub_data["elementValue"]} {pub_data["address"][2:]} {pub_data["appKeyIndex"]} {pub_data["publicationPeriod"]} {pub_data["retransmissionCount"]} {pub_data["modelValue"]}','back','disconnect']
-                extra_timeouts = [0,2,2,1,1,2]
-                output = open("logs/add-pub.txt","w")
-                output.write(send_command(command=command,timeout=5,extra_commands=extra_commands,extra_timeouts=extra_timeouts))
-                return "Success"
+                data = json.loads(data)
+                
+                data["type"] = "Publication"
+                data["commandsList"] = [f'appkey-add {data["appKeyIndex"]}',f'pub-set {data["unicastAddress"]} {data["address"][2:]} {data["appKeyIndex"]} {data["publicationPeriod"]} {data["retransmissionCount"]} {data["modelValue"]}']
+                data["terminalOutput"] = []
+
+                start_configure(data)
+
+                return f"Succesfully added publish for {data['unicastAddress']}" if data["msg"] == True else "Failed to pub set"
         except Exception as e:
-                print("Failed to add pub! ->")
+                print("Failed to add_pub! ->")
                 print(e)
-                return "Failed"
+                return f"Failed: {e}"        
 
 def add_sub(data):
         try:
-                pub_data = json.loads(data)
-                command = f'connect\n'
-                extra_commands = ['menu config',f'target {pub_data["elementValue"]}', f'appkey-add {pub_data["appKeyIndex"]}',f'sub-add {pub_data["elementValue"]} {pub_data["address"][2:]} {pub_data["modelValue"]}','back','disconnect']
-                extra_timeouts = [0,2,2,1,1,2]
-                output = open("logs/add-sub.txt","w")
-                output.write(send_command(command=command,timeout=5,extra_commands=extra_commands,extra_timeouts=extra_timeouts))
-                return "Success"
+                data = json.loads(data)
+                
+                data["type"] = "Subscription"
+                data["commandsList"] = [f'appkey-add {data["appKeyIndex"]}',f'sub-add {data["unicastAddress"]} {data["address"][2:]} {data["modelValue"]}']
+                data["terminalOutput"] = []
+
+                start_configure(data)
+
+                return f"Succesfully added subscription for {data['unicastAddress']}" if data["msg"] == True else "Failed to sub add"
         except Exception as e:
-                print("Failed to add sub! ->")
+                print("Failed to add_sub! ->")
                 print(e)
-                return "Failed"
+                return f"Failed: {e}" 
 
 def reset_node(data):
         try:
-                # Get data from json
                 data = json.loads(data)
-
+                
+                data["type"] = "reset"
+                data["commandsList"] = [f'node-reset']
+                data["terminalOutput"] = []
                 data["msg"] = False
 
-                # Try to remove node from meshctl 
-                start_node_remove(data)
-                
-                # Remove the datapoint of the node from config if meshctl has removed it
+                start_configure(data)
+
                 if data["msg"]:
                         remove_node_from_config(data)
-                
-                return f'Successfuly removed node {data["unicastAddress"]}' if data["msg"] == True else f'Could not remove node {data["unicastAddress"]}, try again..' 
+
+                return f"Succesfully reset node {data['unicastAddress']}" if data["msg"] == True else "Failed to reset node"
         except Exception as e:
                 print("Failed to reset node! ->")
                 print(e)
-                return "Failed"
+                return f"Failed: {e}" 
                 
                 

@@ -308,7 +308,7 @@ const NodesElement = () => {
 
                 <button className="btn bg-transparent ml-1 mt-2 mb-2"><Link href="/keys">Edit</Link></button>
                 <div className="inline-flex">
-                  {selectedBindElementIndex > -1 && <RegularButton command='add-bind' requestData={JSON.stringify({ "elementValue": node.configuration.elements[selectedBindElementIndex].unicastAddress, "elementIndex": selectedBindElementIndex, "appKeyIndex": selectedBindAppKeyIndex, "modelValue": selectedBindModelValue, "cid": node.composition.cid })} text='Bind' />}
+                  {selectedBindElementIndex > -1 && <RegularButton command='add-bind' requestData={JSON.stringify({ "unicastAddress": node.configuration.elements[selectedBindElementIndex].unicastAddress, "elementIndex": selectedBindElementIndex, "appKeyIndex": selectedBindAppKeyIndex, "modelValue": selectedBindModelValue, "cid": node.composition.cid })} text='Bind' />}
                 </div>
               </div>
             </div>
@@ -363,8 +363,8 @@ const NodesElement = () => {
               </div>
               <div className='flex justify-center items-center'>
                 <div className="inline-flex mt-2 mb-2">
-                  {selectedPublishModelValue && <RegularButton command='add-sub' requestData={JSON.stringify({ "elementValue": node.configuration.elements[selectedPublishElementIndex].unicastAddress, "address": inputPublishAddressValue, "appKeyIndex": selectedPublishAppKeyIndex, "modelValue": selectedPublishModelValue, "cid": node.composition.cid })} text='Subscribe' />}
-                  {selectedPublishModelValue && <RegularButton command='add-pub' requestData={JSON.stringify({ "elementValue": node.configuration.elements[selectedPublishElementIndex].unicastAddress, "address": inputPublishAddressValue, "appKeyIndex": selectedPublishAppKeyIndex, "publicationPeriod": inputPublishPublicationPeriod, "retransmissionCount": inputPublishRetransmissionCount, "modelValue": selectedPublishModelValue, "cid": node.composition.cid })} text='Publish' />}
+                  {selectedPublishModelValue && <RegularButton command='add-sub' requestData={JSON.stringify({ "unicastAddress": node.configuration.elements[selectedPublishElementIndex].unicastAddress, "address": inputPublishAddressValue, "appKeyIndex": selectedPublishAppKeyIndex, "modelValue": selectedPublishModelValue, "cid": node.composition.cid })} text='Subscribe' />}
+                  {selectedPublishModelValue && <RegularButton command='add-pub' requestData={JSON.stringify({ "unicastAddress": node.configuration.elements[selectedPublishElementIndex].unicastAddress, "address": inputPublishAddressValue, "appKeyIndex": selectedPublishAppKeyIndex, "publicationPeriod": inputPublishPublicationPeriod, "retransmissionCount": inputPublishRetransmissionCount, "modelValue": selectedPublishModelValue, "cid": node.composition.cid })} text='Publish' />}
                 </div>
               </div>
             </div>

@@ -26,16 +26,15 @@ def remove_node_from_config(data):
         file = open(config_path,"r")
         config = json.loads(file.read())
         file.close()
-        if data["type"] == "unicastAddress":
-                print(f'Trying to remove node {data["unicastAddress"]}')
-                for index, node in enumerate(config["nodes"]):
-                        for element in node["configuration"]["elements"]:
-                                if element["unicastAddress"] == data["unicastAddress"]:
-                                        del config["nodes"][index]
-                                        file = open(home_path + "/.config/meshctl/prov_db.json","w")
-                                        file.write(json.dumps(config))
-                                        file.close()
-                                        print("Success")
-                                        return "Success"
+        print(f'Trying to remove node {data["unicastAddress"]}')
+        for index, node in enumerate(config["nodes"]):
+                for element in node["configuration"]["elements"]:
+                        if element["unicastAddress"] == data["unicastAddress"]:
+                                del config["nodes"][index]
+                                file = open(home_path + "/.config/meshctl/prov_db.json","w")
+                                file.write(json.dumps(config))
+                                file.close()
+                                print("Success")
+                                return "Success"
         return "Couldn't find the entry"
 
