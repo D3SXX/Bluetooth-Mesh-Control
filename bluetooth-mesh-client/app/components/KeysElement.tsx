@@ -220,7 +220,7 @@ const KeysElement = () => {
           </div>
         </div>
 
-        <div className='join-item'><button className="btn bg-base-100 w-full" onClick={() => document.getElementById('appKeyConfigModal').showModal()}>Edit keys configuration</button>
+        <div className='join-item'><button className="btn border border-base-300 bg-base-100 w-full" onClick={() => document.getElementById('appKeyConfigModal').showModal()}>Edit keys configuration</button>
           <dialog id="appKeyConfigModal" className="modal">
             <div className="modal-box min-h-56">
               <h3 className="font-bold text-lg"><ul className="menu menu-vertical lg:menu-horizontal bg-base-200 rounded-box w-full">
@@ -238,7 +238,7 @@ const KeysElement = () => {
                 <option value={netKey.index}>Bound to key {netKey.index}: {netKey.key}</option>
               )}
               </select>
-                <RegularButton command="add-appkey" requestData={JSON.stringify({"key":inputAppKeyAddValue,"boundNetKey":selectedNetKeyBound})} text='Add key'></RegularButton>
+                <RegularButton style="ml-2 btn border border-base-300" command="add-appkey" requestData={JSON.stringify({"key":inputAppKeyAddValue,"boundNetKey":selectedNetKeyBound})} text='Add key'></RegularButton>
                 </div>
               </div>
               <div id="appKeyConfigContent-2" className='hidden'>
@@ -264,7 +264,7 @@ const KeysElement = () => {
                     ))
                   }
                   </select>
-                  <RegularButton command='edit-appkey' requestData={JSON.stringify({"index":selectedAppKeyEdit,"key":inputAppKeyEditValue,"boundNetKey":selectedBoundNetKeyEdit})} text='Edit key'></RegularButton>
+                  <RegularButton style='border border-base-300 btn ml-2' command='edit-appkey' requestData={JSON.stringify({"index":selectedAppKeyEdit,"key":inputAppKeyEditValue,"boundNetKey":selectedBoundNetKeyEdit})} text='Edit key'></RegularButton>
                   </div>
                   }
               <div className='min-h-12'></div>
@@ -277,7 +277,7 @@ const KeysElement = () => {
                 <option value={appKey.key}>Key index {appKey.index}: {appKey.key}</option>
               )}
               </select>
-              {selectedAppKeyRemove && <RegularButton command='remove-appkey' requestData={selectedAppKeyRemove} text='Remove key'></RegularButton>}
+              {selectedAppKeyRemove && <RegularButton style="border border-base-300 btn ml-2" command='remove-appkey' requestData={selectedAppKeyRemove} text='Remove key'></RegularButton>}
               </div></div>
               </p>
             </div>
