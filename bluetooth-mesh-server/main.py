@@ -22,6 +22,7 @@ data = {
         "Local":{
                 "Meshctl-version":"Unknown",
                 "App-version":"0.17",
+                "Security":None,
                 "Adapter":{
                         "Default-adapter":"Unknown",
                         "Available-list":{},
@@ -232,6 +233,16 @@ def resolve_request(request,set_data):
                                 return get_keys_data()
                         except Exception as e:
                                 return {}
+                case "get-security":
+                        sec = send_command("security",0)
+                        sec = sec.split()
+                        index = 0
+                        if "Level" in sec:
+                                index = sec.index("Level")
+                        else:
+                                return {"Level":0,"Description":"Unknown"}
+                        print(sec)
+                        return {"Level":sec[index+3],"Description":sec[index+4]}
                 case "add-appkey":
                         return add_appkey(set_data)
                 case "edit-appkey":
