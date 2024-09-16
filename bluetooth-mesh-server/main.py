@@ -45,6 +45,12 @@ data = {
         }
 }
 
+extra_data = {
+        "Provision":{
+                "Security-descriptions":["Low","Medium","High"]
+        }
+}
+
 def check_meshctl():
         check = send_command("",0)
         if "Failed to parse local node configuration file" in check:
@@ -234,15 +240,22 @@ def resolve_request(request,set_data):
                         except Exception as e:
                                 return {}
                 case "get-security":
-                        sec = send_command("security",0)
-                        sec = sec.split()
-                        index = 0
-                        if "Level" in sec:
-                                index = sec.index("Level")
-                        else:
-                                return {"Level":0,"Description":"Unknown"}
-                        print(sec)
-                        return {"Level":sec[index+3],"Description":sec[index+4]}
+                        if not data["Local"]["Security"]:
+                                sec = send_command("security",0)
+                                sec = sec.split()
+                                index = 0
+                                if "Level" in sec:
+                                        index = sec.index("Level")
+                                        data["Local"]["Security-level"] = int(sec[index+3])
+                                        data["Local"]["Security-description"] = extra_data["Provision"]["Security-descriptions"][data["Local"]["Security-level"]]
+                                else:
+                                        return {"Level":0,"Description":"Unknown"}
+                        return {"Level":data["Local"]["Security-level"],"Description":data["Local"]["Security-description"]}
+                case "set-security":
+                        value = json.loads(set_data)
+                        data["Local"]["Security-level"] = int(value["Value"])
+                        data["Local"]["Security-description"] = extra_data["Provision"]["Security-descriptions"][data["Local"]["Security-level"]]
+                        return {"Level":data["Local"]["Security-level"],"Description":data["Local"]["Security-description"]}
                 case "add-appkey":
                         return add_appkey(set_data)
                 case "edit-appkey":

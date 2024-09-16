@@ -5,7 +5,7 @@ import ListElemenet from '../components/ListElement';
 import RegularButton from '../components/RegularButton';
 import { version } from 'os';
 import AdapterInfoElement from '../components/AdapterInfoElement';
-import SecuritySlidel from '../components/SecuritySlidel';
+import SecuritySlider from '../components/SecuritySlider';
 
 const StatusPage = () => {
   const titles = ["App version","Meshctl version","Default Adapter","Reset meshctl config"]
@@ -25,7 +25,7 @@ const StatusPage = () => {
     </div><br></br>
     <div className='mt-2 ml-2 flex'>
 <AdapterInfoElement></AdapterInfoElement>
-<SecuritySlidel></SecuritySlidel>
+<SecuritySlider></SecuritySlider>
 </div>
     </div>
   )
