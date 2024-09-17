@@ -21,15 +21,17 @@ import os
 data = {
         "Local":{
                 "Meshctl-version":"Unknown",
-                "App-version":"0.17",
-                "Security":None,
+                "App-version":"0.18",
+                "Security-level":1,
+                "Security-description":"Medium",
                 "Adapter":{
                         "Default-adapter":"Unknown",
                         "Available-list":{},
                         "Discovering":None,
                         "Powered": False
                 },
-                "Provisioning-status":False
+                "Provisioning-status":False,
+                "Fallback-scan":False
         },
         "Error":{
                 "Error-status":None,
@@ -240,16 +242,6 @@ def resolve_request(request,set_data):
                         except Exception as e:
                                 return {}
                 case "get-security":
-                        if not data["Local"]["Security"]:
-                                sec = send_command("security",0)
-                                sec = sec.split()
-                                index = 0
-                                if "Level" in sec:
-                                        index = sec.index("Level")
-                                        data["Local"]["Security-level"] = int(sec[index+3])
-                                        data["Local"]["Security-description"] = extra_data["Provision"]["Security-descriptions"][data["Local"]["Security-level"]]
-                                else:
-                                        return {"Level":0,"Description":"Unknown"}
                         return {"Level":data["Local"]["Security-level"],"Description":data["Local"]["Security-description"]}
                 case "set-security":
                         value = json.loads(set_data)
@@ -270,6 +262,13 @@ def resolve_request(request,set_data):
                         return add_sub(set_data)
                 case "reset-node":
                         return reset_node(set_data)
+                case "fallback-scan-status":
+                        return "true" if data["Local"]["Fallback-scan"] else "false"
+                case "fallback-scan-toggle":
+                        data["Local"]["Fallback-scan"] = not data["Local"]["Fallback-scan"]
+                        if data["Local"]["Adapter"]["Discovering"]:
+                                print("Fallback scan was activated while discovering, restarting the process")
+                                resolve_request("unprovisioned-scan-toggle","unprovisioned-scan-toggle")
         return "Failed to find the data"
 
 

@@ -29,6 +29,8 @@ def stop_provision(obj, data, msg):
     global provision_process, output_thread
     print(f"stop_provision() - call msg: {msg}")
     obj.append(msg)
+    provision_process.stdin.write(f"exit\n")
+    provision_process.stdin.flush()
     try:
         if not terminate_provision_event.is_set():
             terminate_provision_event.set()
@@ -44,7 +46,13 @@ def start_provision(UUID, obj, data):
     try:
         provision_process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         
-        provision_process.stdin.write(f"provision {UUID}\n")
+        command = f"provision {UUID}\n"
+
+        if data["Local"]["Security-level"]:
+            print(f"Setting security level for provisioning to {data["Local"]["Security-level"]}")
+            command = f"security {data["Local"]["Security-level"]}\n" + command
+
+        provision_process.stdin.write(command)
         provision_process.stdin.flush()
 
         # Start a thread to continuously read the output

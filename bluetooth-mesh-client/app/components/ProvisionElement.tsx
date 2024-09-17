@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import TerminalOutputElement from './TerminalOutputElement';
+import IconElement from './IconElement';
 
 const fetcher = (request: string) => async (url: string) => {
   const apiUrl = `http://127.0.0.1:10000${url}`;
@@ -43,8 +44,8 @@ const ProvisionElement = () => {
           let obj;
           try {
             obj = JSON.parse(data);
-            const nodesArray = Object.entries(obj.data).map(([address, nodeInfo]) => ({
-              address,
+            const nodesArray = Object.entries(obj.data).map(([UUID, nodeInfo]) => ({
+              UUID,
               ...nodeInfo
             }));
             setUnprovisionedNodes(nodesArray);
@@ -88,7 +89,8 @@ const ProvisionElement = () => {
             />
           </div>
           <div className='ml-2 items-center flex '>
-          {unprovisionedNodes.length > 0 && <div className='btn btn-ghost text-xl' onClick={reset_unprovisioned_list}>&#x2672;</div>}
+          <div className='tooltip tooltip-bottom' data-tip="Toggle Fallback Scan"><IconElement commandToggle='fallback-scan-toggle' commandCheck='fallback-scan-status' iconOn='/icons/scan.png' iconOff='/icons/scan.png' enableBlink={false}></IconElement></div>
+          {unprovisionedNodes.length > 0 && <div className='tooltip tooltip-bottom' data-tip="Reset list"><div className='btn btn-ghost text-xl' onClick={reset_unprovisioned_list}>&#x2672;</div></div>}
           {scanStatus && <div className='items-center flex'>Scanning<span className="loading loading-spinner loading-md ml-2"></span></div>}
           </div>
         </div>

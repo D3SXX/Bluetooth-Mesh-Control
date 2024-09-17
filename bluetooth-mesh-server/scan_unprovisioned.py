@@ -2,7 +2,7 @@ import subprocess
 import threading
 import re
 
-def terminal_read_output(process, obj):
+def terminal_read_output(process, data):
     global terminal_output, past_output
     if "past_output" not in globals():
         past_output = ""
@@ -16,9 +16,11 @@ def terminal_read_output(process, obj):
             terminal_output.append(cleared_output)
             past_output = output
             if "[NEW]" in cleared_output:
-                add_undiscovered_node(obj)
-        
-def add_undiscovered_node(obj):
+                add_undiscovered_node(data)
+            if data["Local"]["Fallback-scan"] and "OOB:" in cleared_output:
+                add_discovered_node(data)
+
+def add_undiscovered_node(data):
     global terminal_output, arr
     address, name, OOB, UUID = "", "", "", ""
     for entry in terminal_output:
@@ -36,10 +38,26 @@ def add_undiscovered_node(obj):
             name = name[:-1]
 
     print(f"Found node: Address: {address} | Name: {name} | OOB: {OOB} | UUID: {UUID}")
-    obj["Nodes"]["Unprovisioned-nodes"][address] = {
+    data["Nodes"]["Unprovisioned-nodes"][UUID] = {
         "name": name,
         "OOB": OOB,
-        "UUID": UUID
+        "address": address
+    }
+
+def add_discovered_node(data):
+    global terminal_output, arr
+    address, name, OOB, UUID = "", "", "", ""
+    for entry in terminal_output:
+        if "Device UUID:" in entry:
+            UUID = entry.split(" ")[-1]
+        if "OOB:" in entry:
+            OOB = entry.split(" ")[-1]
+
+    print(f"Found discovered node: OOB: {OOB} | UUID: {UUID}")
+    data["Nodes"]["Unprovisioned-nodes"][UUID] = {
+        "OOB": OOB,
+        "Name":"",
+        address:""
     }
 
 
@@ -54,7 +72,7 @@ def stop_discover():
         print(f"Got an error for stop_discover(): {e}")
     #print(terminal_output)
 
-def start_discover(obj):
+def start_discover(data):
     global process, discover_output_thread
     try:
         process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
@@ -63,7 +81,7 @@ def start_discover(obj):
         process.stdin.flush()
 
         # Start a thread to continuously read the output
-        discover_output_thread = threading.Thread(target=terminal_read_output, args=(process,obj))
+        discover_output_thread = threading.Thread(target=terminal_read_output, args=(process,data))
         discover_output_thread.start()
         print("Started discovery for unprovisioned nodes")
     except FileNotFoundError:
