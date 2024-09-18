@@ -29,6 +29,9 @@ def terminal_read_output(configure_node_process, data):
                     configure_node_process.stdin.flush()
                     time.sleep(0.5)
             if f"{data["type"]} status Success" in cleared_output:
+                configure_node_process.stdin.write(f'disconnect')
+                configure_node_process.stdin.flush()
+                time.sleep(1)
                 stop_configure(data,True)
             if "Write closed" in cleared_output or "Notify closed" in cleared_output or "Failed to connect" in cleared_output or "Failed to AcquireWrite" in cleared_output:
                 stop_configure(data, False)

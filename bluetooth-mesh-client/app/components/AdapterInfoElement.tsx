@@ -30,8 +30,8 @@ const AdapterInfoElement = () => {
   console.log(obj)
 
   return (
-    <div className='bg-base-100 join join-vertical me-2 mb-2'>
-      <div className='join-item text-center mt-1 font-bold border-b-2 text-lg'>Bluetooth Adapter</div>
+    <div className='bg-base-100 divide-base-200 divide-y join join-vertical me-2 mb-2'>
+      <div className='join-item text-center mt-1 font-bold text-lg'>Bluetooth Adapter</div>
       <div className="overflow-x-auto">
         <table className="table">
           <thead>

@@ -6,7 +6,7 @@ const TooltipElement = ({tooltipText,label,labelStyle,tooltipID} : {tooltipText:
   return (
     <div className={labelStyle}>
       {label}
-      <Image data-tooltip-id={tooltipID} data-ripple-light="true" src='/icons/icons8-info.gif' width={20} height={20} alt={' (?)'}  className='ml-1'/>
+      <Image data-tooltip-id={tooltipID} data-ripple-light="true" src='/icons/icons8-info.gif' unoptimized={true} width={20} height={20} alt={' (?)'}  className='ml-1 rounded-full'/>
       <Tooltip id={tooltipID} className='font-normal'>
         <div>{tooltipText}</div>
       </Tooltip>

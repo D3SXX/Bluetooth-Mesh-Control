@@ -53,7 +53,7 @@ const SecuritySlider = () => {
     return (
         <div>
             <div className='bg-base-100 join join-vertical me-2'>
-                <div className='join-item text-center mt-1 font-bold border-b-2 text-lg'>Security Status</div>
+                <div className='join-item text-center mt-1 font-bold border-base-200 border-b-2 text-lg'>Security Status</div>
                 <div className='join-item'>
                     <label htmlFor="steps-range" id="steps-label" className="block mt-2 mb-2 mr-2 ml-2 text-sm font-medium">
                         Security level is set to {jsonData ? `${jsonData.Level} (${jsonData.Description})` : 'Unknown'}

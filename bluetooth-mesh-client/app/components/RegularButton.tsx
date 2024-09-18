@@ -54,7 +54,7 @@ const RegularButton = ({ command, requestData = command, text = "", style = "btn
   }, [isCalled, timeout]);
 
   return (
-    <div>
+    <div className='w-full'>
       <button onClick={() => call(command, requestData)} className={style}>
         {text || ""}
       </button>
