@@ -21,7 +21,7 @@ import os
 data = {
         "Local":{
                 "Meshctl-version":"Unknown",
-                "App-version":"0.18",
+                "App-version":"0.18+",
                 "Security-level":1,
                 "Security-description":"Medium",
                 "Adapter":{
@@ -168,7 +168,7 @@ def resolve_request(request,set_data):
                                 address = set_data[:set_data.rfind(":")]
                                 data["Local"]["Adapter"]["Default-adapter"] = address
                                 print(address)
-                                print(send_command(f"select {address}",0))
+                                send_command(f"select {address}",0.5)
                         return "True"
                 case "list-adapters":
                         data["Local"]["Adapter"]["Available-list"] = get_controller_list()

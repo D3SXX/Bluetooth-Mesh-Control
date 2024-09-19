@@ -49,8 +49,8 @@ def start_provision(UUID, obj, data):
         command = f"provision {UUID}\n"
 
         if data["Local"]["Security-level"]:
-            print(f"Setting security level for provisioning to {data["Local"]["Security-level"]}")
-            command = f"security {data["Local"]["Security-level"]}\n" + command
+            print(f'Setting security level for provisioning to {data["Local"]["Security-level"]}')
+            command = f'security {data["Local"]["Security-level"]}\n' + command
 
         provision_process.stdin.write(command)
         provision_process.stdin.flush()

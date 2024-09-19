@@ -28,7 +28,7 @@ const ListElement = ({ command, interval,text="" }: { command: string; interval:
   const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
       setSelectedValue(event.target.value);
       const response = await fetcher(event.target.value)(`/api/data/set-${command}`);
-      window.location.reload();
+      //window.location.reload();
   };
   
   if (error) return <div>failed to load</div>

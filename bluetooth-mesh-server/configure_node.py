@@ -28,8 +28,8 @@ def terminal_read_output(configure_node_process, data):
                     configure_node_process.stdin.write(f"{command}\n")
                     configure_node_process.stdin.flush()
                     time.sleep(0.5)
-            if f"{data["type"]} status Success" in cleared_output:
-                configure_node_process.stdin.write(f'disconnect')
+            if f"{data['type']} status Success" in cleared_output:
+                configure_node_process.stdin.write(f'back\ndisconnect\n')
                 configure_node_process.stdin.flush()
                 time.sleep(1)
                 stop_configure(data,True)
