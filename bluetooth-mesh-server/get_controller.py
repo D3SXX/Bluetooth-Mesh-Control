@@ -1,10 +1,11 @@
-from send_command import send_command
 import re
-import json
+from send_command import send_command
 
-def get_controller_data():
+def get_controller_data(adapter = None):
         return_obj = {"UUID":{}}
-        output = send_command("show",0)
+        adapter = f'select {adapter}' if adapter else ''
+        command = adapter + '\n' + 'show'
+        output = send_command(command,0)
         key_pattern =  r"^[ \t]*(\w+):[ \t]*(.*)$"
         uuid_pattern = r"UUID: (.*) (.*)$"
         controller_pattern = r"Controller (.*)$"

@@ -5,9 +5,7 @@ from modify_mesh_config import remove_node_from_config
 from configure_node import start_configure
 
 def add_bind(data):
-        try:
-                data = json.loads(data)
-                
+        try:    
                 data["type"] = "Model App"
                 data["commandsList"] = [f'appkey-add {data["appKeyIndex"]}', f'bind {data["elementIndex"]} {data["appKeyIndex"]} {data["modelValue"]}']
                 data["terminalOutput"] = []
@@ -22,8 +20,6 @@ def add_bind(data):
 
 def add_pub(data):
         try:
-                data = json.loads(data)
-                
                 data["type"] = "Publication"
                 data["commandsList"] = [f'appkey-add {data["appKeyIndex"]}',f'pub-set {data["unicastAddress"]} {data["address"][2:]} {data["appKeyIndex"]} {data["publicationPeriod"]} {data["retransmissionCount"]} {data["modelValue"]}']
                 data["terminalOutput"] = []
@@ -38,8 +34,6 @@ def add_pub(data):
 
 def add_sub(data):
         try:
-                data = json.loads(data)
-                
                 data["type"] = "Subscription"
                 data["commandsList"] = [f'appkey-add {data["appKeyIndex"]}',f'sub-add {data["unicastAddress"]} {data["address"][2:]} {data["modelValue"]}']
                 data["terminalOutput"] = []
@@ -54,10 +48,8 @@ def add_sub(data):
 
 def reset_node(data):
         try:
-                data = json.loads(data)
-                
                 data["type"] = "reset"
-                data["commandsList"] = [f'node-reset']
+                data["commandsList"] = ['node-reset']
                 data["terminalOutput"] = []
                 data["msg"] = False
 

@@ -77,7 +77,7 @@ def start_discover(data):
     try:
         process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         
-        process.stdin.write("discover-unprovisioned on" + "\n")
+        process.stdin.write(f'select {data["Local"]["Adapter"]["Default-adapter"]}\ndiscover-unprovisioned on\n')
         process.stdin.flush()
 
         # Start a thread to continuously read the output

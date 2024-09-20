@@ -65,7 +65,7 @@ def start_configure(data):
     try:
         configure_node_process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         
-        configure_node_process.stdin.write(f"connect\n")
+        configure_node_process.stdin.write(f'select {data["Default-adapter"]}\nconnect\n')
         configure_node_process.stdin.flush()
 
         # Start a thread to continuously read the output

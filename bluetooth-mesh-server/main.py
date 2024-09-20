@@ -25,7 +25,7 @@ data = {
                 "Security-level":1,
                 "Security-description":"Medium",
                 "Adapter":{
-                        "Default-adapter":"Unknown",
+                        "Default-adapter":None,
                         "Available-list":{},
                         "Discovering":None,
                         "Powered": False
@@ -66,7 +66,7 @@ def check_meshctl():
         else:
                 data["Error"]["Error-status"] = False
 def init_controller_data():
-        output_obj = get_controller_data()
+        output_obj = get_controller_data(data["Local"]["Adapter"]["Default-adapter"])
         for key in output_obj:
                 data["Local"]["Adapter"][key] = output_obj[key]
 def restart_adapter():
@@ -106,7 +106,7 @@ def resolve_request(request,set_data):
                         return "Server is Working"
                 case "default-adapter":
                         try:
-                                if not data["Local"]["Adapter"]["Default-adapter"]  == "Unknown" and not data["Error"]["Error-status"]:
+                                if not data["Local"]["Adapter"]["Default-adapter"]:
                                         init_controller_data()
                                 return data["Local"]["Adapter"]["Default-adapter"]      
                         except Exception as e:
@@ -122,10 +122,10 @@ def resolve_request(request,set_data):
                                 return "false"
                 case "power-toggle":
                         if data["Local"]["Adapter"]["Powered"] == "yes":
-                                send_command("power off",0)
+                                send_command(f'select {data["Local"]["Adapter"]["Default-adapter"]}\npower off',0)
                                 return "false"
                         else:
-                                send_command("power on",0)
+                                send_command(f'select {data["Local"]["Adapter"]["Default-adapter"]}\npower on',0)
                                 return "true"
                 case "discovery-status":
                         init_controller_data()
@@ -167,8 +167,6 @@ def resolve_request(request,set_data):
                         if set_data:
                                 address = set_data[:set_data.rfind(":")]
                                 data["Local"]["Adapter"]["Default-adapter"] = address
-                                print(address)
-                                send_command(f"select {address}",0.5)
                         return "True"
                 case "list-adapters":
                         data["Local"]["Adapter"]["Available-list"] = get_controller_list()
@@ -255,12 +253,20 @@ def resolve_request(request,set_data):
                 case "remove-appkey":
                         return remove_appkey(set_data)
                 case "add-bind":
+                        set_data = json.loads(set_data)
+                        set_data["Default-adapter"] = data["Local"]["Adapter"]["Default-adapter"]
                         return add_bind(set_data)
                 case "add-pub":
+                        set_data = json.loads(set_data)
+                        set_data["Default-adapter"] = data["Local"]["Adapter"]["Default-adapter"]
                         return add_pub(set_data)
                 case "add-sub":
+                        set_data = json.loads(set_data)
+                        set_data["Default-adapter"] = data["Local"]["Adapter"]["Default-adapter"]
                         return add_sub(set_data)
                 case "reset-node":
+                        set_data = json.loads(set_data)
+                        set_data["Default-adapter"] = data["Local"]["Adapter"]["Default-adapter"]
                         return reset_node(set_data)
                 case "fallback-scan-status":
                         return "true" if data["Local"]["Fallback-scan"] else "false"

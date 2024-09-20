@@ -9,7 +9,7 @@ import IconElement from './IconElement';
 import ErrorHandlerElement from './ErrorHandlerElement';
 
 const NavBar = () => {
-  const elements = [(<DataElement key="1" command="status" interval = {0}></DataElement>),(<DataElement key="2" command="default-adapter" interval = {0} text="Default Adapter: "></DataElement>)];
+  const elements = [(<DataElement key="1" command="status" interval = {0}></DataElement>),(<DataElement key="2" command="default-adapter" interval = {2} text="Default Adapter: "></DataElement>)];
   const linksForElements = ["","/status"];
   return (
     

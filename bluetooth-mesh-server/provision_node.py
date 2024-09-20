@@ -46,13 +46,18 @@ def start_provision(UUID, obj, data):
     try:
         provision_process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         
-        command = f"provision {UUID}\n"
+        command = f'select {data["Local"]["Adapter"]["Default-adapter"]}\ndiscover-unprovisioned on\n'
 
         if data["Local"]["Security-level"]:
             print(f'Setting security level for provisioning to {data["Local"]["Security-level"]}')
             command = f'security {data["Local"]["Security-level"]}\n' + command
 
         provision_process.stdin.write(command)
+        provision_process.stdin.flush()
+
+        time.sleep(1)
+
+        provision_process.stdin.write(f"provision {UUID}\n")
         provision_process.stdin.flush()
 
         # Start a thread to continuously read the output
