@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const fetcher = (request: string) => async (url: string) => {
-    const apiUrl = `http://127.0.0.1:10000${url}`;
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
     const res = await fetch(apiUrl, {
       method: 'POST', 
       body: request,

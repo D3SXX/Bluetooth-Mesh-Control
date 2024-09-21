@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "get-ip":"node get-ip.ts",
+    "dev": "node get-ip.ts && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

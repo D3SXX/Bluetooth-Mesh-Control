@@ -11,7 +11,7 @@ from update_data import get_latest_data
 from multiprocessing import Process, Queue
 import json
 import re
-from flask import Flask, request
+from flask import Flask, request, make_response
 from flask_cors import CORS
 import threading
 import subprocess
@@ -21,7 +21,7 @@ import os
 data = {
         "Local":{
                 "Meshctl-version":"Unknown",
-                "App-version":"0.18+",
+                "App-version":"0.19",
                 "Security-level":1,
                 "Security-description":"Medium",
                 "Adapter":{
@@ -288,9 +288,13 @@ CORS(app)
 
 @app.route("/api/data/<command>", methods=['POST'])
 def return_data(command):
-        print("/api/data/: got command: " + command)
-        data = request.data.decode('utf-8')
-        return resolve_request(command,data)
+    print("/api/data/: got command: " + command)
+    data = request.data.decode('utf-8')
+    result = resolve_request(command, data)
+    response = make_response(result)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    
+    return response
 
 @app.route("/api/terminal/<command>", methods=['POST'])
 def return_terminal(command):
@@ -306,4 +310,4 @@ def return_terminal(command):
         
 if __name__ == "__main__":
         print("Initializing")
-        app.run(debug=True, port=10000)
+        app.run(host="0.0.0.0", debug=True, port=10000)
