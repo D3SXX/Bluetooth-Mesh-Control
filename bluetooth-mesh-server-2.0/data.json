@@ -1,7 +1,0 @@
-{
-    "local": {
-        "meshctl-version": null,
-        "server-version": 0.1
-    },
-    "requests": {"version":"request"}
-}

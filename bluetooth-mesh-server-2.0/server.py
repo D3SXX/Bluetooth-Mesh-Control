@@ -1,4 +1,5 @@
 import re
+import time
 from flask import Blueprint, jsonify, current_app, request
 from process import start_meshctl,write_to_meshctl
 
@@ -6,15 +7,30 @@ server_bp = Blueprint('server_bp', __name__)
 
 @server_bp.route('/server', methods=['GET'])
 def get_server_info():
+    update_server()
     status = request.args.get('query')
-    command = request.args.get('command')
-    if command:
-        write_to_meshctl(command)
+    if status is None:
+        return jsonify(current_app.config['SERVER']), 200
+    if not status in current_app.config['SERVER']:
+        return jsonify({status: "Invalid query parameter"}), 400
 
-    print(status)
-    response_value = current_app.config['SERVER'].get(status)
-
-    if response_value is None:
-        return jsonify({"error": "Invalid query parameter"}), 400
+    response_value = {status: current_app.config['SERVER'].get(status)}
 
     return jsonify(response_value), 200
+
+def update_server():
+    current_app.config['TERMINAL_OUTPUT'].clear()
+    write_to_meshctl("version\n")
+    start = time.time()
+    pattern = r"Version\s+(\d+\.\d+)"
+    while True:
+        if time.time() - start > 5:
+            print("update_server() - Timeout on getting data!")
+            return
+        out = "".join(current_app.config['TERMINAL_OUTPUT'])
+        if re.search(pattern, out):
+            match = re.search(pattern, out)
+            current_app.config['SERVER']['MESHCTL'] = match.group(1)
+            return
+        time.sleep(0.1)
+    current_app.config['TERMINAL_OUTPUT'].clear()
