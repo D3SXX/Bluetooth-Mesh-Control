@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, current_app, jsonify, make_response, request
 
 from read_prov_db import get_nodes_data
 from process import write_to_meshctl
@@ -24,20 +24,32 @@ def handle_config():
 
         response_value = {status:current_app.config['CONFIG'].get(status)}
 
-        return jsonify(response_value), 200
-
+        response = make_response(response_value)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 200
+    
     elif request.method == 'POST':
         req_data = request.get_json()
-        response = {
-            "status": "success",
-            "message": "Received data",
-            "data": req_data
-        }
-        return jsonify(response), 201
+        security_level = req_data.get("security_level")
+        response_value = {}
+        if security_level is not None:
+            update_security()
+            response_value = {
+                "status": "success",
+                "message": f"Security level is set to {current_app.config["CONFIG"]["SECURITY_LEVEL"]}",
+                "SECURITY_LEVEL":current_app.config["CONFIG"]["SECURITY_LEVEL"]
+            }
+        else:
+            response_value = {
+                "status": "fail",
+                "message": "Config request is empty or not found"
+            }
+        response = make_response(response_value)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 201
     
 
 def update_security(level = ""):
-    current_app.config['TERMINAL_OUTPUT'].clear()
     write_to_meshctl(f"security {level}\n")
     start = time.time()
     while "Level" not in "".join(current_app.config['TERMINAL_OUTPUT']):
@@ -50,4 +62,3 @@ def update_security(level = ""):
     out = "".join(current_app.config['TERMINAL_OUTPUT']).split()
     index = out.index("Level") + 3
     current_app.config["CONFIG"]["SECURITY_LEVEL"] = int(out[index])
-    current_app.config['TERMINAL_OUTPUT'].clear()

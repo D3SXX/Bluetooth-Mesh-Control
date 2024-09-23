@@ -45,6 +45,32 @@ def load_config(current_app):
         except Exception:
                current_app.config["CONFIG"]["ERROR"] = True  
 
+def get_keys_data(current_app):
+        keys_info = load_config(current_app)
+        returned_obj = {}
+        returned_obj["APPKEYS"] = keys_info["appKeys"] if "appKeys" in keys_info else []
+        returned_obj["NETKEYS"] = keys_info["netKeys"] if "netKeys" in keys_info else []
+        returned_obj["BIND"] = {}
+        returned_obj["PUBLISH"] = {}
+        nodes = keys_info["nodes"] if "nodes" in keys_info else []
+        for node in nodes:
+                for element in node["configuration"]["elements"]:
+                        if not "models" in element:
+                               break
+                        for model in element["models"]:
+                                if "bind" in model:
+                                        returned_obj["BIND"][element["unicastAddress"]] = {
+                                        "MODEL":model["modelId"],
+                                        "APPKEY_INDEX":int(model["bind"][0])
+                                        }
+                                if "publish" in model:
+                                        returned_obj["PUBLISH"][element["unicastAddress"]] = {
+                                        "ADDRESS":model["publish"]["address"],
+                                        "APPKEY_INDEX":int(model["publish"]["index"]),
+                                        "TTL":model["publish"]["ttl"]
+                                        }                                       
+        return returned_obj
+
 def get_nodes_data(current_app):
         mesh_info = load_config(current_app)
         returned_obj = {}

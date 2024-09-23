@@ -6,34 +6,51 @@ import React from 'react'
 import DataElement from './DataElement';
 import { request } from 'http';
 
-const fetcher = (request: string) => async (url: string) => {
+const fetcherGET = () => async (url: string) => {
+  console.log("fetcherget() - " + url)
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
+  const res = await fetch(apiUrl, {
+    method: 'GET', 
+  });
+  return res.text();
+};
+
+const fetcherPOST = (requestData: object) => async (url: string) => {
   const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
   const res = await fetch(apiUrl, {
     method: 'POST', 
-    body: request,
+    body: JSON.stringify(requestData),
     headers: {
-      'Content-Type': 'text/plain' 
+      'Content-Type': 'application/json' 
     }
   });
   return res.text();
 };
 
 
-const ListElement = ({ command, interval,text="" }: { command: string; interval: number;text?:string }) => {
-  const key = `/api/data/${command}`;
-  const { data, error, isLoading } = useSWR(key, fetcher(command), { refreshInterval: interval});
+const ListElement = ({ apiUrl, interval, postKey, query="", text="" }: { apiUrl: string; interval: number; postKey: string, text?:string, query?:string }) => {
+  let request = `/${apiUrl}`
+  if (query){
+    request += `?query=${query}`
+  }
+  
+  const { data, error, isLoading } = useSWR(request, fetcherGET(), { refreshInterval: interval});
   
   const [selectedValue, setSelectedValue] = useState("");
 
   const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
       setSelectedValue(event.target.value);
-      const response = await fetcher(event.target.value)(`/api/data/set-${command}`);
-      //window.location.reload();
+      const response = await fetcherPOST({postKey: event.target.value})(apiUrl);
   };
   
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
-  let obj = JSON.parse(data);
+  let obj;
+  try {
+    obj = JSON.parse(data);
+  } catch {
+    return <div>Failed to parse data</div>;
+  }
   const renderedElements = Object.entries(obj).map(([key, value], index) => (
         
           <option key={key} selected={value === "Default"}>{key}: {value}</option>

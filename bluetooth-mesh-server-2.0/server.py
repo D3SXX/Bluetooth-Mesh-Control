@@ -1,6 +1,6 @@
 import re
 import time
-from flask import Blueprint, jsonify, current_app, request
+from flask import Blueprint, jsonify, current_app, make_response, request
 from process import start_meshctl,write_to_meshctl
 
 server_bp = Blueprint('server_bp', __name__)
@@ -15,8 +15,9 @@ def get_server_info():
         return jsonify({status: "Invalid query parameter"}), 400
 
     response_value = {status: current_app.config['SERVER'].get(status)}
-
-    return jsonify(response_value), 200
+    response = make_response(response_value)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response, 200
 
 def update_server():
     current_app.config['TERMINAL_OUTPUT'].clear()
