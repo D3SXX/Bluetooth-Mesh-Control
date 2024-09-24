@@ -33,11 +33,11 @@ def handle_config():
         security_level = req_data.get("security_level")
         response_value = {}
         if security_level is not None:
-            update_security()
+            update_security(security_level)
             response_value = {
                 "status": "success",
-                "message": f"Security level is set to {current_app.config["CONFIG"]["SECURITY_LEVEL"]}",
-                "SECURITY_LEVEL":current_app.config["CONFIG"]["SECURITY_LEVEL"]
+                "message": f"Security level is set to {security_level}",
+                "SECURITY_LEVEL":security_level
             }
         else:
             response_value = {
@@ -60,5 +60,5 @@ def update_security(level = ""):
     end = time.time()
     print(f"update_security() - Took {end-start} s to receive the output")
     out = "".join(current_app.config['TERMINAL_OUTPUT']).split()
-    index = out.index("Level") + 3
+    index = len(out) - 1 - out[::-1].index('Level') + 3
     current_app.config["CONFIG"]["SECURITY_LEVEL"] = int(out[index])

@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import ReactIcon from './ReactIcon';
 
 const fetcherGET = () => async (url: string) => {
-        const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
+        const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
         const res = await fetch(apiUrl, {
           method: 'GET', 
         });
@@ -12,7 +12,7 @@ const fetcherGET = () => async (url: string) => {
       };
       
       const fetcherPOST = (requestData: object) => async (url: string) => {
-        const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
+        const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
         const res = await fetch(apiUrl, {
           method: 'POST', 
           body: JSON.stringify(requestData),
@@ -46,7 +46,7 @@ const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { a
 
         const call = async (command: string) => {
                 try {
-                        let state = await fetcherPOST({postKey: !returnData})(apiUrl)
+                        let state = await fetcherPOST({[postKey]: !returnData})(apiUrl)
                         try{
                                 const objState = JSON.parse(state)
                                 state = objState[postKey]
@@ -65,7 +65,7 @@ const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { a
                 <div>
                         <button className='btn btn-ghost' onClick={() => call(commandToggle)}>
                                 <div>
-                                        <ReactIcon iconOn={iconOn} iconOff={iconOff} enableBlink={enableBlink} command={commandCheck} interval={1}>
+                                        <ReactIcon iconOn={iconOn} iconOff={iconOff} enableBlink={enableBlink} apiUrl={apiUrl} query={query} interval={1}>
                                         </ReactIcon>
                                 </div>
                         </button>

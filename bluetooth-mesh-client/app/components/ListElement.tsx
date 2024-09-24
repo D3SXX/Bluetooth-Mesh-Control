@@ -8,7 +8,7 @@ import { request } from 'http';
 
 const fetcherGET = () => async (url: string) => {
   console.log("fetcherget() - " + url)
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
   const res = await fetch(apiUrl, {
     method: 'GET', 
   });
@@ -16,7 +16,7 @@ const fetcherGET = () => async (url: string) => {
 };
 
 const fetcherPOST = (requestData: object) => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
   const res = await fetch(apiUrl, {
     method: 'POST', 
     body: JSON.stringify(requestData),
@@ -40,20 +40,22 @@ const ListElement = ({ apiUrl, interval, postKey, query="", text="" }: { apiUrl:
 
   const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
       setSelectedValue(event.target.value);
-      const response = await fetcherPOST({postKey: event.target.value})(apiUrl);
+      const response = await fetcherPOST({[postKey]: event.target.value})(apiUrl);
+      returnData = response[query]
   };
   
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
-  let obj;
-  try {
-    obj = JSON.parse(data);
-  } catch {
+  let returnData;
+  try{
+    const obj = JSON.parse(data)
+    returnData = obj[query]
+  }catch(e) {
+    console.log(e)
     return <div>Failed to parse data</div>;
   }
-  const renderedElements = Object.entries(obj).map(([key, value], index) => (
-        
-          <option key={key} selected={value === "Default"}>{key}: {value}</option>
+  const renderedElements = Object.entries(returnData).map(([key, value]) => (
+          <option key={key} value={key} selected={value.includes("[default]")}>{key} ({value})</option>
           
       ));
 

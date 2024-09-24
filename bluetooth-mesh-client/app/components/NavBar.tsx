@@ -24,8 +24,8 @@ const NavBar = () => {
       }
   </div>
   <div className="flex-none">
-    <div className='tooltip tooltip-bottom' data-tip="Unprovisioned scan status"><IconElement commandToggle="" commandCheck="discovery-status" iconOn='/icons/bluetooth.png' iconOff='/icons/bluetooth.png' enableBlink={true}></IconElement></div>
-    <div className='tooltip tooltip-bottom' data-tip="Toggle power"><IconElement commandToggle="power-toggle" commandCheck="power-status" iconOn='/icons/power.png' iconOff='/icons/power.png' enableBlink={false}></IconElement></div>  
+    <div className='tooltip tooltip-bottom' data-tip="Unprovisioned scan status"><IconElement apiUrl='provision' query='SCAN_ACTIVE' postKey='discovery' iconOn='/icons/bluetooth.png' iconOff='/icons/bluetooth.png' enableBlink={true}></IconElement></div>
+    <div className='tooltip tooltip-bottom' data-tip="Toggle power"><IconElement apiUrl='controller' query='POWER' postKey='power' iconOn='/icons/power.png' iconOff='/icons/power.png' enableBlink={false}></IconElement></div>  
     <button className="btn btn-square btn-ghost">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
     </button>

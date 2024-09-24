@@ -76,7 +76,7 @@ const SecuritySlider = () => {
                 <div className='join-item text-center mt-1 font-bold border-base-200 border-b-2 text-lg'>Security Status</div>
                 <div className='join-item'>
                     <label htmlFor="steps-range" id="steps-label" className="block mt-2 mb-2 mr-2 ml-2 text-sm font-medium">
-                        Security level is set to {returnData ? `${returnData} (${securityDescriptions[returnData]})` : 'Unknown'}
+                        Security level is set to {returnData !== undefined ? `${returnData} (${securityDescriptions[returnData]})` : 'Unknown'}
                     </label>
                 </div>
                 <div className='join-item flex justify-center items-center mb-4'>
@@ -87,6 +87,7 @@ const SecuritySlider = () => {
                         min={0}
                         max={2}
                         step={1}
+                        defaultValue={returnData}
                         className=" ml-2 mt-2 mr-2 w-3/4 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                     />
                 </div>

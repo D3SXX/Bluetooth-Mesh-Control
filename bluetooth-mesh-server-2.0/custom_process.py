@@ -18,16 +18,14 @@ def terminal_read_output(process, app, caller):
             past_output = output
             with app.app_context():
                 current_app.config['TERMINAL_SESSIONS'][caller]['OUTPUT'].append(cleared_output)
-            print(output)
 
 
 def stop_custom_process():
     try:
-        write_to_custom_meshctl("exit\n")
-        process.terminate()
-        print("stop_process() - Trying to close process")
+        process.stdin.write("exit\n")
+        #process.terminate()
+        print(f"stop_process() - Trying to close {threading.current_thread().name}")
         process_thread.join(timeout=0.1)
-        print("stop_process() - Closed thread")
     except Exception as e:
         print(f"Got an error for stop_process(): {e}")
 
@@ -37,7 +35,7 @@ def start_custom_meshctl(caller):
         process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         process_thread = threading.Thread(target=terminal_read_output, args=(process, current_app._get_current_object(), caller))
         process_thread.start()
-        print("start_meshctl() - Started meshctl process")
+        print(f"start_custom_meshctl() - Started meshctl {threading.current_thread().name}")
     except FileNotFoundError:
         print("meshctl command not found. Make sure it's installed and accessible.")
 

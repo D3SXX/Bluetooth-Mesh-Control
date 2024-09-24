@@ -28,9 +28,12 @@ def handle_config():
         power_status = req_data.get('power')
         if new_address:
             write_to_meshctl(f"select {new_address}\n")
+            current_app.config['CONTROLLER']['DEFAULT'] = new_address
+            update_controller()
             response = {
                 "status": "success",
-                "message": f"Controller address updated to {new_address}"
+                "message": f"Controller address updated to {new_address}",
+                "LIST": current_app.config['CONTROLLER']['LIST']
             }
         elif power_status is not None:
             write_to_meshctl(f"power {'on' if power_status else 'off'}\n")
@@ -47,14 +50,16 @@ def handle_config():
 
 def update_controller():
     current_app.config['TERMINAL_SESSIONS']['CONTROLLER']['OUTPUT'].clear()
-    start_custom_meshctl("CONTROLLER")
-    write_to_custom_meshctl("list\nshow\n")
+    if current_app.config['TERMINAL_SESSIONS']['CONTROLLER']["STATUS"] is not True:
+        start_custom_meshctl("CONTROLLER")
+        current_app.config['TERMINAL_SESSIONS']['CONTROLLER']["STATUS"] = True
+    write_to_custom_meshctl(f"select {current_app.config['CONTROLLER']['DEFAULT'] or ""}\nlist\nshow\n")
     start = time.time()
-    while "Discovering: no" not in current_app.config['TERMINAL_SESSIONS']['CONTROLLER']['OUTPUT'] and "Discovering: yes" not in current_app.config['TERMINAL_SESSIONS']['CONTROLLER']['OUTPUT']:
-        if time.time() - start > 5:
-            print("update_controller() - Timeout on getting data from config!")
+    while "Discovering:" not in "".join(current_app.config['TERMINAL_SESSIONS']['CONTROLLER']['OUTPUT']):
+        if time.time() - start > 5.0:
+            print("Reached timeout on update_controller()!")
+            current_app.config['TERMINAL_SESSIONS']['CONTROLLER']["STATUS"] = False
             return
-        time.sleep(0.1)
     end = time.time()
     print(f"update_controller() - Took {end-start} s to receive the output")
     out = current_app.config['TERMINAL_SESSIONS']['CONTROLLER']['OUTPUT']
@@ -67,6 +72,7 @@ def update_controller():
         line = entry.strip()
         if re.search(controller_pattern, line):
             current_app.config['CONTROLLER']['DEFAULT'] = re.search(controller_pattern, line).group(1)
+            current_app.config['CONTROLLER']['DEFAULT_DATA']['Default-adapter'] = re.search(controller_pattern, line).group(1)
         elif re.search(uuid_pattern, line):
             match = re.search(uuid_pattern, line)
             current_app.config['CONTROLLER']['DEFAULT_DATA']['UUID'][match[1]] = match[2]
@@ -77,4 +83,3 @@ def update_controller():
             match = re.search(controller_list_pattern, line)
             current_app.config['CONTROLLER']['LIST'][match.group(1)] = match.group(2)
     current_app.config['CONTROLLER']["POWER"] = True if current_app.config['CONTROLLER']['DEFAULT_DATA']["Powered"] == "yes" else False
-    stop_custom_process()
