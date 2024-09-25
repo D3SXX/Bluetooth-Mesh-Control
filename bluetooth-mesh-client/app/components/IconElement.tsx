@@ -43,13 +43,13 @@ const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { a
           console.log(e)
           return <div>Failed to parse data</div>;
         }        
-
-        const call = async (command: string) => {
+        
+        const call = async () => {
                 try {
-                        let state = await fetcherPOST({[postKey]: !returnData})(apiUrl)
+                        let state = await fetcherPOST({[postKey]: "any"})(apiUrl)
                         try{
                                 const objState = JSON.parse(state)
-                                state = objState[postKey]
+                                state = objState[query]
                               }catch(e) {
                                 console.log(e)
                                 return <div>Failed to parse data</div>;
@@ -63,7 +63,7 @@ const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { a
 
         return (
                 <div>
-                        <button className='btn btn-ghost' onClick={() => call(commandToggle)}>
+                        <button className='btn btn-ghost' onClick={() => call()}>
                                 <div>
                                         <ReactIcon iconOn={iconOn} iconOff={iconOff} enableBlink={enableBlink} apiUrl={apiUrl} query={query} interval={1}>
                                         </ReactIcon>

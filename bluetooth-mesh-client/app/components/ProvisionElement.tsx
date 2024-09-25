@@ -3,14 +3,33 @@ import React, { useState, useEffect } from 'react';
 import TerminalOutputElement from './TerminalOutputElement';
 import IconElement from './IconElement';
 
-const fetcher = (request: string) => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
+const fetcherGET = () => async (url: string) => {
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
   const res = await fetch(apiUrl, {
-    method: 'POST',
-    body: request,
+    method: 'GET', 
+  });
+  return res.text();
+};
+
+  
+const fetcherPOST = (requestData: object) => async (url: string) => {
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
+  console.log("fetcherPOST-")
+  console.log(requestData)
+  const res = await fetch(apiUrl, {
+    method: 'POST', 
+    body: JSON.stringify(requestData),
     headers: {
-      'Content-Type': 'text/plain'
+      'Content-Type': 'application/json' 
     }
+  });
+  return res.text();
+};
+
+const fetcherDELETE = () => async (url: string) => {
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
+  const res = await fetch(apiUrl, {
+    method: 'DELETE', 
   });
   return res.text();
 };
@@ -28,31 +47,32 @@ const ProvisionElement = () => {
 
   const provision = async (uuid: string) => {
     setScanStatus(false)
-    await fetcher(`${uuid}`)(`/api/data/provision-start`)
+    await fetcherPOST({"provision_node":uuid})(`/provision`)
   }
 
   const reset_unprovisioned_list = async() => {
-    setScanStatus(false)
-    await fetcher(`true`)(`/api/data/reset_unprovisioned_list`)
+    await fetcherDELETE()("provision?query=UNPROVISIONED_NODES")
   }
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
       intervalId = setInterval(async () => {
         try {
-          const data = await fetcher('true')('/api/data/unprovisioned-scan-status');
+          const data = await fetcherGET()('/provision?query=UNPROVISIONED_NODES&query=SCAN_ACTIVE');
           let obj;
           try {
+            
             obj = JSON.parse(data);
-            const nodesArray = Object.entries(obj.data).map(([UUID, nodeInfo]) => ({
+            const nodesObj = obj["UNPROVISIONED_NODES"]
+            const nodesArray = Object.entries(nodesObj).map(([UUID, nodeInfo]) => ({
               UUID,
               ...nodeInfo
             }));
             setUnprovisionedNodes(nodesArray);
-            const state = obj["Status"] == "true";
-            setScanStatus(state);
+            setScanStatus(obj["SCAN_ACTIVE"]);
           } catch (error) {
-            console.error('Error parsing JSON:', error);
+            console.error('Error parsing JSON:');
+            console.log(error)
           }
         } catch (error) {
           console.error('Error during scan:', error);
@@ -68,7 +88,7 @@ const ProvisionElement = () => {
   const handleCheckboxChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setScanStatus(event.target.checked);
     try {
-      await fetcher(`${event.target.checked}`)('/api/data/unprovisioned-scan-toggle');
+      await fetcherPOST({"discovery":event.target.checked})('/provision');
     } catch (error) {
       console.error('Error during scan toggle:', error);
     }
@@ -89,7 +109,7 @@ const ProvisionElement = () => {
             />
           </div>
           <div className='ml-2 items-center flex '>
-          <div className='tooltip tooltip-bottom' data-tip="Toggle Fallback Scan"><IconElement commandToggle='fallback-scan-toggle' commandCheck='fallback-scan-status' iconOn='/icons/scan.png' iconOff='/icons/scan.png' enableBlink={false}></IconElement></div>
+          <div className='tooltip tooltip-bottom' data-tip="Toggle Fallback Scan"><IconElement apiUrl='provision' query='USE_FAILBACK_SCAN' postKey='failback_scan' iconOn='/icons/scan.png' iconOff='/icons/scan.png' enableBlink={false}></IconElement></div>
           {unprovisionedNodes.length > 0 && <div className='tooltip tooltip-bottom' data-tip="Reset list"><div className='btn btn-ghost text-xl' onClick={reset_unprovisioned_list}>&#x2672;</div></div>}
           {scanStatus && <div className='items-center flex'>Scanning<span className="loading loading-spinner loading-md ml-2"></span></div>}
           </div>

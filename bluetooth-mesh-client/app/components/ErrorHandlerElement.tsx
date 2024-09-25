@@ -1,17 +1,13 @@
 "use client"
 import React, { useEffect, useRef, useState } from "react";
 
-const fetcher = (request: string) => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
-    const res = await fetch(apiUrl, {
-      method: 'POST', 
-      body: request,
-      headers: {
-        'Content-Type': 'text/plain' 
-      }
-    });
-    return res.text();
-  };
+const fetcherGET = () => async (url: string) => {
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
+  const res = await fetch(apiUrl, {
+    method: 'GET', 
+  });
+  return res.text();
+};
 
 interface errorObj{
     "Error":string,
@@ -35,8 +31,9 @@ const ErrorHandlerElement = () => {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const result = await fetcher("true")("/api/data/error-state");
-            setData(result);
+            const response = await fetcherGET()("server?query=ERROR");
+            const obj = JSON.parse(response)
+            setData(obj["ERROR"]);
           } catch (err) {
             console.log(err);
           }

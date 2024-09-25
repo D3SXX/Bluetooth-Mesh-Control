@@ -36,10 +36,14 @@ def handle_config():
                 "LIST": current_app.config['CONTROLLER']['LIST']
             }
         elif power_status is not None:
+            if power_status == "any":
+                power_status = not current_app.config['CONTROLLER']["POWER"]
+
             write_to_meshctl(f"power {'on' if power_status else 'off'}\n")
             response = {
                 "status": "success",
-                "message": f"Controller power updated to {power_status}"
+                "message": f"Controller power updated to {power_status}",
+                "POWER": power_status
             }
         else:
             response = {

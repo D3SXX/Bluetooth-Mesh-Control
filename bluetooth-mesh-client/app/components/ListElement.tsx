@@ -55,7 +55,7 @@ const ListElement = ({ apiUrl, interval, postKey, query="", text="" }: { apiUrl:
     return <div>Failed to parse data</div>;
   }
   const renderedElements = Object.entries(returnData).map(([key, value]) => (
-          <option key={key} value={key} selected={value.includes("[default]")}>{key} ({value})</option>
+          <option key={key} value={key} selected={value.includes("[default]")} disabled={value.includes("[default]")}>{key} ({value})</option>
           
       ));
 

@@ -20,8 +20,6 @@ const fetcherGET = () => async (url: string) => {
   
   const fetcherPOST = (requestData: object) => async (url: string) => {
     const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-    console.log("fetcherPOST-")
-    console.log(requestData)
     const res = await fetch(apiUrl, {
       method: 'POST', 
       body: JSON.stringify(requestData),
@@ -36,13 +34,10 @@ const SecuritySlider = () => {
 
     const changeValue = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = parseInt(e.target.value, 10);
-        console.log("sending POST - " + newValue)
         const data = await fetcherPOST({"security_level":newValue})('config')
         let jsonData: SecurityObject | undefined;
         try {
           jsonData = JSON.parse(data || '{}');
-          console.log("Got data ")
-          console.log(jsonData)
       } catch (err) {
           console.error('Error parsing data:', err);
       }
@@ -61,10 +56,11 @@ const SecuritySlider = () => {
     }, [returnData]);
 
     try{
-      const obj = JSON.parse(data)
+      const obj = JSON.parse(data || '{}')
       returnData = obj["SECURITY_LEVEL"]
     }catch(e) {
-      console.log(e)
+      console.error('Error parsing data:', e);
+      console.log(data)
       return <div>Failed to parse data</div>;
     }
 

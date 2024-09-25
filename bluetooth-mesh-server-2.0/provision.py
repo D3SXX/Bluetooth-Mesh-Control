@@ -7,12 +7,12 @@ import time
 provision_bp = Blueprint('provision_bp', __name__)
 
 
-@provision_bp.route('/provision', methods=['GET', 'POST'])
+@provision_bp.route('/provision', methods=['GET', 'POST', 'DELETE'])
 def handle_config():
     if request.method == 'GET':
         
-        status = request.args.get('query')
-        
+        query_params = request.args.getlist('query')
+
         if current_app.config['PROVISION']["SCAN_ACTIVE"]:
             if current_app.config['PROVISION']["USE_FAILBACK_SCAN"]:
                 failback_scan()
@@ -22,12 +22,16 @@ def handle_config():
             node_provision_output()
             stop_node_provision()
 
-        if status is None:
-            return jsonify(current_app.config['PROVISION']), 200
-        if not status in current_app.config['PROVISION']:
-            return jsonify({status: "Invalid query parameter"}), 400
+        response_value = {}
 
-        response_value = {status:current_app.config['PROVISION'].get(status)}
+        if not query_params:
+            return jsonify(current_app.config['PROVISION']), 200
+        
+        for query in query_params:
+            if query not in current_app.config['PROVISION']:
+                return jsonify({query: "Invalid query parameter"}), 400
+            response_value[query] = current_app.config['PROVISION'].get(query)
+
 
         response = make_response(response_value)
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -46,10 +50,15 @@ def handle_config():
                 "message": f"Discovery status is set to {discovery_status}"
             }
         elif failback_scan_status is not None:
-            current_app.config['PROVISION']['USE_FAILBACK_SCAN'] = failback_scan_status
+            if failback_scan_status == "any":
+                current_app.config['PROVISION']['USE_FAILBACK_SCAN'] = not current_app.config['PROVISION']['USE_FAILBACK_SCAN']
+            else:
+                current_app.config['PROVISION']['USE_FAILBACK_SCAN'] = failback_scan_status
+            restart_scan()
             response = {
                 "status": "success",
-                "message": f"Failback scan status is set to {failback_scan_status}"
+                "message": f"Failback scan status is set to {current_app.config['PROVISION']['USE_FAILBACK_SCAN']}",
+                "USE_FAILBACK_SCAN": current_app.config['PROVISION']['USE_FAILBACK_SCAN']
             }            
         elif provision_node:
             start_node_provision(provision_node)
@@ -63,6 +72,33 @@ def handle_config():
                 "message": "Provision request is empty or not found"
             }              
         return jsonify(response), 201
+    elif request.method == "DELETE":
+        query_params = request.args.getlist('query')
+        response_value = {}
+
+        if not query_params:
+            return jsonify({"REMOVE_METHODS":["UNPROVISIONED_NODES"]}), 421
+        
+        for query in query_params:
+            if "UNPROVISIONED_NODES" not in query:
+                return jsonify({query: "Invalid query parameter"}), 400
+            else:
+                current_app.config['PROVISION']["UNPROVISIONED_NODES"].clear()
+                restart_scan()
+                response_value = {
+                    "status": "success",
+                    "message": "Deleted unprovisioned nodes list",
+                    "UNPROVISIONED_NODES":current_app.config['PROVISION']['UNPROVISIONED_NODES']
+                }
+        response = make_response(response_value)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 200
+            
+def restart_scan():
+    write_to_meshctl("discover-unprovisioned off")
+    time.sleep(0.1)
+    current_app.config['TERMINAL_OUTPUT'].clear()
+    write_to_meshctl("discover-unprovisioned on")
 
 def start_node_provision(node):
     current_app.config['TERMINAL_OUTPUT'].clear()
@@ -72,18 +108,22 @@ def start_node_provision(node):
     write_to_meshctl(f"provision {node}")
 
 def stop_node_provision():
+    error_arr = ["Failed to connect:","Stale services? Remove device and re-discover","Services resolved no","Could not find device proxy"]
+    out = "".join(current_app.config['PROVISION']['PROVISION_OUTPUT'])
     if time.time() - current_app.config['PROVISION']['PROVISION_START_TIME'] >= 60:
         current_app.config['PROVISION']['PROVISION_ACTIVE'] = False
         current_app.config['PROVISION']['PROVISION_STATUS'] = "Provision failed on timeout!"
-    if "Failed to connect:" in current_app.config['PROVISION']['PROVISION_OUTPUT'] or "Stale services? Remove device and re-discover" in current_app.config['PROVISION']['PROVISION_OUTPUT'] or "Services resolved no" in current_app.config['PROVISION']['PROVISION_OUTPUT']:
-        current_app.config['PROVISION']['PROVISION_ACTIVE'] = False
-        current_app.config['PROVISION']['PROVISION_STATUS'] = "Provision failed on error!"
-    if "Provision success." in current_app.config['PROVISION']['PROVISION_OUTPUT']:
+    for error in error_arr:
+        if error in out:
+            current_app.config['PROVISION']['PROVISION_ACTIVE'] = False
+            current_app.config['PROVISION']['PROVISION_STATUS'] = "Provision failed on error!"
+    if "Provision success." in out:
         current_app.config['PROVISION']['PROVISION_ACTIVE'] = False
         current_app.config['PROVISION']['PROVISION_STATUS'] = "Provision success!"
 
 def node_provision_output():
-    current_app.config['PROVISION']['PROVISION_OUTPUT'] = current_app.config['TERMINAL_OUTPUT']
+    if current_app.config['PROVISION']['PROVISION_ACTIVE'] == True:
+        current_app.config['PROVISION']['PROVISION_OUTPUT'] = current_app.config['TERMINAL_OUTPUT'].copy()
 
 def scan_unprovisioned(state):
     current_app.config['TERMINAL_OUTPUT'].clear()

@@ -40,7 +40,7 @@ const AdapterInfoElement = () => {
           </thead>
           <tbody>
 
-            {elementList.map((key, index) => <tr className='hover'><td>
+            {elementList.map((key, index) => <tr key={key} className='hover'><td>
               {titleList[index]}
             </td>
               <td>
