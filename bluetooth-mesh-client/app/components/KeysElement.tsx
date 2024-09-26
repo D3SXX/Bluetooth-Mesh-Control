@@ -8,6 +8,8 @@ import Toast from './Toast';
 import { json } from 'stream/consumers';
 import NoProvisionedNodes from './NoProvisionedNodes';
 
+import { fetcherGET } from "../utils/fetcher";
+
 interface DataInterface {
   $schema: string;
   meshName: string;
@@ -115,20 +117,8 @@ const KeysElement = () => {
     
   };
 
-  const fetcher = (request: string) => async (url: string) => {
-    const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
-    const res = await fetch(apiUrl, {
-      method: 'POST',
-      body: request,
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    });
-    return res.text();
-  };
-
-  const key = `/api/data/get-keys-data`;
-  const { data, error, isLoading } = useSWR(key, fetcher("get-keys-data"), { refreshInterval: 0 });
+  const request = "keys"
+  const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: 0 });
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
   let obj: DataInterface;

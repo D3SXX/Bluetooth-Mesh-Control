@@ -7,6 +7,8 @@ import Link from "next/link";
 import RegularButton from "./RegularButton";
 import NoProvisionedNodes from "./NoProvisionedNodes";
 
+import { fetcherGET } from "../utils/fetcher";
+
 interface nodeObject {
   appKeys: {
     index: number;
@@ -108,17 +110,6 @@ const NodesElement = () => {
   const [allowAddressInput, setAllowAddressInput] = useState(false);
   const [suggestAddressInput, setSuggestAddressInput] =
     useState("Type here...");
-  const fetcher = (request: string) => async (url: string) => {
-    const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      body: request,
-      headers: {
-        "Content-Type": "text/plain",
-      },
-    });
-    return res.text();
-  };
 
   const handleAddressSelection = (e) => {
     console.log(addressTypes[e.target.value], e.target.value);
@@ -143,8 +134,8 @@ const NodesElement = () => {
     setAllowAddressInput(true);
   };
 
-  const key = `/api/data/get-nodes-info`;
-  const { data, error, isLoading } = useSWR(key, fetcher("get-nodes-info"), {
+  const key = `config?query=NODES`;
+  const { data, error, isLoading } = useSWR(key, fetcherGET, {
     refreshInterval: 0,
   });
   if (error) return <div>failed to load</div>;
@@ -156,7 +147,8 @@ const NodesElement = () => {
     );
   let obj: nodeObject;
   try {
-    obj = JSON.parse(data);
+    const jsonObj  = JSON.parse(data);
+    obj = jsonObj["NODES"]
   } catch {
     return <div>Failed to load</div>;
   }
@@ -201,7 +193,7 @@ const NodesElement = () => {
               </thead>
               <tbody>
                 {compositionTitles.map((title, titleIndex) => (
-                  <tr className="hover">
+                  <tr className="hover" key={`composition-${title}-${nodeIndex}`}>
                     <th>{title}</th>
                     <td>
                       <TooltipElement
@@ -222,6 +214,7 @@ const NodesElement = () => {
                 <div
                   className="stat hover:bg-base-200"
                   data-tooltip-id={`tooltip-${key}-${nodeIndex}`}
+                  key={`stat-${key}-${nodeIndex}`}
                 >
                   <div className="stat-value text-sm">{key}</div>
                   <Tooltip id={`tooltip-${key}-${nodeIndex}`}>
@@ -315,7 +308,7 @@ const NodesElement = () => {
                   </thead>
                   <tbody>
                     {node.composition.elements.map((element, elementIndex) => (
-                      <tr className="hover">
+                      <tr className="hover" key={`available-elements-${element.location}-${nodeIndex}`}>
                         <th>
                           {
                             node.configuration.elements[elementIndex]
@@ -326,7 +319,7 @@ const NodesElement = () => {
                         <td>
                           {node.composition.elements[elementIndex].models.map(
                             (model, modelIndex) => (
-                              <span>
+                              <span key={`available-elements-${element.location}-${model}-${nodeIndex}`}>
                                 {model}{" "}
                                 {element.model_names && (
                                   <span>
@@ -413,8 +406,8 @@ const NodesElement = () => {
                     {selectedBindElementIndex > -1 && (
                       <RegularButton
                         style="btn bg-base-100 w-full border border-base-300"
-                        command="add-bind"
-                        requestData={JSON.stringify({
+                        apiUrl="config"
+                        requestData={{"add_bind":{
                           unicastAddress: node.configuration.elements[
                             selectedBindElementIndex
                           ]
@@ -426,7 +419,7 @@ const NodesElement = () => {
                           appKeyIndex: selectedBindAppKeyIndex,
                           modelValue: selectedBindModelValue,
                           cid: node.composition.cid,
-                        })}
+                        }}}
                         text="Bind"
                         timeout={30}
                       />

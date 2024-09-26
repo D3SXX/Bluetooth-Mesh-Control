@@ -3,25 +3,8 @@ import React, { ReactNode, useState } from 'react'
 import useSWR from 'swr';
 import ReactIcon from './ReactIcon';
 
-const fetcherGET = () => async (url: string) => {
-        const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-        const res = await fetch(apiUrl, {
-          method: 'GET', 
-        });
-        return res.text();
-      };
+import { fetcherGET, fetcherPOST } from "../utils/fetcher";
       
-      const fetcherPOST = (requestData: object) => async (url: string) => {
-        const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-        const res = await fetch(apiUrl, {
-          method: 'POST', 
-          body: JSON.stringify(requestData),
-          headers: {
-            'Content-Type': 'application/json' 
-          }
-        });
-        return res.text();
-      };
 
 const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { apiUrl: string, query: string, postKey:string, iconOn:string, iconOff: string, enableBlink: boolean }) => {
         const [forceState, setForceState] = useState(undefined);
@@ -31,7 +14,7 @@ const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { a
           request += `?query=${query}`
         }        
 
-        const { data, error, isLoading } = useSWR(request, fetcherGET(), { refreshInterval: 0 });
+        const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: 0 });
         if (error) return <div>failed to load</div>
         if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
 

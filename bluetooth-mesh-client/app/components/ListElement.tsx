@@ -6,26 +6,7 @@ import React from 'react'
 import DataElement from './DataElement';
 import { request } from 'http';
 
-const fetcherGET = () => async (url: string) => {
-  console.log("fetcherget() - " + url)
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-  const res = await fetch(apiUrl, {
-    method: 'GET', 
-  });
-  return res.text();
-};
-
-const fetcherPOST = (requestData: object) => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-  const res = await fetch(apiUrl, {
-    method: 'POST', 
-    body: JSON.stringify(requestData),
-    headers: {
-      'Content-Type': 'application/json' 
-    }
-  });
-  return res.text();
-};
+import { fetcherGET, fetcherPOST } from "../utils/fetcher";
 
 
 const ListElement = ({ apiUrl, interval, postKey, query="", text="" }: { apiUrl: string; interval: number; postKey: string, text?:string, query?:string }) => {
@@ -34,7 +15,7 @@ const ListElement = ({ apiUrl, interval, postKey, query="", text="" }: { apiUrl:
     request += `?query=${query}`
   }
   
-  const { data, error, isLoading } = useSWR(request, fetcherGET(), { refreshInterval: interval});
+  const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: interval});
   
   const [selectedValue, setSelectedValue] = useState("");
 

@@ -13,7 +13,6 @@ export default function Home() {
     <main>
       <NavBar></NavBar>
       <div className="m-2">
-      <ProvisioningElement></ProvisioningElement>
 </div>
         
     </main>

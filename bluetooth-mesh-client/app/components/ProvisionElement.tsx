@@ -3,36 +3,7 @@ import React, { useState, useEffect } from 'react';
 import TerminalOutputElement from './TerminalOutputElement';
 import IconElement from './IconElement';
 
-const fetcherGET = () => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-  const res = await fetch(apiUrl, {
-    method: 'GET', 
-  });
-  return res.text();
-};
-
-  
-const fetcherPOST = (requestData: object) => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-  console.log("fetcherPOST-")
-  console.log(requestData)
-  const res = await fetch(apiUrl, {
-    method: 'POST', 
-    body: JSON.stringify(requestData),
-    headers: {
-      'Content-Type': 'application/json' 
-    }
-  });
-  return res.text();
-};
-
-const fetcherDELETE = () => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-  const res = await fetch(apiUrl, {
-    method: 'DELETE', 
-  });
-  return res.text();
-};
+import { fetcherGET, fetcherPOST, fetcherDELETE } from "../utils/fetcher";
 
 interface UnprovisionedNode {
   OOB: string;
@@ -51,14 +22,14 @@ const ProvisionElement = () => {
   }
 
   const reset_unprovisioned_list = async() => {
-    await fetcherDELETE()("provision?query=UNPROVISIONED_NODES")
+    await fetcherDELETE("provision?query=UNPROVISIONED_NODES")
   }
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
       intervalId = setInterval(async () => {
         try {
-          const data = await fetcherGET()('/provision?query=UNPROVISIONED_NODES&query=SCAN_ACTIVE');
+          const data = await fetcherGET('/provision?query=UNPROVISIONED_NODES&query=SCAN_ACTIVE');
           let obj;
           try {
             

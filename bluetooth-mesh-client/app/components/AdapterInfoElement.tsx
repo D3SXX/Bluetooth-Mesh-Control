@@ -2,18 +2,12 @@
 import React from 'react'
 import useSWR from 'swr';
 
-const fetcher = () => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
-  const res = await fetch(apiUrl, {
-    method: 'GET',
-  });
-  return res.text();
-};
+import { fetcherGET } from '../utils/fetcher';
 
 const AdapterInfoElement = () => {
 
   const request = `/controller?query=DEFAULT_DATA`;
-  const { data, error, isLoading } = useSWR(request, fetcher(), { refreshInterval: 1 });
+  const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: 1 });
 
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>

@@ -3,20 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
 
+import { fetcherGET } from "../utils/fetcher";
+
 interface SecurityObject {
     Level: number;
     Description: string;
 }
 
 const securityDescriptions = ["Low","Medium","High"]
-
-const fetcherGET = () => async (url: string) => {
-    const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-    const res = await fetch(apiUrl, {
-      method: 'GET', 
-    });
-    return res.text();
-  };
   
   const fetcherPOST = (requestData: object) => async (url: string) => {
     const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
@@ -45,7 +39,7 @@ const SecuritySlider = () => {
     };
 
     let request = `config?query=SECURITY_LEVEL`
-    const { data, error, isLoading } = useSWR(request, fetcherGET(), { refreshInterval: 0 });
+    const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: 0 });
 
     let returnData;
 

@@ -2,29 +2,20 @@
 import React, { useEffect, useState } from 'react';
 import Toast from './Toast';
 
-const fetcher = (request: string) => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000${url}`;
-  const res = await fetch(apiUrl, {
-    method: 'POST',
-    body: request,
-    headers: {
-      'Content-Type': 'text/plain'
-    }
-  });
-  return res.text();
-};
+import { fetcherGET, fetcherPOST } from "../utils/fetcher";
 
-const RegularButton = ({ command, requestData = command, text = "", style = "btn ml-2", timeout = undefined }: { command: string; requestData?: string; text?: string, style: string, timeout?: number }) => {
+const RegularButton = ({ apiUrl, requestData, text = "", style = "btn ml-2", timeout = undefined }: { apiUrl: string; requestData: object; text?: string, style: string, timeout?: number }) => {
   const [outputData, setOutputData] = useState<string | null>(null);
   const [isCalled, setIsCalled] = useState<boolean>(false);
   const [progressValue, setProgressValue] = useState(0);
 
-  const call = async (command: string, requestData: string) => {
+  const call = async () => {
     try {
       setOutputData(null);
       setIsCalled(true);
-      const data = await fetcher(`${requestData}`)(`/api/data/${command}`);
-      setOutputData(data);
+      const data = await fetcherPOST(requestData)(`${apiUrl}`);
+      const jsonObj = JSON.parse(data);
+      setOutputData(jsonObj["message"]);
       setIsCalled(false);
       setProgressValue(0); 
     } catch (error) {
@@ -55,7 +46,7 @@ const RegularButton = ({ command, requestData = command, text = "", style = "btn
 
   return (
     <div className='w-full'>
-      <button onClick={() => call(command, requestData)} className={style}>
+      <button onClick={call} className={style}>
         {text || ""}
       </button>
       {(isCalled && timeout) && (

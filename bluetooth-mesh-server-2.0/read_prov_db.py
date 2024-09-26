@@ -96,8 +96,11 @@ def add_company(data):
                                                 node["composition"]["cidName"] = f"{cid} ({identifier['name']})"
                                                 print(identifier['name'])
                                                 break
-        finally:                
-                return data
+        except Exception as e:
+               print(f"add_company() - error: {e}")
+               for node in data["nodes"]:
+                      node["composition"]["cidName"] = node["composition"]["cid"]                      
+        return data
         
 def add_model_name(data):
         try:

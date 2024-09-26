@@ -4,13 +4,7 @@ import React, { useEffect, useState } from 'react'
 import useSWR from 'swr';
 import Image from 'next/image'
 
-const fetcherGET = () => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-  const res = await fetch(apiUrl, {
-    method: 'GET', 
-  });
-  return res.text();
-};
+import { fetcherGET } from "../utils/fetcher";
 
 const imageOn = {
   filter: "invert(39%) sepia(93%) saturate(3269%) hue-rotate(193deg) brightness(98%) contrast(110%)",
@@ -41,7 +35,7 @@ const ReactIcon = ({iconOn,iconOff,enableBlink, apiUrl, query, interval}: { icon
         if (query){
           request += `?query=${query}`
         }
-        const { data, error, isLoading } = useSWR(request, fetcherGET(), { refreshInterval: interval});
+        const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: interval});
         if (error) return <div>failed to load</div>
         if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
         let state;

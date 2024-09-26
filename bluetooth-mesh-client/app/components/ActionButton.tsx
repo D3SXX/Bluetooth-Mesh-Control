@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import DataElement from './DataElement';
 import SelectListElement from './SelectListElement';
+
 const ActionButton = ({text, actionText, command, interval, enableProgressBar = false,toggleTerminalOutput }: { text:string,actionText:string; command: string; interval: number; enableProgressBar?:boolean;toggleTerminalOutput: () => void}) => {
         const [isButtonStart, setButtonStart] = useState(false);
         const [progressValue, setProgressValue] = useState(0);

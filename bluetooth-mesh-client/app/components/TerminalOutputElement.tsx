@@ -2,25 +2,19 @@
 import React, { useEffect, useRef, useState } from 'react'
 import useSWR from 'swr';
 
+import { fetcherGET } from "../utils/fetcher";
+
 interface TerminalData{
     PROVISION_ACTIVE: boolean;
     PROVISION_OUTPUT: [];
 }
-
-const fetcherGET = () => async (url: string) => {
-    const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
-    const res = await fetch(apiUrl, {
-      method: 'GET', 
-    });
-    return res.text();
-  };
 
 const TerminalOutputElement = () => {
     const terminalOutputRef = useRef<HTMLUListElement>(null);
     const [terminalData, setTerminalData] = useState<TerminalData | null>(null);
 
     const request = "provision?query=PROVISION_OUTPUT&query=PROVISION_ACTIVE"
-    const { data, error, isLoading } = useSWR(request, fetcherGET(), { refreshInterval: 1000 });
+    const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: 1000 });
 
     
     useEffect(() => {
