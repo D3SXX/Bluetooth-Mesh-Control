@@ -19,6 +19,8 @@ def terminal_read_output(process,app):
             past_output = output
             with app.app_context():
                 current_app.config['TERMINAL_OUTPUT'].append(cleared_output)
+            if "Composition data for node" in cleared_output:
+                write_to_meshctl("disconnect")
             print(output)
 
 

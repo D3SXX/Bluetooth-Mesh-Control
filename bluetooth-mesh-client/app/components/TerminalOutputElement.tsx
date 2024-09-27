@@ -19,12 +19,7 @@ const TerminalOutputElement = () => {
     
     useEffect(() => {
         if (data) {
-            try {
-                const obj = JSON.parse(data);
-                setTerminalData(obj);
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-            }
+            setTerminalData(data);
         }
     }, [data]);
 

@@ -15,15 +15,7 @@ const AdapterInfoElement = () => {
   let elementList = ["Name", "Alias", "Default-adapter", "Class", "Powered", "Discoverable", "Discovering", "Modalias"];
   let titleList = ["Name", "Alias", "MAC Address", "Bluetooth device class", "Power status", "Discoverable status", "Discovering status", "Modalias"]
 
-  let returnData;
-  try{
-    const obj = JSON.parse(data)
-    returnData = obj["DEFAULT_DATA"]
-    console.log(returnData)
-  }catch(e) {
-    console.log(e)
-    return <div>Failed to parse data</div>;
-  }
+  let returnData = data["DEFAULT_DATA"];
 
   return (
     <div className='bg-base-100 divide-base-200 divide-y join join-vertical me-2 mb-2'>

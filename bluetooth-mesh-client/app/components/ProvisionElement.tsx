@@ -22,7 +22,7 @@ const ProvisionElement = () => {
   }
 
   const reset_unprovisioned_list = async() => {
-    await fetcherDELETE("provision?query=UNPROVISIONED_NODES")
+    await fetcherDELETE("provision?reset=True")
   }
 
   useEffect(() => {
@@ -32,15 +32,14 @@ const ProvisionElement = () => {
           const data = await fetcherGET('/provision?query=UNPROVISIONED_NODES&query=SCAN_ACTIVE');
           let obj;
           try {
-            
-            obj = JSON.parse(data);
-            const nodesObj = obj["UNPROVISIONED_NODES"]
+
+            const nodesObj = data["UNPROVISIONED_NODES"]
             const nodesArray = Object.entries(nodesObj).map(([UUID, nodeInfo]) => ({
               UUID,
               ...nodeInfo
             }));
             setUnprovisionedNodes(nodesArray);
-            setScanStatus(obj["SCAN_ACTIVE"]);
+            setScanStatus(data["SCAN_ACTIVE"]);
           } catch (error) {
             console.error('Error parsing JSON:');
             console.log(error)

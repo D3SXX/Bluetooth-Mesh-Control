@@ -121,14 +121,9 @@ const KeysElement = () => {
   const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: 0 });
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
-  let obj: DataInterface;
-  try{
-    obj = JSON.parse(data);
-  }
-  catch{
-    return <div>Failed to load, try to add new nodes..</div>
-  }
 
+  let obj: DataInterface;
+  obj = data;
   let renderedElements;
 
   if ("appKeys" in obj){

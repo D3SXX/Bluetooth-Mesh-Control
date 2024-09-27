@@ -26,8 +26,7 @@ const ErrorHandlerElement = () => {
         const fetchData = async () => {
           try {
             const response = await fetcherGET("server?query=ERROR");
-            const obj = JSON.parse(response)
-            setData(obj["ERROR"]);
+            setData(response["ERROR"]);
           } catch (err) {
             console.log(err);
           }

@@ -20,18 +20,19 @@ def get_server_info():
     return response, 200
 
 def update_server():
-    current_app.config['TERMINAL_OUTPUT'].clear()
-    write_to_meshctl("version\n")
-    start = time.time()
-    pattern = r"Version\s+(\d+\.\d+)"
-    while True:
-        if time.time() - start > 5:
-            print("update_server() - Timeout on getting data!")
-            return
-        out = "".join(current_app.config['TERMINAL_OUTPUT'])
-        if re.search(pattern, out):
-            match = re.search(pattern, out)
-            current_app.config['SERVER']['MESHCTL'] = match.group(1)
-            return
-        time.sleep(0.1)
-    current_app.config['TERMINAL_OUTPUT'].clear()
+    if current_app.config['SERVER']['MESHCTL'] is None:
+        current_app.config['TERMINAL_OUTPUT'].clear()
+        write_to_meshctl("version\n")
+        start = time.time()
+        pattern = r"Version\s+(\d+\.\d+)"
+        while True:
+            if time.time() - start > 5:
+                print("update_server() - Timeout on getting data!")
+                return
+            out = "".join(current_app.config['TERMINAL_OUTPUT'])
+            if re.search(pattern, out):
+                match = re.search(pattern, out)
+                current_app.config['SERVER']['MESHCTL'] = match.group(1)
+                return
+            time.sleep(0.1)
+        current_app.config['TERMINAL_OUTPUT'].clear()

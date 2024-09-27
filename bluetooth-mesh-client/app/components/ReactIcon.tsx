@@ -38,14 +38,9 @@ const ReactIcon = ({iconOn,iconOff,enableBlink, apiUrl, query, interval}: { icon
         const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: interval});
         if (error) return <div>failed to load</div>
         if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
-        let state;
-        try{
-          const obj = JSON.parse(data)
-          state = obj[query]
-        }catch(e) {
-          console.log(e)
-          return <div>Failed to parse data</div>;
-        }
+ 
+        let state = data[query];
+
         const finalState = state && isBlinking ? blinkingState : state;
         
         return (

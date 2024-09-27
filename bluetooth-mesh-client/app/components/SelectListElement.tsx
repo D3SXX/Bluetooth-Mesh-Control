@@ -11,12 +11,9 @@ const SelectListElement = ({ command, interval,text="",toggleTerminalOutput }: {
   const { data, error, isLoading } = useSWR(key, fetcherGET, { refreshInterval: interval});
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
-  let obj;
-  try {
-    obj = JSON.parse(data);
-  } catch (error) {
-    return <div>{data}</div>
-  }
+  
+  let obj = data;
+
   const provisionDevice = async (uuid: string) => {
     toggleTerminalOutput();
     try {

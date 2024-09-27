@@ -18,14 +18,7 @@ const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { a
         if (error) return <div>failed to load</div>
         if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
 
-        let returnData : boolean;
-        try{
-          const obj = JSON.parse(data)
-          returnData = obj[query]
-        }catch(e) {
-          console.log(e)
-          return <div>Failed to parse data</div>;
-        }        
+        let returnData = data[query];    
         
         const call = async () => {
                 try {

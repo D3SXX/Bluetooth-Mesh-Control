@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
 
 import { fetcherGET } from "../utils/fetcher";
+import { isEmpty } from '../utils/isEmpty';
 
 interface SecurityObject {
     Level: number;
@@ -48,15 +49,11 @@ const SecuritySlider = () => {
             document.getElementById("steps-range")?.setAttribute("value",returnData.Level)
         }
     }, [returnData]);
-
-    try{
-      const obj = JSON.parse(data || '{}')
-      returnData = obj["SECURITY_LEVEL"]
-    }catch(e) {
-      console.error('Error parsing data:', e);
-      console.log(data)
-      return <div>Failed to parse data</div>;
+    
+    if (data){
+      returnData = data["SECURITY_LEVEL"];
     }
+    
 
 
 

@@ -18,7 +18,7 @@ def terminal_read_output(process, app, caller):
             past_output = output
             with app.app_context():
                 current_app.config['TERMINAL_SESSIONS'][caller]['OUTPUT'].append(cleared_output)
-
+            #print(output)
 
 def stop_custom_process():
     try:

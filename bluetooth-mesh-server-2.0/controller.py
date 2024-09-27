@@ -53,6 +53,8 @@ def handle_config():
         return jsonify(response), 201
 
 def update_controller():
+    if current_app.config['CONFIG']['PROCESS']['STATUS'] == True:
+        return
     current_app.config['TERMINAL_SESSIONS']['CONTROLLER']['OUTPUT'].clear()
     if current_app.config['TERMINAL_SESSIONS']['CONTROLLER']["STATUS"] is not True:
         start_custom_meshctl("CONTROLLER")

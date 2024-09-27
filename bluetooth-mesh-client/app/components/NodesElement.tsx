@@ -145,13 +145,10 @@ const NodesElement = () => {
         loading <span className="loading loading-spinner text-primary"></span>
       </div>
     );
+
   let obj: nodeObject;
-  try {
-    const jsonObj  = JSON.parse(data);
-    obj = jsonObj["NODES"]
-  } catch {
-    return <div>Failed to load</div>;
-  }
+  obj = data["NODES"];
+
   console.log(obj);
   const compositionTitles = ["Company ID", "Product ID", "Version ID"];
   const compositionIndexes = ["cidName", "pid", "vid", "crpl"];
@@ -566,8 +563,9 @@ const NodesElement = () => {
                     <div className="flex w-full space-x-2">
                       <RegularButton
                         style="btn bg-base-100 w-full border border-base-300"
-                        command="add-sub"
-                        requestData={JSON.stringify({
+                        apiUrl="config"
+                        requestData={{
+                          "sub_add":{
                           unicastAddress: node.configuration.elements[
                             selectedPublishElementIndex
                           ]
@@ -579,14 +577,16 @@ const NodesElement = () => {
                           appKeyIndex: selectedPublishAppKeyIndex,
                           modelValue: selectedPublishModelValue,
                           cid: node.composition.cid,
-                        })}
+                          
+                        }}}
                         text="Subscribe"
                         timeout={30}
                       />
                       <RegularButton
                         style="btn bg-base-100 w-full border border-base-300"
-                        command="add-pub"
-                        requestData={JSON.stringify({
+                        apiUrl="config"
+                        requestData={{
+                          "pub_set":{
                           unicastAddress: node.configuration.elements[
                             selectedPublishElementIndex
                           ]
@@ -600,7 +600,7 @@ const NodesElement = () => {
                           retransmissionCount: inputPublishRetransmissionCount,
                           modelValue: selectedPublishModelValue,
                           cid: node.composition.cid,
-                        })}
+                        }}}
                         text="Publish"
                         timeout={30}
                       />
@@ -611,11 +611,7 @@ const NodesElement = () => {
             </div>
             <div className="join-item inline-block">
               <RegularButton
-                command="reset-node"
-                requestData={JSON.stringify({
-                  unicastAddress: node.configuration.elements[0].unicastAddress,
-                  type: "unicastAddress",
-                })}
+                apiUrl={`config?address=${node.configuration.elements[0].unicastAddress}`}
                 text="Reset node"
                 style="btn btn-outline btn-error bg-transparent w-full"
                 timeout={30}

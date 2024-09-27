@@ -15,15 +15,9 @@ const DataElement = ({apiUrl, interval,query="",text="" }: { apiUrl: string; int
   const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: interval});
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
-  let returnData;
-  try{
-    const obj = JSON.parse(data)
-    returnData = obj[query]
-  }catch(e) {
-    console.log(e)
-    return <div>Failed to parse data</div>;
-  }
-  
+
+  let returnData = data[query];
+
   return <div>{returnData}</div>
 };
 

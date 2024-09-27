@@ -3,7 +3,9 @@ export const fetcherGET = async (url: string) => {
   const res = await fetch(apiUrl, {
     method: "GET",
   });
-  return res.text();
+ 
+  const response = await res.json();
+  return response;
 };
 
 export const fetcherPOST = (requestData: object) => async (url: string) => {
@@ -15,7 +17,8 @@ export const fetcherPOST = (requestData: object) => async (url: string) => {
       "Content-Type": "application/json",
     },
   });
-  return res.text();
+  const response = await res.json();
+  return response;
 };
 
 export const fetcherDELETE = async (url: string) => {
@@ -23,5 +26,6 @@ export const fetcherDELETE = async (url: string) => {
   const res = await fetch(apiUrl, {
     method: "DELETE",
   });
-  return res.text();
+  const response = await res.json();
+  return response;
 };

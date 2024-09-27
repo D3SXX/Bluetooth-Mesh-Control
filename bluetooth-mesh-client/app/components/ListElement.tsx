@@ -27,14 +27,8 @@ const ListElement = ({ apiUrl, interval, postKey, query="", text="" }: { apiUrl:
   
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
-  let returnData;
-  try{
-    const obj = JSON.parse(data)
-    returnData = obj[query]
-  }catch(e) {
-    console.log(e)
-    return <div>Failed to parse data</div>;
-  }
+  let returnData = data[query];
+
   const renderedElements = Object.entries(returnData).map(([key, value]) => (
           <option key={key} value={key} selected={value.includes("[default]")} disabled={value.includes("[default]")}>{key} ({value})</option>
           

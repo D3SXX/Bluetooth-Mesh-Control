@@ -73,23 +73,21 @@ def handle_config():
             }              
         return jsonify(response), 201
     elif request.method == "DELETE":
-        query_params = request.args.getlist('query')
+        address = request.args.get('address')
+        unprovisioned = request.args.get('reset')
         response_value = {}
 
-        if not query_params:
-            return jsonify({"REMOVE_METHODS":["UNPROVISIONED_NODES"]}), 421
+        if unprovisioned:
+            current_app.config['PROVISION']["UNPROVISIONED_NODES"].clear()
+            restart_scan()
+            response_value = {
+                "status": "success",
+                "message": "Deleted unprovisioned nodes list",
+                "UNPROVISIONED_NODES":current_app.config['PROVISION']['UNPROVISIONED_NODES']
+            }
+        else:
+            return jsonify({"REMOVE_METHODS":["unprovisioned"]}), 421
         
-        for query in query_params:
-            if "UNPROVISIONED_NODES" not in query:
-                return jsonify({query: "Invalid query parameter"}), 400
-            else:
-                current_app.config['PROVISION']["UNPROVISIONED_NODES"].clear()
-                restart_scan()
-                response_value = {
-                    "status": "success",
-                    "message": "Deleted unprovisioned nodes list",
-                    "UNPROVISIONED_NODES":current_app.config['PROVISION']['UNPROVISIONED_NODES']
-                }
         response = make_response(response_value)
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 200
@@ -118,6 +116,7 @@ def stop_node_provision():
             current_app.config['PROVISION']['PROVISION_ACTIVE'] = False
             current_app.config['PROVISION']['PROVISION_STATUS'] = "Provision failed on error!"
     if "Provision success." in out:
+        time.sleep(5)
         current_app.config['PROVISION']['PROVISION_ACTIVE'] = False
         current_app.config['PROVISION']['PROVISION_STATUS'] = "Provision success!"
 

@@ -39,7 +39,8 @@ app.config['PROVISION'] = {
 
 app.config['CONFIG'] = {
         "SECURITY_LEVEL":None,
-        "NODES":[]
+        "NODES":[],
+        "PROCESS":{"STATUS":False,"PROGRESS":0,"LOGS":[]}
 }
 
 app.config['KEYS'] = {
