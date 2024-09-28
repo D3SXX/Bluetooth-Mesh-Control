@@ -1,10 +1,12 @@
 from flask import Blueprint, current_app, jsonify, make_response, request
-from process import start_meshctl,write_to_meshctl
-from custom_process import start_custom_meshctl,stop_custom_process, write_to_custom_meshctl
 import time
 import re
-controller_bp = Blueprint('controller_bp', __name__)
 
+from process import write_to_meshctl
+from custom_process import start_custom_meshctl,stop_custom_process, write_to_custom_meshctl
+from provision import scan_unprovisioned 
+
+controller_bp = Blueprint('controller_bp', __name__)
 
 @controller_bp.route('/controller', methods=['GET', 'POST'])
 def handle_config():
@@ -38,8 +40,12 @@ def handle_config():
         elif power_status is not None:
             if power_status == "any":
                 power_status = not current_app.config['CONTROLLER']["POWER"]
-
+                
             write_to_meshctl(f"power {'on' if power_status else 'off'}\n")
+            
+            if power_status is False:
+                scan_unprovisioned(False)
+
             response = {
                 "status": "success",
                 "message": f"Controller power updated to {power_status}",

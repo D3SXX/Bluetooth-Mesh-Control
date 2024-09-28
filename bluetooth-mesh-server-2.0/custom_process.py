@@ -1,7 +1,6 @@
 import subprocess
 import threading
 import re
-import time
 from flask import current_app
 
 process = None

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Toast from "./Toast";
 import { fetcherPOST, fetcherDELETE, fetcherGET } from "../utils/fetcher";
 import { isEmpty } from "../utils/isEmpty";
@@ -9,21 +9,22 @@ const RegularButton = ({
   requestData = {},
   text = "",
   style = "btn ml-2",
-  timeout = undefined,
+  uniqueId,
 }: {
   apiUrl: string;
   query?: string;
   requestData?: object;
   text?: string;
   style: string;
-  timeout?: number;
+  uniqueId: string;
 }) => {
   const [outputData, setOutputData] = useState<string | null>(null);
   const [isCalled, setIsCalled] = useState<boolean>(false);
   const [progressValue, setProgressValue] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const [processStatus, setProcessStatus] = useState(false);
-
+  const outputRef = useRef<HTMLUListElement>(null);
+  
   const call = async () => {
     try {
       setOutputData(null);
@@ -40,7 +41,7 @@ const RegularButton = ({
 
       if (data["status"] === "success") {
         pollProcessStatus();
-        document.getElementById(`modal-${apiUrl}`)?.showModal()
+        document.getElementById(`modal-${uniqueId}-${apiUrl}-${text}`)?.showModal()
       }
 
       setProgressValue(0);
@@ -60,7 +61,9 @@ const RegularButton = ({
         setLogs(processResponse["PROCESS"]["LOGS"]);
         setProgressValue(processResponse["PROCESS"]["PROGRESS"]);
         setProcessStatus(processResponse["PROCESS"]["STATUS"]);
-
+        if (outputRef.current) {
+          outputRef.current.scrollTop = outputRef.current.scrollHeight;
+      }
         if (!processResponse["PROCESS"]["STATUS"]) {
           clearInterval(interval);
         }
@@ -68,48 +71,22 @@ const RegularButton = ({
     }, 1000);
   };
 
-  useEffect(() => {
-    let progressInterval: NodeJS.Timeout;
-
-    if (isCalled && timeout) {
-      progressInterval = setInterval(() => {
-        setProgressValue((prevValue) => {
-          const newValue = prevValue + 1;
-          if (newValue >= timeout * 10) {
-            clearInterval(progressInterval);
-            setIsCalled(false);
-          }
-          return newValue;
-        });
-      }, 100);
-    }
-    return () => clearInterval(progressInterval);
-  }, [isCalled, timeout]);
-
   return (
     <div className="w-full">
       <button onClick={call} className={style}>
         {text || ""}
       </button>
 
-      {isCalled && timeout && (
-        <progress
-          className="progress progress-primary w-100"
-          value={progressValue}
-          max={timeout * 10}
-        ></progress>
-      )}
-
       {outputData && <Toast message={outputData} timeout={10000}></Toast>}
-      <dialog id={`modal-${apiUrl}`} className="modal">
+      <dialog id={`modal-${uniqueId}-${apiUrl}-${text}`} className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg items-center flex">Configuring Mesh {processStatus && (<span className="loading loading-spinner loading-md ml-2"></span>)}</h3>
-          <ul className="overflow-auto h-32 mt-2 border border-base-200 rounded-lg">
+          <ul className="overflow-auto h-32 mt-2 border border-base-200 rounded-lg" ref={outputRef}>
             {logs.map((log, index) => (
               <li
-                key={index}
+                key={`log-${uniqueId}-${apiUrl}-${text}-${index}`}
                 className={`${
-                  index === logs.length - 1 ? "text-info-content animate-pulse hover" : ""
+                  index === logs.length - 1 ? "animate-pulse" : ""
                 }`}
               >
                 {log}

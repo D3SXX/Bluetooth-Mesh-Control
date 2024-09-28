@@ -1,10 +1,8 @@
 from flask import Blueprint, current_app, jsonify, make_response, request
 from process import write_to_meshctl
 from read_prov_db import get_keys_data
-import time
-import re
-keys_bp = Blueprint('keys_bp', __name__)
 
+keys_bp = Blueprint('keys_bp', __name__)
 
 @keys_bp.route('/keys', methods=['GET', 'POST','PUT','DELETE'])
 def handle_keys():

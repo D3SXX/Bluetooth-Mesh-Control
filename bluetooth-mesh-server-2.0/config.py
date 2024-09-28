@@ -63,14 +63,14 @@ def handle_config():
                 "SECURITY_LEVEL":security_level
             }
         elif pub_set:
-            commandList = [f'appkey-add {pub_set["appKeyIndex"]}',f'pub-set {pub_set["unicastAddress"]} {pub_set["address"][2:]} {pub_set["appKeyIndex"]} {pub_set["publicationPeriod"]} {pub_set["retransmissionCount"]} {pub_set["modelValue"]}']
+            commandList = [f'appkey-add {pub_set["appKeyIndex"]}',f'pub-set {pub_set["elementAddress"]} {pub_set["address"][2:]} {pub_set["appKeyIndex"]} {pub_set["publicationPeriod"]} {pub_set["retransmissionCount"]} {pub_set["modelValue"]}']
             threading.Thread(target=run_async_in_thread, args=(pub_set["unicastAddress"], commandList,[False, "Publication"],current_app._get_current_object())).start()
             response_value = {
                 "status": "success",
                 "message": f"Initiated pub set for node {pub_set["unicastAddress"]}",
             }
         elif sub_add:
-            commandList = [f'appkey-add {sub_add["appKeyIndex"]}',f'sub-add {sub_add["unicastAddress"]} {sub_add["address"][2:]} {sub_add["modelValue"]}']
+            commandList = [f'appkey-add {sub_add["appKeyIndex"]}',f'sub-add {sub_add["elementAddress"]} {sub_add["address"][2:]} {sub_add["modelValue"]}']
             threading.Thread(target=run_async_in_thread, args=(sub_add["unicastAddress"], commandList,[False, "Subscription"],current_app._get_current_object())).start()
             response_value = {
                 "status": "success",
@@ -138,7 +138,7 @@ async def configure_mesh(address, commandList, waitList):
 
     if current_app.config['CONFIG']["PROCESS"]["STATUS"] == True:
         return
-    progressMax = 4 + len(commandList)
+    progressMax = 6 + len(commandList)
     progressIncrement = 100 / progressMax
 
     current_app.config['CONFIG']["PROCESS"]["STATUS"] = True
@@ -146,16 +146,31 @@ async def configure_mesh(address, commandList, waitList):
     current_app.config['CONFIG']["PROCESS"]["LOGS"] = []
     if current_app.config['TERMINAL_SESSIONS']['CONFIG']["STATUS"] is not True:
         current_app.config['TERMINAL_SESSIONS']['CONFIG']["STATUS"] = True
+    
+    current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Restarting controller")
+    current_app.config['CONFIG']["PROCESS"]["PROGRESS"] = 0
+    
     write_to_meshctl("power off")
     time.sleep(1)
     write_to_meshctl("power on")
     time.sleep(1)
     write_to_meshctl("connect")
+    
     start = time.time()
     current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Trying to connect to the mesh network")
-    current_app.config['CONFIG']["PROCESS"]["PROGRESS"] = 0
-    while "Mesh session is open" not in "".join(current_app.config['TERMINAL_OUTPUT']):
+    current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
+
+    while "Connection successful" not in "".join(current_app.config['TERMINAL_OUTPUT']):
         if time.time() - start > 10.0:
+            stop("Reached timeout while trying...")
+            return
+
+    current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Waiting for mesh session to open")
+    current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
+    start = time.time()
+
+    while "Mesh session is open" not in "".join(current_app.config['TERMINAL_OUTPUT']):
+        if time.time() - start > 5.0:
             stop("Reached timeout while trying...")
             return
     current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
@@ -228,7 +243,7 @@ def remove_node_from_config(address):
                                 return "Success"
         return "Couldn't find the entry"
 
-async def reset_node_test(address):
+async def reset_node_test(address, i, k):
     def stop(msg):
         current_app.config['CONFIG']["PROCESS"]["LOGS"].append(msg)
         current_app.config['CONFIG']["PROCESS"]["PROGRESS"] = 100

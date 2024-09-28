@@ -1,8 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
 const SideBar = () => {
-  const elements = ["Provision","Home (deprecated)","Nodes","Keys","Status"];
-  const linksForElements = ["/provision","/","/nodes","/keys","/status"];
+  const elements = ["Home","Provision","Nodes","Keys","Status"];
+  const linksForElements = ["/","/provision","/nodes","/keys","/status"];
   return (
     <div>
       <div className="drawer z-10">

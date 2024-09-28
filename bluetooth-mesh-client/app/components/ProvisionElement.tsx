@@ -85,8 +85,8 @@ const ProvisionElement = () => {
           </div>
         </div>
         <div className="collapse-content">
-          {scanStatus && unprovisionedNodes.length <= 0 && <div className='text-gray-500'>Scanning for unprovisioned nodes...</div>}
-          <div className="mt-4">
+          {scanStatus && unprovisionedNodes.length <= 0 && <div className='text-gray-500 '>Scanning for unprovisioned nodes...</div>}
+          <div className="rounded-lg h-60">
             {unprovisionedNodes.length > 0 ? (
               <div>
                 {unprovisionedNodes.map((node, index) => (
@@ -99,7 +99,7 @@ const ProvisionElement = () => {
                     </div>
                     <dialog id={`modal-${index}`} className="modal">
                       <div className="modal-box">
-                        <h3 className="font-bold text-lg">Provision</h3>
+                        <h3 className="font-bold text-lg"></h3>
                         <div className="py-4 text-lg font-normal">
                           <div className='mb-2'>Do you want to provision this node?</div>
                           <div>
@@ -116,7 +116,7 @@ const ProvisionElement = () => {
                 ))}
               </div>
             ) : (
-              <div className='text-gray-500'>Unprovisioned nodes list is empty.</div>
+              <div className='text-gray-500 animate-pulse'>Unprovisioned nodes list is empty.</div>
             )}
           </div>
         </div>

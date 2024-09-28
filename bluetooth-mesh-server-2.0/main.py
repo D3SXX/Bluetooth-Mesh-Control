@@ -1,4 +1,3 @@
-
 from flask import Flask
 from flask_cors import CORS
 from server import server_bp

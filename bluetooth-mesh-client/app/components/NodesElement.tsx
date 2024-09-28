@@ -409,7 +409,7 @@ const NodesElement = () => {
                             selectedBindElementIndex
                           ]
                             ? node.configuration.elements[
-                                selectedBindElementIndex
+                                0
                               ].unicastAddress
                             : "",
                           elementIndex: selectedBindElementIndex,
@@ -418,7 +418,7 @@ const NodesElement = () => {
                           cid: node.composition.cid,
                         }}}
                         text="Bind"
-                        timeout={30}
+                        uniqueId={`node${nodeIndex}`}
                       />
                     )}
                   </div>
@@ -570,9 +570,10 @@ const NodesElement = () => {
                             selectedPublishElementIndex
                           ]
                             ? node.configuration.elements[
-                                selectedPublishElementIndex
+                                0
                               ].unicastAddress
                             : "",
+                            elementAddress: node.configuration.elements[selectedPublishElementIndex || 0].unicastAddress,
                           address: inputPublishAddressValue,
                           appKeyIndex: selectedPublishAppKeyIndex,
                           modelValue: selectedPublishModelValue,
@@ -580,7 +581,7 @@ const NodesElement = () => {
                           
                         }}}
                         text="Subscribe"
-                        timeout={30}
+                        uniqueId={`node${nodeIndex}`}
                       />
                       <RegularButton
                         style="btn bg-base-100 w-full border border-base-300"
@@ -591,9 +592,10 @@ const NodesElement = () => {
                             selectedPublishElementIndex
                           ]
                             ? node.configuration.elements[
-                                selectedPublishElementIndex
+                                0
                               ].unicastAddress
                             : "",
+                          elementAddress: node.configuration.elements[selectedPublishElementIndex || 0].unicastAddress,
                           address: inputPublishAddressValue,
                           appKeyIndex: selectedPublishAppKeyIndex,
                           publicationPeriod: inputPublishPublicationPeriod,
@@ -602,7 +604,7 @@ const NodesElement = () => {
                           cid: node.composition.cid,
                         }}}
                         text="Publish"
-                        timeout={30}
+                        uniqueId={`node${nodeIndex}`}
                       />
                     </div>
                   )}
@@ -614,7 +616,7 @@ const NodesElement = () => {
                 apiUrl={`config?address=${node.configuration.elements[0].unicastAddress}`}
                 text="Reset node"
                 style="btn btn-outline btn-error bg-transparent w-full"
-                timeout={30}
+                uniqueId={`node${nodeIndex}`}
               ></RegularButton>
             </div>
           </div>

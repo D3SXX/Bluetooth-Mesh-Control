@@ -1,8 +1,9 @@
-from flask import Blueprint, current_app, jsonify, make_response, request
+import time
 
+from flask import Blueprint, current_app, jsonify, make_response, request
 from process import write_to_meshctl
 
-import time
+
 
 provision_bp = Blueprint('provision_bp', __name__)
 
@@ -99,9 +100,9 @@ def restart_scan():
     write_to_meshctl("discover-unprovisioned on")
 
 def start_node_provision(node):
-    current_app.config['TERMINAL_OUTPUT'].clear()
-    current_app.config['PROVISION']['SCAN_ACTIVE'] = False
+    scan_unprovisioned(False)
     current_app.config['PROVISION']['PROVISION_ACTIVE'] = True
+    current_app.config['PROVISION']["UNPROVISIONED_NODES"].clear()
     current_app.config['PROVISION']['PROVISION_START_TIME'] = time.time()
     write_to_meshctl(f"provision {node}")
 
