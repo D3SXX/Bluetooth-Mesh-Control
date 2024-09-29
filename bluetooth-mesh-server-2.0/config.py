@@ -1,8 +1,8 @@
 import json
 from flask import Blueprint, current_app, jsonify, make_response, request
 
-from read_prov_db import get_nodes_data
-from process import write_to_meshctl
+from utils.read_prov_db import get_nodes_data
+from utils.process import write_to_meshctl
 
 import time
 import os
@@ -22,10 +22,11 @@ def handle_config():
 
     if request.method == 'GET':
 
-        current_app.config['CONFIG']['NODES'] = get_nodes_data(config_bp)
-        update_security()
-        
         status = request.args.get('query')
+
+        if current_app.config['SERVER']['ERROR']['STATUS'] == False:
+            current_app.config['CONFIG']['NODES'] = get_nodes_data()
+            update_security()
         
         if status is None:
             return jsonify(current_app.config['CONFIG']), 200
@@ -44,6 +45,7 @@ def handle_config():
         add_bind = req_data.get("add_bind")
         pub_set = req_data.get("pub_set")
         sub_add = req_data.get("sub_add")
+        config = req_data.get("config")
 
         response_value = {}
         
@@ -75,7 +77,24 @@ def handle_config():
             response_value = {
                 "status": "success",
                 "message": f"Initiated sub add for node {sub_add["unicastAddress"]}",
-            }               
+            }
+        elif config:
+            prov_db = config["prov_db"]
+            local_node = config["local_node"]
+            try:
+                json.loads(prov_db)
+                json.loads(local_node)
+                reset_config([True,True],prov_db,local_node)
+                current_app.config['SERVER']['ERROR']['STATUS'] = False
+                response_value = {
+                    "status": "success",
+                    "message": "Succesfully edited config"
+                }    
+            except Exception as e:
+                response_value = {
+                    "status": "fail",
+                    "message": f"Got error: {str(e)}",
+                }                           
         else:
             response_value = {
                 "status": "fail",

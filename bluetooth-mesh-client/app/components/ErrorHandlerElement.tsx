@@ -2,23 +2,46 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import { fetcherGET, fetcherPOST } from "../utils/fetcher";
+import Toast from "./Toast";
 
 interface errorObj{
-    "Error":string,
-    "Error-status":boolean,
-    "Extra-error-data":string
+    "MESSAGE":string,
+    "STATUS":boolean,
+    "TYPE":string
+    "EXTRA_DATA":object
 }
 
 const ErrorHandlerElement = () => {
-    const [data, setData] = useState<string | null>(null);
-    const [obj, setObj] = useState<errorObj | null>(null);
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-    
-    const start = () => {
-      if (textareaRef.current) {
-        const textareaValue = textareaRef.current.value;
-        const msg = {"Message":textareaValue}
-        fetcherPOST(msg)(`/api/data/set-config`)
+    const [data, setData] = useState<errorObj | null>(null);
+    const textareaRef1 = useRef<HTMLTextAreaElement>(null);
+    const textareaRef2 = useRef<HTMLTextAreaElement>(null);
+    const [lastResponse, setLastResponse] = useState("");
+    const [appKeyModalSelected, setappKeyModalSelected] = useState(1);
+
+    const start = async () => {
+      if (textareaRef1.current && textareaRef2.current) {
+        const textareaValue1 = textareaRef1.current.value;
+        const textareaValue2 = textareaRef2.current.value;
+        const msg = {"config":{"prov_db":textareaValue1,"local_node":textareaValue2}}
+        const response = await fetcherPOST(msg)(`/config`);
+        console.log(response)
+        setLastResponse(response["message"]);
+      }
+    };
+
+    const handleappKeyModal = (option: React.SetStateAction<number>) => {
+      setappKeyModalSelected(option);
+      const contentFirst = document.getElementById(`ErrorModal-1`);
+      const contentSecond = document.getElementById(`ErrorModal-2`);
+      switch (option) {
+        case 1:
+          contentFirst?.classList.remove("hidden");
+          contentSecond?.classList.add("hidden");
+          break;
+        case 2:
+          contentFirst?.classList.add("hidden");
+          contentSecond?.classList.remove("hidden");
+          break;
       }
     };
 
@@ -34,31 +57,45 @@ const ErrorHandlerElement = () => {
         fetchData();
       }, []);
     
-      useEffect(() => {
-        if (data) {
-          try {
-            const json = JSON.parse(data);
-            setObj(json);
-          } catch (err) {
-            console.log(err);
-          }
-        }
-      }, [data]);
-  
     return (
-    <div>{obj && obj["Error-status"] && <div className="flex flex-col h-full"><button className="btn" onClick={()=>document.getElementById('error_modal').showModal()}>Fix error</button>
+    <div>{data && data["STATUS"] && <div className="flex flex-col h-full"><button className="btn" onClick={()=>document.getElementById('error_modal').showModal()}>Fix error</button>
     <dialog id="error_modal" className="modal" open>
       <div className="modal-box w-2/3 h-2/3 max-w-fit max-h-fit">
-            {obj.Error == "config" && <div>
+            {data.TYPE == "CONFIG" && <div>
                 <h3 className="font-bold text-lg">Setting up config files</h3>
                 <div>
-                It seems that `meshctl` cannot locate or open the configuration files. This could be due to either the files not existing or incorrect JSON formatting. 
+                It seems that MeshControl cannot locate or open the configuration files. This could be due to either the files not existing or incorrect JSON formatting. 
                 <br></br>
-                As a result, the application won't be able to communicate or function properly without the correct configuration files.
-                <br></br>
-                Would you like to create empty configuration files?
+                Would you like to create a new configuration?
                 </div>
-                <textarea ref={textareaRef} className="textarea textarea-bordered w-full h-full flex-grow resize-y min-h-56">{obj["Extra-error-data"]}</textarea>
+                <ul className="menu menu-vertical lg:menu-horizontal bg-base-200 rounded-box w-full mt-2 mb-2">
+                    <li
+                      className={`m-auto ${
+                        appKeyModalSelected === 1
+                          ? "border-b-2 border-neutral-700"
+                          : ""
+                      }`}
+                      onClick={() => handleappKeyModal(1)}
+                    >
+                      <a>prov_db.json</a>
+                    </li>
+                    <li
+                      className={`m-auto ${
+                        appKeyModalSelected === 2
+                          ? "border-b-2 border-neutral-700"
+                          : ""
+                      }`}
+                      onClick={() => handleappKeyModal(2)}
+                    >
+                      <a>local_node.json</a>
+                    </li>
+                  </ul>
+                <div id="ErrorModal-1" className="space-y-2">
+                <textarea ref={textareaRef1} className="textarea textarea-bordered w-full h-full flex-grow resize-y min-h-56">{data["EXTRA_DATA"]["prov_db.json"]}</textarea>
+                </div>
+                <div id="ErrorModal-2" className="hidden space-y-2">
+                <textarea ref={textareaRef2} className="textarea textarea-bordered w-full h-full flex-grow resize-y min-h-56">{data["EXTRA_DATA"]["local_node.json"]}</textarea>
+                </div>
                 </div>}
                 
         <div className="modal-action">
@@ -73,6 +110,7 @@ const ErrorHandlerElement = () => {
         </div>
       </div>
     </dialog></div>}
+    {lastResponse && <Toast message={lastResponse} timeout={10000}></Toast>}
     </div>
   )
 }

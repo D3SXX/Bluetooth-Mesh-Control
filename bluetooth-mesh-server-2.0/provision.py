@@ -1,7 +1,7 @@
 import time
 
 from flask import Blueprint, current_app, jsonify, make_response, request
-from process import write_to_meshctl
+from utils.process import write_to_meshctl
 
 
 

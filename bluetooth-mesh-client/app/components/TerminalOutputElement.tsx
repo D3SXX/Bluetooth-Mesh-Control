@@ -40,12 +40,10 @@ const TerminalOutputElement = () => {
                 {(terminalData && terminalData["PROVISION_ACTIVE"]) && <div className='items-center flex ml-auto'>Provisioning<span className="loading loading-spinner loading-md ml-2"></span></div>}
             </div>
             <div className="collapse-content">
-                <ul className='overflow-auto bg-black rounded-lg h-72' ref={terminalOutputRef}>
-                    <div className='ml-2 mt-1'>
+                <ul className='overflow-auto bg-black rounded-lg h-72 p-2' ref={terminalOutputRef}>
                         {terminalData != undefined && terminalData["PROVISION_OUTPUT"] != undefined && terminalData["PROVISION_OUTPUT"].map((line, index) => (
-                            <li className="leading-tight text-lg text-white font-mono" key={index}>{line}</li>
+                            <li className="leading-tight text-lg text-white font-mono break-all whitespace-normal" key={index}>{line}</li>
                         ))}
-                    </div>
                 </ul>
             </div>
         </div>

@@ -99,7 +99,7 @@ const ProvisionElement = () => {
                     </div>
                     <dialog id={`modal-${index}`} className="modal">
                       <div className="modal-box">
-                        <h3 className="font-bold text-lg"></h3>
+                        <h3 className="font-bold text-lg">Warning</h3>
                         <div className="py-4 text-lg font-normal">
                           <div className='mb-2'>Do you want to provision this node?</div>
                           <div>

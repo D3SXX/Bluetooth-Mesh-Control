@@ -43,8 +43,6 @@ def start_meshctl(app):
     except FileNotFoundError:
         print("meshctl command not found. Make sure it's installed and accessible.")
 
-
-
 def write_to_meshctl(command):
     if process and process.poll() is None:
         process.stdin.write(command + "\n")

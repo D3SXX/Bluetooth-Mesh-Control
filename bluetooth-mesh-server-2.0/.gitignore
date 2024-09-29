@@ -3,3 +3,4 @@ __pycache__/
 *.py[cod]
 *$py.class
 sig_data/
+resources/sig_data/

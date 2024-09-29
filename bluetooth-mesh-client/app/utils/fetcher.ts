@@ -29,3 +29,12 @@ export const fetcherDELETE = async (url: string) => {
   const response = await res.json();
   return response;
 };
+
+export const fetcherPUT = async (url: string) => {
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
+  const res = await fetch(apiUrl, {
+    method: "PUT",
+  });
+  const response = await res.json();
+  return response;
+};

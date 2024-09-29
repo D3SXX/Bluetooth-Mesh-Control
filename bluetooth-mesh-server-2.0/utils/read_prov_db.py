@@ -41,18 +41,16 @@ def default_node():
         "sequenceNumber": "unknown"
     }
 
-def load_config(current_app):
+def load_config():
         home_path = os.path.expanduser('~')
         meshctl_path = home_path + "/.config/meshctl/"
         get_sig_data()
-        try:
-            with open(meshctl_path+"prov_db.json","r",encoding="utf-8") as file:
-                return json.loads(file.read())
-        except Exception:
-               current_app.config["CONFIG"]["ERROR"] = True  
+        with open(meshctl_path+"prov_db.json","r",encoding="utf-8") as file:
+                obj = json.loads(file.read())
+                return obj
 
-def get_keys_data(current_app):
-        keys_info = load_config(current_app)
+def get_keys_data():
+        keys_info = load_config()
         returned_obj = {}
         returned_obj["APPKEYS"] = keys_info["appKeys"] if "appKeys" in keys_info else []
         returned_obj["NETKEYS"] = keys_info["netKeys"] if "netKeys" in keys_info else []
@@ -88,9 +86,12 @@ def get_keys_data(current_app):
                                         }                                                                              
         return returned_obj
 
-def get_nodes_data(current_app):
-        mesh_info = load_config(current_app)
-        returned_obj = {}
+def get_nodes_data():
+        try:
+                mesh_info = load_config()
+        except Exception as e:
+                return {"STATUS":False,"MESSAGE":str(e),"TYPE":"CONFIG"}
+        returned_obj = {"STATUS":True}
         returned_obj["nodes"] = mesh_info["nodes"] if "nodes" in mesh_info else []
         returned_obj["appKeys"] = mesh_info["appKeys"] if "appKeys" in mesh_info else []
         returned_obj =  add_company(returned_obj)
@@ -166,10 +167,9 @@ def get_sig_data():
         
         title_arr = ["company_identifiers","mmdl_model_uuids","mesh_model_uuids"]
         link_arr = ["https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/company_identifiers/company_identifiers.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mmdl_model_uuids.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mesh_model_uuids.yaml"]
-        current_time = time.time()
 
-        if not os.path.isdir("resources/sig_data"):
-                os.mkdir("resources/sig_data")
+        if not os.path.exists("resources/sig_data"):
+                os.makedirs("resources/sig_data")
                 print("Created folder for sig_data")
         
         time_record = {}

@@ -12,8 +12,8 @@ const StatusPage = () => {
   const elements = [(<DataElement key="element_1" apiUrl="server" query='VERSION' interval = {0}></DataElement>),(<DataElement key="element_2" apiUrl="server" query='MESHCTL' interval = {0}></DataElement>),(<ListElement key="element_3" apiUrl='controller' query='LIST' postKey="address" interval = {2}></ListElement>),(<RegularButton key="element_4" apiUrl='config?config=PROV_DB, LOCAL_NODE' query='NODES' text='Request' style='border border-base-300 btn w-full'></RegularButton>)]
   const renderedElements = titles.map((title, index) => (
     <div className="stat" key={`renderedElement-${index}`}>
-      <div className="stat-title font-bold ">{title}</div>
-      <div className="stat-desc">{elements[index]}</div>
+      <div className="stat-title font-bold text-base-content">{title}</div>
+      <div className="stat-desc text-base-content">{elements[index]}</div>
     </div>
   ));
   return (

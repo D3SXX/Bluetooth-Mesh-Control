@@ -2,8 +2,8 @@ from flask import Blueprint, current_app, jsonify, make_response, request
 import time
 import re
 
-from process import write_to_meshctl
-from custom_process import start_custom_meshctl,stop_custom_process, write_to_custom_meshctl
+from utils.process import write_to_meshctl
+from utils.custom_process import start_custom_meshctl,stop_custom_process, write_to_custom_meshctl
 from provision import scan_unprovisioned 
 
 controller_bp = Blueprint('controller_bp', __name__)
@@ -61,6 +61,9 @@ def handle_config():
 def update_controller():
     if current_app.config['CONFIG']['PROCESS']['STATUS'] == True:
         return
+    if current_app.config['CONTROLLER']['PROCESS']['STATUS'] == True:
+        return
+    current_app.config['CONTROLLER']['PROCESS']['STATUS'] = True
     current_app.config['TERMINAL_SESSIONS']['CONTROLLER']['OUTPUT'].clear()
     if current_app.config['TERMINAL_SESSIONS']['CONTROLLER']["STATUS"] is not True:
         start_custom_meshctl("CONTROLLER")
@@ -95,3 +98,4 @@ def update_controller():
             match = re.search(controller_list_pattern, line)
             current_app.config['CONTROLLER']['LIST'][match.group(1)] = match.group(2)
     current_app.config['CONTROLLER']["POWER"] = True if current_app.config['CONTROLLER']['DEFAULT_DATA']["Powered"] == "yes" else False
+    current_app.config['CONTROLLER']['PROCESS']['STATUS'] = False

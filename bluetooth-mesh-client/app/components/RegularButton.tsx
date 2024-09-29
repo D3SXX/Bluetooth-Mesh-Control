@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Toast from "./Toast";
-import { fetcherPOST, fetcherDELETE, fetcherGET } from "../utils/fetcher";
+import { fetcherPOST, fetcherDELETE, fetcherGET, fetcherPUT } from "../utils/fetcher";
 import { isEmpty } from "../utils/isEmpty";
 
 const RegularButton = ({
@@ -10,6 +10,7 @@ const RegularButton = ({
   text = "",
   style = "btn ml-2",
   uniqueId,
+  method = "DELETE"
 }: {
   apiUrl: string;
   query?: string;
@@ -17,6 +18,7 @@ const RegularButton = ({
   text?: string;
   style: string;
   uniqueId: string;
+  method?: string;
 }) => {
   const [outputData, setOutputData] = useState<string | null>(null);
   const [isCalled, setIsCalled] = useState<boolean>(false);
@@ -31,7 +33,12 @@ const RegularButton = ({
       setIsCalled(true);
       let data;
       if (await isEmpty(requestData)) {
-        data = await fetcherDELETE(apiUrl);
+        if (method === "DELETE"){
+          data = await fetcherDELETE(apiUrl);
+        }
+        else{
+          data = await fetcherPUT(apiUrl);
+        }
       } else {
         data = await fetcherPOST(requestData)(apiUrl);
       }

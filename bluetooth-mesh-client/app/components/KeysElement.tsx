@@ -219,7 +219,7 @@ const KeysElement = () => {
             </button>
             <dialog id="appKeyConfigModal" className="modal">
               <div className="modal-box min-h-56">
-                <h3 className="font-bold text-lg">
+                <h3 className="font-bold text-lg text-center">
                   Application keys configuration
                   <ul className="menu menu-vertical lg:menu-horizontal bg-base-200 rounded-box w-full mt-2">
                     <li
@@ -280,14 +280,10 @@ const KeysElement = () => {
                       </select>
                       <RegularButton
                         style="mt-2 w-full btn bg-base-100 border border-base-300"
-                        apiUrl="keys"
-                        requestData={{
-                          "add_appkey":{
-                          key: inputAppKeyAddValue,
-                          boundNetKey: selectedNetKeyBound,
-                        }}}
+                        apiUrl={`keys?key=${inputAppKeyAddValue}&bound=${selectedNetKeyBound}`}
                         text="Add key"
                         uniqueId="content-1"
+                        method="PUT"
                       ></RegularButton>
                     </div>
                   </div>
@@ -348,7 +344,7 @@ const KeysElement = () => {
                         <RegularButton
                           style="mt-2 w-full btn bg-base-100 border border-base-300"
                           apiUrl="keys"
-                          requestData={{"edit-key":{
+                          requestData={{"edit_key":{
                             index: selectedAppKeyEdit,
                             key: inputAppKeyEditValue,
                             boundNetKey: selectedBoundNetKeyEdit,
@@ -373,7 +369,7 @@ const KeysElement = () => {
                         </option>
                         {obj.APPKEYS &&
                           obj.APPKEYS.map((appKey, index) => (
-                            <option value={appKey.key} key={`content3-${appKey.key}-remove`}>
+                            <option value={appKey.index} key={`content3-${appKey.key}-remove`}>
                               Key index {appKey.index}: {appKey.key}
                             </option>
                           ))}
@@ -381,7 +377,7 @@ const KeysElement = () => {
                       {selectedAppKeyRemove && (
                         <RegularButton
                           style="mt-2 w-full btn bg-base-100 border border-base-300"
-                          apiUrl={`keys?appkey=${selectedAppKeyRemove}`}
+                          apiUrl={`keys?index=${selectedAppKeyRemove}`}
                           text="Remove key"
                           uniqueId="content-3"
                         ></RegularButton>
