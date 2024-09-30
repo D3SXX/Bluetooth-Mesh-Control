@@ -8,7 +8,7 @@ keys_bp = Blueprint('keys_bp', __name__)
 @keys_bp.route('/keys', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def handle_keys():
     if request.method == 'GET':
-        current_app.config['KEYS'] = get_keys_data(current_app)
+        current_app.config['KEYS'] = get_keys_data()
         status = request.args.get('query')
         if status is None:
             return jsonify(current_app.config['KEYS']), 200

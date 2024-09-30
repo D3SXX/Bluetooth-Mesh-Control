@@ -48,14 +48,18 @@ sudo apt install python3-yaml python3-flask-cors python3-requests
 
 #### Running the Application
 
-After setting up, run the following scripts in separate terminal windows:
+After setting up, run the following script(s):
 
 Start the client:
 
 ```ruby
 sh ./start_only_client.sh
 ```
-Start the server (in different terminal):
+
+
+Either click three dot menu on the upper right side of navigation bar and start backend
+
+Or run the script (in different terminal):
 
 ```ruby
 sh ./start_only_server.sh

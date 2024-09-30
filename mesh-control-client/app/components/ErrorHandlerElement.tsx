@@ -58,7 +58,9 @@ const ErrorHandlerElement = () => {
       }, []);
     
     return (
-    <div>{data && data["STATUS"] && <div className="flex flex-col h-full"><button className="btn" onClick={()=>document.getElementById('error_modal').showModal()}>Fix error</button>
+    <div>{data && data["STATUS"] && <div className="flex flex-col h-full"><button className="btn" onClick={() => {
+      const dialog = document.getElementById('error_modal') as HTMLDialogElement | null; dialog?.showModal()}
+  }>Fix error</button>
     <dialog id="error_modal" className="modal" open>
       <div className="modal-box w-2/3 h-2/3 max-w-fit max-h-fit">
             {data.TYPE == "CONFIG" && <div>

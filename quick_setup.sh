@@ -7,7 +7,7 @@ if [ -d ./Bluetooth-Mesh-Control ]
         git clone https://github.com/D3SXX/Bluetooth-Mesh-Control.git
 fi
 	
-cd Bluetooth-Mesh-Control/bluetooth-mesh-client
+cd Bluetooth-Mesh-Control/mesh-control-client
 npm install
 
 echo "Done!"

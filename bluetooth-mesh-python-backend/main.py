@@ -16,7 +16,7 @@ CORS(app)
 
 app.config['SERVER'] = {
     "STATUS": None,
-    "VERSION": "0.19",
+    "VERSION": "1.0 Preview",
     "ALLOW_PROCESSES":True,
     "MESHCTL": None,
     "ERROR":{"STATUS":False,

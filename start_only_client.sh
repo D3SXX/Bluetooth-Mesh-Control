@@ -1,3 +1,3 @@
 echo "Trying to start Next js client"
-cd bluetooth-mesh-client
+cd mesh-control-client
 npm run dev
