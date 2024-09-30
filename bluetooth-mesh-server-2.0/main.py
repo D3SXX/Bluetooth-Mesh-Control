@@ -15,8 +15,9 @@ app = Flask(__name__)
 CORS(app)
 
 app.config['SERVER'] = {
-    "STATUS": "Server is running",
+    "STATUS": None,
     "VERSION": "0.19",
+    "ALLOW_PROCESSES":True,
     "MESHCTL": None,
     "ERROR":{"STATUS":False,
              "MESSAGE":None,
@@ -84,7 +85,25 @@ app.register_blueprint(controller_bp)
 app.register_blueprint(provision_bp)
 app.register_blueprint(keys_bp)
 
+@app.before_request
+def initialize_meshctl():
+    if app.config['SERVER']['STATUS'] is None:
+        start_meshctl(app)
+        app.config['SERVER']['STATUS'] = "Server is running"
+
+@app.route('/main', methods=['POST'])
+def main():
+    req_data = request.get_json()
+    state = req_data.get("STATUS")
+    if state is not None:
+        app.config['SERVER']['ALLOW_PROCESSES'] = not state
+        if state:
+            start_meshctl(app) 
+        else:
+            stop_process() 
+        return jsonify({"message": f"meshctl process is set to {state}"}), 200
+    return jsonify({"message": "Main request is empty or not found"}), 400
+
 if __name__ == "__main__":
-    start_meshctl(app)
     app.run(host="0.0.0.0", port=10000, debug=True)
     

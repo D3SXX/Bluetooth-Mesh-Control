@@ -1,40 +1,63 @@
-// backend-control.ts
+import { spawn } from "child_process";
+import { NextApiRequest, NextApiResponse } from "next";
 
-import { exec, execSync } from 'child_process';
+if (typeof global.pythonProcess === 'undefined') {
+  global.pythonProcess = null;
+  global.pythonProcessPID = null;
+}
 
-let pythonProcess = null;
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-export default function handler(req, res) {
-  const { action } = req.body; 
-
-  const pythonScriptPath = '../bluetooth-mesh-server-2.0/main.py';
-
-  if (action === 'start') {
-    if (pythonProcess) {
-      return res.status(400).json({ message: 'Python script is already running' });
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  if (req.method === 'GET') {
+    let query = req.query['query'];
+    if (query === 'STATUS') {
+      return res.status(200).json({ STATUS: global.pythonProcess != null, PID: global.pythonProcess?.pid });
     }
+  }
 
-    pythonProcess = exec(`python3 ${pythonScriptPath}`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error starting Python script: ${stderr}`);
-        pythonProcess = null;
-        return res.status(500).json({ message: stderr });
+  if (req.method === 'POST') {
+    const { STATUS } = req.body;
+
+    if (STATUS === true) {
+      if (global.pythonProcess) {
+        return res.status(400).json({ message: 'Python script is already running' });
       }
-      console.log(`Python script output: ${stdout}`);
-    });
 
-    return res.status(200).json({ message: 'Python script started' });
+      const pythonScriptPath = '../bluetooth-mesh-server-2.0/main.py';
+      
+      global.pythonProcess = spawn('python3', [pythonScriptPath]);
+      global.pythonProcessPID = global.pythonProcess.pid;
 
-  } else if (action === 'stop') {
-    if (!pythonProcess) {
-      return res.status(400).json({ message: 'Python script is not running' });
+      global.pythonProcess.stdout.on('data', (data) => {
+        console.log(`${data}`);
+      });
+
+      global.pythonProcess.stderr.on('data', (data) => {
+        console.error(`${data}`);
+      });
+
+      global.pythonProcess.on('exit', (code) => {
+        global.pythonProcessPID = null;
+      });
+
+      return res.status(200).json({ message: 'Python backend started' });
+    } else if (STATUS === false) {
+      if (!global.pythonProcess) {
+        return res.status(400).json({ message: 'Python backend is not running' });
+      }
+
+      global.pythonProcess.kill('SIGINT');
+      global.pythonProcess = null;
+      global.pythonProcessPID = null;
+
+      return res.status(200).json({ message: 'Python backend stopped' });
     }
-
-    pythonProcess.kill('SIGKILL');
-    pythonProcess = null;
-    return res.status(200).json({ message: 'Python script stopped' });
-
-  } else {
-    return res.status(400).json({ message: 'Invalid action' });
   }
 }

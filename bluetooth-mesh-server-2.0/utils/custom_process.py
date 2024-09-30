@@ -17,7 +17,6 @@ def terminal_read_output(process, app, caller):
             past_output = output
             with app.app_context():
                 current_app.config['TERMINAL_SESSIONS'][caller]['OUTPUT'].append(cleared_output)
-            #print(output)
 
 def stop_custom_process():
     try:
@@ -28,8 +27,10 @@ def stop_custom_process():
     except Exception as e:
         print(f"Got an error for stop_process(): {e}")
 
-def start_custom_meshctl(caller):
+def start_custom_meshctl(caller, allow):
     global process, process_thread
+    if allow is False:
+        return
     try:
         process = subprocess.Popen(["meshctl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         process_thread = threading.Thread(target=terminal_read_output, args=(process, current_app._get_current_object(), caller))

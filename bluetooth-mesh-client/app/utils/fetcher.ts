@@ -1,5 +1,5 @@
-export const fetcherGET = async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
+export const fetcherGET = async (url: string, port: number = 10000) => {
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:${port}/${url}`;
   const res = await fetch(apiUrl, {
     method: "GET",
   });
@@ -8,8 +8,8 @@ export const fetcherGET = async (url: string) => {
   return response;
 };
 
-export const fetcherPOST = (requestData: object) => async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
+export const fetcherPOST = (requestData: object) => async (url: string, port: number = 10000) => {
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:${port}/${url}`;
   const res = await fetch(apiUrl, {
     method: "POST",
     body: JSON.stringify(requestData),

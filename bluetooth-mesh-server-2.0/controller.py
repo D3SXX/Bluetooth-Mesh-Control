@@ -58,6 +58,12 @@ def handle_config():
             }  
         return jsonify(response), 201
 
+@controller_bp.route('/controller/stop', methods=['POST'])
+def stop_meshctl():
+    """Endpoint to stop the controller meshctl process"""
+    stop_custom_process() 
+    return jsonify({"message": "meshctl process stopping"}), 200
+
 def update_controller():
     if current_app.config['CONFIG']['PROCESS']['STATUS'] == True:
         return
@@ -66,7 +72,7 @@ def update_controller():
     current_app.config['CONTROLLER']['PROCESS']['STATUS'] = True
     current_app.config['TERMINAL_SESSIONS']['CONTROLLER']['OUTPUT'].clear()
     if current_app.config['TERMINAL_SESSIONS']['CONTROLLER']["STATUS"] is not True:
-        start_custom_meshctl("CONTROLLER")
+        start_custom_meshctl("CONTROLLER", current_app.config['SERVER']['ALLOW_PROCESSES'])
         current_app.config['TERMINAL_SESSIONS']['CONTROLLER']["STATUS"] = True
     write_to_custom_meshctl(f"select {current_app.config['CONTROLLER']['DEFAULT'] or ""}\nlist\nshow\n")
     start = time.time()

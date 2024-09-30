@@ -7,6 +7,7 @@ import Link from 'next/link';
 import ReactIcon from './ReactIcon';
 import IconElement from './IconElement';
 import ErrorHandlerElement from './ErrorHandlerElement';
+import CheckBoxElement from './CheckBoxElement';
 
 const NavBar = () => {
   const elements = [(<DataElement key="1" apiUrl='server' query='STATUS' interval = {0} text='MeshControl'></DataElement>),(<DataElement key="2" apiUrl='controller' query='DEFAULT' interval = {2} text="Default Adapter: "></DataElement>)];
@@ -26,9 +27,12 @@ const NavBar = () => {
   <div className="flex-none">
     <div className='tooltip tooltip-bottom' data-tip="Unprovisioned scan status"><IconElement apiUrl='provision' query='SCAN_ACTIVE' postKey='discovery' iconOn='/icons/bluetooth.png' iconOff='/icons/bluetooth.png' enableBlink={true}></IconElement></div>
     <div className='tooltip tooltip-bottom' data-tip="Toggle power"><IconElement apiUrl='controller' query='POWER' postKey='power' iconOn='/icons/power.png' iconOff='/icons/power.png' enableBlink={false}></IconElement></div>  
-    <button className="btn btn-square btn-ghost">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
-    </button>
+    <div className="dropdown dropdown-end">
+  <div tabIndex={0} role="button" className="btn btn-square btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg></div>
+  <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow mt-3">
+    <li><CheckBoxElement apiUrl="api/backend-control" query="STATUS" postKey="STATUS" text="Enable backend"></CheckBoxElement></li>
+  </ul>
+</div>
   </div>
   <ErrorHandlerElement></ErrorHandlerElement>
 </div>

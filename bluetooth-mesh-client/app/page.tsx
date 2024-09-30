@@ -8,7 +8,7 @@ export default function Home() {
       { name: "Provision", link: "/provision", icon: "/icons/provision.png" },
       { name: "Nodes", link: "/nodes", icon: "/icons/nodes.png"},
       { name: "Keys", link: "/keys", icon: "/icons/keys.png"},
-      { name: "Status", link: "/status", icon: "/icons/status.png"},
+      { name: "Status", link: "/status", icon: "/icons/stats.png"},
     ],
   };
 
