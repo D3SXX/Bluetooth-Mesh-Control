@@ -48,24 +48,13 @@ sudo apt install python3-yaml python3-flask-cors python3-requests
 
 #### Running the Application
 
-After setting up, run the following script(s):
+After setting up, run the following script:
 
-Start the client:
 
 ```ruby
-sh ./start_only_client.sh
+sh ./start_mesh_control.sh
 ```
-
-
-Either click three dot menu on the upper right side of navigation bar and start backend
-
-Or run the script (in different terminal):
-
-```ruby
-sh ./start_only_server.sh
-```
-
-Once both scripts are running, open your web browser and navigate to [IP address]:3000 to access the web app. If you are running the scripts on the same machine, use:
+Once the script is running, open your web browser and navigate to [IP address]:3000 to access the web app. If you are running the scripts on the same machine, use:
 
 ```ruby
 localhost:3000

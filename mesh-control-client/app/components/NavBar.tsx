@@ -2,7 +2,6 @@ import React from 'react'
 import DataElement from "@/app/components/DataElement";
 import "@/app/components/SideBar"
 import SideBar from '@/app/components/SideBar';
-import ActionButton from './ActionButton';
 import Link from 'next/link';
 import ReactIcon from './ReactIcon';
 import IconElement from './IconElement';
@@ -10,8 +9,8 @@ import ErrorHandlerElement from './ErrorHandlerElement';
 import CheckBoxElement from './CheckBoxElement';
 
 const NavBar = () => {
-  const elements = [(<DataElement key="1" apiUrl='server' query='STATUS' interval = {0} text='MeshControl'></DataElement>),(<DataElement key="2" apiUrl='controller' query='DEFAULT' interval = {2} text="Default Adapter: "></DataElement>)];
-  const linksForElements = ["","/status"];
+  const elements = [(<DataElement key="1" apiUrl='server' query='NAME' interval = {0} text='MeshControl' style='text-[#0082fc]'></DataElement>),(<DataElement key="2" apiUrl='controller' query='DEFAULT' interval = {2} text="(Server is offline)"></DataElement>)];
+  const linksForElements = ["/","/status"];
   return (
     
 

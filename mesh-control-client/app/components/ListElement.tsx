@@ -25,13 +25,12 @@ const ListElement = ({ apiUrl, interval, postKey, query="", text="" }: { apiUrl:
       returnData = response[query]
   };
   
-  if (error) return <div>failed to load</div>
+  if (error) return <div></div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
   let returnData = data[query];
 
   const renderedElements = Object.entries(returnData).map(([key, value]) => (
-          <option key={key} value={key} selected={value.includes("[default]")} disabled={value.includes("[default]")}>{key} ({value})</option>
-          
+          <option key={key} value={key} selected={(value as string).includes("[default]")} disabled={(value as string).includes("[default]")}>{key} ({(value as string)})</option>
       ));
 
   return <div><select className="select select-bordered w-full max-w-xs" onChange={handleSelectChange}>{renderedElements}</select></div>

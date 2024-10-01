@@ -5,10 +5,12 @@ import { fetcherGET, fetcherPOST } from "../utils/fetcher";
 import Toast from "./Toast";
 
 interface errorObj{
-    "MESSAGE":string,
-    "STATUS":boolean,
-    "TYPE":string
-    "EXTRA_DATA":object
+    MESSAGE:string,
+    STATUS:boolean,
+    TYPE:string
+    EXTRA_DATA: {
+      [key: string]: string | undefined;
+    };
 }
 
 const ErrorHandlerElement = () => {
@@ -24,7 +26,6 @@ const ErrorHandlerElement = () => {
         const textareaValue2 = textareaRef2.current.value;
         const msg = {"config":{"prov_db":textareaValue1,"local_node":textareaValue2}}
         const response = await fetcherPOST(msg)(`/config`);
-        console.log(response)
         setLastResponse(response["message"]);
       }
     };

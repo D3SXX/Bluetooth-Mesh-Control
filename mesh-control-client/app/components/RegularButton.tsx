@@ -48,7 +48,7 @@ const RegularButton = ({
 
       if (data["status"] === "success") {
         pollProcessStatus();
-        document.getElementById(`modal-${uniqueId}-${apiUrl}-${text}`)?.showModal()
+        (document.getElementById(`modal-${uniqueId}-${apiUrl}-${text}`) as HTMLFormElement).showModal()
       }
 
       setProgressValue(0);

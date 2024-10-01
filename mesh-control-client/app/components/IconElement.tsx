@@ -15,7 +15,7 @@ const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { a
         }        
 
         const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: 0 });
-        if (error) return <div>failed to load</div>
+        if (error) return <div></div>
         if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
 
         let returnData = data[query];    
@@ -31,7 +31,6 @@ const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { a
                                 return <div>Failed to parse data</div>;
                               }   
                         setForceState(state)
-                        console.log(`Forcing icon button to ${state}`)
                 } catch (error) {
                         console.error('Error:', error);
                 }

@@ -91,7 +91,7 @@ const KeysElement = () => {
   const { data, error, isLoading } = useSWR(request, fetcherGET, {
     refreshInterval: 0,
   });
-  if (error) return <div>failed to load</div>;
+  if (error) return <div></div>;
   if (isLoading)
     return (
       <div>
@@ -102,8 +102,6 @@ const KeysElement = () => {
   let obj: DataInterface;
   obj = data;
   let renderedElements;
-
-  console.log(JSON.stringify(data));
 
   if ("APPKEYS" in obj) {
     renderedElements = (
@@ -190,7 +188,7 @@ const KeysElement = () => {
                                       key={`subscribe_${bindIndex}_${addressIndex}`}
                                     >
                                       {address}
-                                      {addressIndex <
+                                      {obj.SUBSCRIBE[key].ADDRESS_LIST && addressIndex <
                                       obj.SUBSCRIBE[key].ADDRESS_LIST.length - 1
                                         ? ", "
                                         : ""}
@@ -211,8 +209,9 @@ const KeysElement = () => {
           <div className="join-item">
             <button
               className="btn border border-base-300 bg-base-100 w-full"
-              onClick={() =>
-                document.getElementById("appKeyConfigModal")?.showModal()
+              onClick={() => {          
+                (document.getElementById('appKeyConfigModal') as HTMLDialogElement).showModal()
+              }
               }
             >
               Edit keys configuration

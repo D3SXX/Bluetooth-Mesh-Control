@@ -11,6 +11,9 @@ interface UnprovisionedNode {
   address: string;
   name: string;
 }
+interface NodesObj {
+  [UUID: string]: UnprovisionedNode;
+}
 
 const ProvisionElement = () => {
   const [scanStatus, setScanStatus] = useState(false);
@@ -33,10 +36,10 @@ const ProvisionElement = () => {
           let obj;
           try {
 
-            const nodesObj = data["UNPROVISIONED_NODES"]
-            const nodesArray = Object.entries(nodesObj).map(([UUID, nodeInfo]) => ({
+            const nodesObj : NodesObj = data["UNPROVISIONED_NODES"]
+            const nodesArray = Object.entries(nodesObj).map(([UUID, nodeInfo]: [string, UnprovisionedNode]) => ({
+              ...nodeInfo,
               UUID,
-              ...nodeInfo
             }));
             setUnprovisionedNodes(nodesArray);
             setScanStatus(data["SCAN_ACTIVE"]);
@@ -85,12 +88,12 @@ const ProvisionElement = () => {
           </div>
         </div>
         <div className="collapse-content">
-          {scanStatus && unprovisionedNodes.length <= 0 && <div className='text-gray-500 '>Scanning for unprovisioned nodes...</div>}
+          {scanStatus && unprovisionedNodes.length <= 0 && <div className='text-gray-500 '>Scanning for unprovisioned nodes... <br></br>(Try to toggle power if the scan cannot find node)</div>}
           <div className="rounded-lg h-60">
             {unprovisionedNodes.length > 0 ? (
               <div>
                 {unprovisionedNodes.map((node, index) => (
-                  <div key={index} onClick={() => document.getElementById(`modal-${index}`).showModal()} className="btn h-fit btn-ghost stats shadow w-full mb-1 mt-1">
+                  <div key={index} onClick={() => (document.getElementById(`modal-${index}`) as HTMLFormElement).showModal()} className="btn h-fit btn-ghost stats shadow w-full mb-1 mt-1">
                     <div className="join join-horizontal flex items-center flex-wrap justify-center text-center ">
                       <div className="stat join-item w-full sm:w-auto">Name:<br/><div className='font-normal mt-1'>{node.name}</div></div>
                       <div className="stat join-item w-full sm:w-auto">Address:<br/><div className='font-normal mt-1'>{node.address}</div></div>
@@ -116,7 +119,11 @@ const ProvisionElement = () => {
                 ))}
               </div>
             ) : (
-              <div className='text-gray-500 animate-pulse'>Unprovisioned nodes list is empty.</div>
+              !scanStatus && (
+                <div className='text-neutral-content'>
+                  Unprovisioned nodes list is is empty
+                </div>
+              )
             )}
           </div>
         </div>

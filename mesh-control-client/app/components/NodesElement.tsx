@@ -88,57 +88,56 @@ const tooltipText = {
 
 const NodesElement = () => {
   // For binding (bind <ele_idx> <app_idx> <mod_id> [cid])
-  const [selectedBindElementIndex, setSelectedBindElementIndex] = useState(-1);
-  const [selectedBindAppKeyIndex, setSelectedBindAppKeyIndex] = useState(null);
-  const [selectedBindModelValue, setSelectedBindModelValue] = useState(null);
+  const [selectedBindElementIndex, setSelectedBindElementIndex] = useState<{ [key: number]: number }>({});
+  const [selectedBindAppKeyIndex, setSelectedBindAppKeyIndex] = useState<{ [key: number]: number }>({});
+  const [selectedBindModelValue, setSelectedBindModelValue] = useState<{ [key:number]: string}>({});
 
   // For publishing (pub-set <ele_addr> <pub_addr> <app_idx> <per (step|res)> <re-xmt (cnt|per)> <mod id> [cid])
   const [selectedPublishElementIndex, setSelectedPublishElementIndex] =
-    useState(null);
+    useState<{ [key:number]: number}>({});
   const [inputPublishAddressValue, setInputPublishAddressValue] =
-    useState(null);
+    useState<{ [key: number]: string}>({});
   const [selectedPublishAppKeyIndex, setSelectedPublishAppKeyIndex] =
-    useState(null);
+  useState<{ [key:number]: number}>({});
   const [inputPublishPublicationPeriod, setInputPublishPublicationPeriod] =
-    useState(0);
+    useState<{ [key:number]: number}>({});
   const [inputPublishRetransmissionCount, setInputPublishRetransmissionCount] =
-    useState(0);
+    useState<{ [key: number]: number}>({});
   const [selectedPublishModelValue, setSelectedPublishModelValue] =
-    useState(null);
+    useState<{ [key:number]: string}>({});
 
-  //const [resetNodeState, setResetNodeState] = useState(false);
-  const [allowAddressInput, setAllowAddressInput] = useState(false);
+  const [allowAddressInput, setAllowAddressInput] = useState<{ [key:number]: boolean}>({});
   const [suggestAddressInput, setSuggestAddressInput] =
-    useState("Type here...");
+    useState<{[key:number]: string}>({});
 
-  const handleAddressSelection = (e) => {
-    console.log(addressTypes[e.target.value], e.target.value);
+  const handleAddressSelection = (e: React.ChangeEvent<HTMLSelectElement>, nodeIndex: number) => {
+    
     switch (e.target.value) {
       case "0":
-        setAllowAddressInput(false);
-        setInputPublishAddressValue("0xFFFF");
+        setAllowAddressInput((prevState => ({...prevState, [nodeIndex] : false})));
+        setInputPublishAddressValue(prevState => ({...prevState, [nodeIndex] : "0xFFFF"}));
         return;
       case "1":
-        setSuggestAddressInput("Type here (e.g. 0xC000)");
-        setInputPublishAddressValue("0xC000");
+        setSuggestAddressInput(prevState => ({...prevState, [nodeIndex] : "Type here (e.g. 0xC000)"}));
+        setInputPublishAddressValue(prevState => ({...prevState, [nodeIndex] : "0xC000"}));
         break;
       case "2":
-        setSuggestAddressInput("Type here (e.g. 0x0100)");
-        setInputPublishAddressValue("0x0100");
+        setSuggestAddressInput(prevState => ({...prevState, [nodeIndex] : "Type here (e.g. 0x0100)"}));
+        setInputPublishAddressValue(prevState => ({...prevState, [nodeIndex] : "0x0100"}));
         break;
       case "3":
-        setSuggestAddressInput("Type here (W.I.P.)");
-        setInputPublishAddressValue("");
+        setSuggestAddressInput(prevState => ({...prevState, [nodeIndex] : "Type here (W.I.P)"}));
+        setInputPublishAddressValue(prevState => ({...prevState, [nodeIndex] : ""}));
         break;
     }
-    setAllowAddressInput(true);
+    setAllowAddressInput(prevState => ({...prevState, [nodeIndex] : true}));
   };
 
   const key = `config?query=NODES`;
   const { data, error, isLoading } = useSWR(key, fetcherGET, {
     refreshInterval: 0,
   });
-  if (error) return <div>failed to load</div>;
+  if (error) return <div></div>;
   if (isLoading)
     return (
       <div>
@@ -149,7 +148,6 @@ const NodesElement = () => {
   let obj: nodeObject;
   obj = data["NODES"];
 
-  console.log(obj);
   const compositionTitles = ["Company ID", "Product ID", "Version ID"];
   const compositionIndexes = ["cidName", "pid", "vid", "crpl"];
   const nonceTitles = ["Initialisation Vector Index", "Sequence Number"];
@@ -174,7 +172,7 @@ const NodesElement = () => {
           data-tooltip-id={`tooltip-nodeid-${nodeIndex}`}
           data-ripple-light="true"
         >
-          Node {nodeIndex + 1}
+          Node {node.configuration.elements[0].unicastAddress || nodeIndex+1}
         </div>
         {/* Add useful icons based on models*/}
         <Tooltip id={`tooltip-nodeid-${nodeIndex}`}>
@@ -194,8 +192,8 @@ const NodesElement = () => {
                     <th>{title}</th>
                     <td>
                       <TooltipElement
-                        tooltipText={tooltipText[title]}
-                        label={node.composition[compositionIndexes[titleIndex]]}
+                        tooltipText={tooltipText[title as keyof typeof tooltipText]}
+                        label={node.composition[compositionIndexes[titleIndex] as keyof typeof node.composition].toString()}
                         labelStyle="flex"
                         tooltipID={title}
                       ></TooltipElement>
@@ -215,7 +213,7 @@ const NodesElement = () => {
                 >
                   <div className="stat-value text-sm">{key}</div>
                   <Tooltip id={`tooltip-${key}-${nodeIndex}`}>
-                    <div>{tooltipText[key]}</div>
+                    <div>{tooltipText[key as keyof typeof tooltipText]}</div>
                   </Tooltip>
                   <div className="stat-desc">
                     {value ? (
@@ -243,8 +241,8 @@ const NodesElement = () => {
                     <th>{nonceTitle}</th>
                     <td>
                       <TooltipElement
-                        tooltipText={tooltipText[nonceIndexes[nonceIndex]]}
-                        label={node[nonceIndexes[nonceIndex]]}
+                        tooltipText={tooltipText[nonceIndexes[nonceIndex] as keyof typeof tooltipText]}
+                        label={node[nonceIndexes[nonceIndex] as keyof typeof node].toString()}
                         labelStyle="flex "
                         tooltipID={nonceTitle}
                       ></TooltipElement>
@@ -345,7 +343,7 @@ const NodesElement = () => {
                   <select
                     className="select max-w-xs"
                     onChange={(e) =>
-                      setSelectedBindElementIndex(parseInt(e.target.value))
+                      setSelectedBindElementIndex(prevState => ({...prevState, [nodeIndex] : parseInt(e.target.value)}))
                     }
                   >
                     <option disabled selected>
@@ -361,17 +359,14 @@ const NodesElement = () => {
                   </select>
                   <select
                     className="select max-w-xs"
-                    onChange={(e) => setSelectedBindModelValue(e.target.value)}
+                    onChange={(e) => setSelectedBindModelValue(prevState => ({...prevState, [nodeIndex] : e.target.value}))}
                   >
                     <option disabled selected>
                       model
                     </option>
-                    {/* selectedElementIndex < node.composition.elements.length prevents crash that happens when on any node selected element has more models that the one on any other node, ideally every node should have separate selectedIndex*/}
-                    {selectedBindElementIndex > -1 &&
-                      selectedBindElementIndex <
-                        node.composition.elements.length &&
+                    {selectedBindElementIndex[nodeIndex] >= 0 &&
                       node.composition.elements[
-                        selectedBindElementIndex
+                        selectedBindElementIndex[nodeIndex]
                       ].models.map((model, modelIndex) => (
                         <option key={modelIndex} value={model}>
                           model {model}
@@ -384,7 +379,7 @@ const NodesElement = () => {
                   <div className="inline">To</div>
                   <select
                     className="select max-w-xs"
-                    onChange={(e) => setSelectedBindAppKeyIndex(e.target.value)}
+                    onChange={(e) => setSelectedBindAppKeyIndex(prevState => ({...prevState, [nodeIndex] : parseInt(e.target.value)}))}
                   >
                     <option disabled selected>
                       application key
@@ -400,21 +395,21 @@ const NodesElement = () => {
                   </button>
                   </div>
                   <div className="flex justify-center items-center w-full py-2">
-                    {selectedBindElementIndex > -1 && (
+                    {selectedBindElementIndex[nodeIndex] >= 0 && (
                       <RegularButton
                         style="btn bg-base-100 w-full border border-base-300"
                         apiUrl="config"
                         requestData={{"add_bind":{
                           unicastAddress: node.configuration.elements[
-                            selectedBindElementIndex
+                            selectedBindElementIndex[nodeIndex]
                           ]
                             ? node.configuration.elements[
                                 0
                               ].unicastAddress
                             : "",
-                          elementIndex: selectedBindElementIndex,
-                          appKeyIndex: selectedBindAppKeyIndex,
-                          modelValue: selectedBindModelValue,
+                          elementIndex: selectedBindElementIndex[nodeIndex],
+                          appKeyIndex: selectedBindAppKeyIndex[nodeIndex],
+                          modelValue: selectedBindModelValue[nodeIndex],
                           cid: node.composition.cid,
                         }}}
                         text="Bind"
@@ -439,7 +434,7 @@ const NodesElement = () => {
                   <select
                     className="select max-w-xs"
                     onChange={(e) =>
-                      setSelectedPublishElementIndex(e.target.value)
+                      setSelectedPublishElementIndex(prevState => ({...prevState, [nodeIndex] : parseInt(e.target.value)}))
                     }
                   >
                     <option disabled selected>
@@ -456,18 +451,16 @@ const NodesElement = () => {
                   <select
                     className="select max-w-xs"
                     onChange={(e) =>
-                      setSelectedPublishModelValue(e.target.value)
+                      setSelectedPublishModelValue(prevState => ({...prevState, [nodeIndex] : e.target.value}))
                     }
                   >
                     <option disabled selected>
                       model
                     </option>
                     {/* selectedElementIndex < node.composition.elements.length prevents crash that happens when on any node selected element has more models that the one on any other node, ideally every node should have separate selectedIndex*/}
-                    {selectedPublishElementIndex &&
-                      selectedPublishElementIndex <
-                        node.composition.elements.length &&
+                    {selectedPublishElementIndex[nodeIndex] >= 0 &&
                       node.composition.elements[
-                        selectedPublishElementIndex
+                        selectedPublishElementIndex[nodeIndex]
                       ].models.map((model, modelIndex) => (
                         <option key={modelIndex} value={model}>
                           model {model}
@@ -482,7 +475,7 @@ const NodesElement = () => {
                   </div>
                   <select
                     className="select max-w-xs"
-                    onChange={handleAddressSelection}
+                    onChange={(e) => handleAddressSelection(e, nodeIndex)}
                   >
                     <option disabled selected>
                       Address
@@ -494,17 +487,19 @@ const NodesElement = () => {
                     ))}
                   </select>
                   <TooltipElement
+                    tooltipText=""
                     label=""
                     tooltipID="publish-info-2"
+                    labelStyle=""
                   ></TooltipElement>
-                  {allowAddressInput && (
+                  {allowAddressInput[nodeIndex] && (
                     <input
                       type="text"
-                      value={inputPublishAddressValue}
+                      value={inputPublishAddressValue[nodeIndex]}
                       onChange={(e) =>
-                        setInputPublishAddressValue(e.target.value)
+                        setInputPublishAddressValue(prevState => ({...prevState, [nodeIndex] : e.target.value}))
                       }
-                      placeholder={suggestAddressInput}
+                      placeholder={suggestAddressInput[nodeIndex]}
                       className="input flex-grow"
                     />
                   )}
@@ -517,7 +512,7 @@ const NodesElement = () => {
                   <input
                     type="text"
                     onChange={(e) =>
-                      setInputPublishPublicationPeriod(e.target.value)
+                      setInputPublishPublicationPeriod(prevState => ({...prevState, [nodeIndex] : parseInt(e.target.value)}))
                     }
                     placeholder="publication period (default is 0)"
                     className="input w-full max-w-xs inline"
@@ -529,7 +524,7 @@ const NodesElement = () => {
                   <input
                     type="text"
                     onChange={(e) =>
-                      setInputPublishRetransmissionCount(e.target.value)
+                      setInputPublishRetransmissionCount(prevState => ({...prevState, [nodeIndex] : parseInt(e.target.value)}))
                     }
                     placeholder="retransmission count (default is 0)"
                     className="input w-full max-w-xs"
@@ -542,7 +537,7 @@ const NodesElement = () => {
                   <select
                     className="select max-w-xs"
                     onChange={(e) =>
-                      setSelectedPublishAppKeyIndex(e.target.value)
+                      setSelectedPublishAppKeyIndex(prevState => ({...prevState, [nodeIndex] : parseInt(e.target.value)}))
                     }
                   >
                     <option disabled selected>
@@ -559,7 +554,7 @@ const NodesElement = () => {
                   </button>
                 </div>
                 <div className="flex justify-center items-center w-full py-2">
-                  {selectedPublishModelValue && (
+                  {selectedPublishModelValue[nodeIndex] && (
                     <div className="flex w-full space-x-2">
                       <RegularButton
                         style="btn bg-base-100 w-full border border-base-300"
@@ -567,16 +562,16 @@ const NodesElement = () => {
                         requestData={{
                           "sub_add":{
                           unicastAddress: node.configuration.elements[
-                            selectedPublishElementIndex
+                            selectedPublishElementIndex[nodeIndex]
                           ]
                             ? node.configuration.elements[
                                 0
                               ].unicastAddress
                             : "",
-                            elementAddress: node.configuration.elements[selectedPublishElementIndex || 0].unicastAddress,
-                          address: inputPublishAddressValue,
-                          appKeyIndex: selectedPublishAppKeyIndex,
-                          modelValue: selectedPublishModelValue,
+                            elementAddress: node.configuration.elements[selectedPublishElementIndex[nodeIndex] || 0].unicastAddress,
+                          address: inputPublishAddressValue[nodeIndex],
+                          appKeyIndex: selectedPublishAppKeyIndex[nodeIndex],
+                          modelValue: selectedPublishModelValue[nodeIndex],
                           cid: node.composition.cid,
                           
                         }}}
@@ -589,18 +584,18 @@ const NodesElement = () => {
                         requestData={{
                           "pub_set":{
                           unicastAddress: node.configuration.elements[
-                            selectedPublishElementIndex
+                            selectedPublishElementIndex[nodeIndex]
                           ]
                             ? node.configuration.elements[
                                 0
                               ].unicastAddress
                             : "",
-                          elementAddress: node.configuration.elements[selectedPublishElementIndex || 0].unicastAddress,
-                          address: inputPublishAddressValue,
-                          appKeyIndex: selectedPublishAppKeyIndex,
-                          publicationPeriod: inputPublishPublicationPeriod,
-                          retransmissionCount: inputPublishRetransmissionCount,
-                          modelValue: selectedPublishModelValue,
+                          elementAddress: node.configuration.elements[selectedPublishElementIndex[nodeIndex] || 0].unicastAddress,
+                          address: inputPublishAddressValue[nodeIndex],
+                          appKeyIndex: selectedPublishAppKeyIndex[nodeIndex],
+                          publicationPeriod: inputPublishPublicationPeriod[nodeIndex] || 0,
+                          retransmissionCount: inputPublishRetransmissionCount[nodeIndex] || 0,
+                          modelValue: selectedPublishModelValue[nodeIndex],
                           cid: node.composition.cid,
                         }}}
                         text="Publish"

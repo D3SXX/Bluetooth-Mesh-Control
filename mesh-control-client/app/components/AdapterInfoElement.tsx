@@ -9,7 +9,7 @@ const AdapterInfoElement = () => {
   const request = `/controller?query=DEFAULT_DATA`;
   const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: 1 });
 
-  if (error) return <div>failed to load</div>
+  if (error) return <div></div>
   if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
 
   let elementList = ["Name", "Alias", "Default-adapter", "Class", "Powered", "Discoverable", "Discovering", "Modalias"];

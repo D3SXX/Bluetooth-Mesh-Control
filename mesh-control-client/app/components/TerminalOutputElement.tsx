@@ -29,7 +29,7 @@ const TerminalOutputElement = () => {
         }
     }, [terminalData]);
 
-    if (error) return <div>Failed to load</div>;
+    if (error) return <div></div>;
     if (isLoading) return <div>Loading <span className="loading loading-spinner text-primary"></span></div>;
 
     return (

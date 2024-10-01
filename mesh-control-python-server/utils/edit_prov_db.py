@@ -51,7 +51,7 @@ def edit_appkey(keyData):
                 f.write(json.dumps(mesh_info))
                 f.close()
                 
-                return f"Succesfully edited a key {edit_index}: {keyData["key"]}"
+                return f"Succesfully edited a key {edit_index}: {keyData['key']}"
         except Exception as e:
                 return f"Failed: {e}"
         
@@ -70,7 +70,7 @@ def remove_appkey(index):
                 f.write(json.dumps(mesh_info))
                 f.close()
                 
-                return f"Succesfully removed a key: {removed_key["key"]}"
+                return f"Succesfully removed a key: {removed_key['key']}"
         except Exception as e:
                 return f"Failed: {e}"
         

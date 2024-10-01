@@ -6,7 +6,7 @@ const envPath = './.env.local';
 
 const envContent = `NEXT_PUBLIC_SERVER_IP=${localIp}\n`;
 
-fs.writeFile(envPath, envContent, (err) => {
+fs.writeFile(envPath, envContent, (err: NodeJS.ErrnoException | null) => {
     if (err) {
         console.error('Error writing to .env.local:', err);
     } else {

@@ -128,7 +128,7 @@ def node_provision_output():
 def scan_unprovisioned(state):
     current_app.config['TERMINAL_OUTPUT'].clear()
     current_app.config['PROVISION']['SCAN_ACTIVE'] = state
-    write_to_meshctl(f"discover-unprovisioned {"on" if state else "off"}\n")
+    write_to_meshctl(f"discover-unprovisioned {'on' if state else 'off'}\n")
 
 def normal_scan():
     if "[NEW]" in "".join(current_app.config['TERMINAL_OUTPUT']):

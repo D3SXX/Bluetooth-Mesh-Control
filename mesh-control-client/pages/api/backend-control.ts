@@ -4,6 +4,42 @@ import { NextApiRequest, NextApiResponse } from "next";
 if (typeof global.pythonProcess === 'undefined') {
   global.pythonProcess = null;
   global.pythonProcessPID = null;
+  
+}
+
+if (typeof global.forceState === 'undefined'){
+  global.forceState = null;
+}
+
+const startPythonProcess = () => {
+  const pythonScriptPath = '../mesh-control-python-server/main.py';
+
+  global.pythonProcess = spawn('python3', [pythonScriptPath]);
+  global.pythonProcessPID = global.pythonProcess.pid || null;
+
+  console.log(`Python process started with PID: ${global.pythonProcessPID}`);
+
+  if (global.pythonProcess.stdout !== null) {
+    global.pythonProcess.stdout.on('data', (data) => {
+      console.log(`${data}`);
+    });
+  }
+  if (global.pythonProcess.stderr !== null) {
+    global.pythonProcess.stderr.on('data', (data) => {
+      console.error(`${data}`);
+    });
+  }
+
+  global.pythonProcess.on('exit', (code) => {
+    console.log(`Python process exited with code: ${code}`);
+    global.pythonProcess = null;
+    global.pythonProcessPID = null;
+    global.forceState = null;
+  });
+};
+
+if (!global.pythonProcess && global.forceState === null) {
+  startPythonProcess();
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -14,7 +50,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-  
+
   if (req.method === 'GET') {
     let query = req.query['query'];
     if (query === 'STATUS') {
@@ -27,26 +63,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (STATUS === true) {
       if (global.pythonProcess) {
-        return res.status(400).json({ message: 'Python script is already running' });
+        return res.status(400).json({ message: 'Python backend is already running' });
       }
 
-      const pythonScriptPath = '../bluetooth-mesh-server-2.0/main.py';
-      
-      global.pythonProcess = spawn('python3', [pythonScriptPath]);
-      global.pythonProcessPID = global.pythonProcess.pid;
-
-      global.pythonProcess.stdout.on('data', (data) => {
-        console.log(`${data}`);
-      });
-
-      global.pythonProcess.stderr.on('data', (data) => {
-        console.error(`${data}`);
-      });
-
-      global.pythonProcess.on('exit', (code) => {
-        global.pythonProcessPID = null;
-      });
-
+      startPythonProcess();
+      global.forceState = true;
       return res.status(200).json({ message: 'Python backend started' });
     } else if (STATUS === false) {
       if (!global.pythonProcess) {
@@ -56,6 +77,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       global.pythonProcess.kill('SIGINT');
       global.pythonProcess = null;
       global.pythonProcessPID = null;
+      global.forceState = false;
 
       return res.status(200).json({ message: 'Python backend stopped' });
     }

@@ -74,7 +74,7 @@ def update_controller():
     if current_app.config['TERMINAL_SESSIONS']['CONTROLLER']["STATUS"] is not True:
         start_custom_meshctl("CONTROLLER", current_app.config['SERVER']['ALLOW_PROCESSES'])
         current_app.config['TERMINAL_SESSIONS']['CONTROLLER']["STATUS"] = True
-    write_to_custom_meshctl(f"select {current_app.config['CONTROLLER']['DEFAULT'] or ""}\nlist\nshow\n")
+    write_to_custom_meshctl(f"select {current_app.config['CONTROLLER']['DEFAULT'] or ''}\nlist\nshow\n")
     start = time.time()
     while "Discovering:" not in "".join(current_app.config['TERMINAL_SESSIONS']['CONTROLLER']['OUTPUT']):
         if time.time() - start > 5.0:

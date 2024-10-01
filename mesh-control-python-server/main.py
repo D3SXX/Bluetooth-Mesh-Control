@@ -1,4 +1,5 @@
 import json
+import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from server import server_bp
@@ -17,6 +18,7 @@ CORS(app)
 app.config['SERVER'] = {
     "STATUS": None,
     "VERSION": "1.0 Preview",
+    "NAME": "MeshControl",
     "ALLOW_PROCESSES":True,
     "MESHCTL": None,
     "ERROR":{"STATUS":False,
@@ -72,8 +74,9 @@ if nodes_data["STATUS"] == False:
     app.config['SERVER']['ERROR']['STATUS'] = True
     app.config['SERVER']['ERROR']['EXTRA_DATA'] = {}
     files = ["prov_db.json","local_node.json"]
+    path = os.path.abspath(__file__)[:-7]
     for file in files:
-        with open(f'resources/reset_config/{file}') as f:       
+        with open(f'{path}resources/reset_config/{file}') as f:       
             obj = f.read()
             app.config['SERVER']['ERROR']['EXTRA_DATA'][file] = obj
 else:

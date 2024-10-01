@@ -36,7 +36,7 @@ const ReactIcon = ({iconOn,iconOff,enableBlink, apiUrl, query, interval}: { icon
           request += `?query=${query}`
         }
         const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: interval});
-        if (error) return <div>failed to load</div>
+        if (error) return <div></div>
         if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
  
         let state = data[query];

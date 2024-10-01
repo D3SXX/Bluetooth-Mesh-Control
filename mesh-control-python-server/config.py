@@ -61,7 +61,7 @@ def handle_config():
             threading.Thread(target=run_async_in_thread, args=(add_bind["unicastAddress"], commandList,[False, "Model App"],current_app._get_current_object())).start()
             response_value = {
                 "status": "success",
-                "message": f"Initiated add bind for node {add_bind["unicastAddress"]}",
+                "message": f'Initiated add bind for node {add_bind["unicastAddress"]}',
                 "SECURITY_LEVEL":security_level
             }
         elif pub_set:
@@ -69,14 +69,14 @@ def handle_config():
             threading.Thread(target=run_async_in_thread, args=(pub_set["unicastAddress"], commandList,[False, "Publication"],current_app._get_current_object())).start()
             response_value = {
                 "status": "success",
-                "message": f"Initiated pub set for node {pub_set["unicastAddress"]}",
+                "message": f'Initiated pub set for node {pub_set["unicastAddress"]}',
             }
         elif sub_add:
             commandList = [f'appkey-add {sub_add["appKeyIndex"]}',f'sub-add {sub_add["elementAddress"]} {sub_add["address"][2:]} {sub_add["modelValue"]}']
             threading.Thread(target=run_async_in_thread, args=(sub_add["unicastAddress"], commandList,[False, "Subscription"],current_app._get_current_object())).start()
             response_value = {
                 "status": "success",
-                "message": f"Initiated sub add for node {sub_add["unicastAddress"]}",
+                "message": f'Initiated sub add for node {sub_add["unicastAddress"]}',
             }
         elif config:
             prov_db = config["prov_db"]
@@ -134,7 +134,8 @@ def handle_config():
         return response, 200
                     
 def update_security(level = ""):
-    if level or current_app.config["CONFIG"]["SECURITY_LEVEL"] is None:
+    if level != "" or current_app.config["CONFIG"]["SECURITY_LEVEL"] is None:
+        current_app.config['TERMINAL_OUTPUT'] = []
         write_to_meshctl(f"security {level}\n")
         start = time.time()
         while "Level" not in "".join(current_app.config['TERMINAL_OUTPUT']):

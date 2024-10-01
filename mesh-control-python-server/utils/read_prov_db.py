@@ -103,8 +103,9 @@ def get_nodes_data():
         return returned_obj
 
 def add_company(data):
+        path = f"{os.path.abspath(__file__)[:-21]}resources/sig_data"
         try:
-                with open("resources/sig_data/company_identifiers.json", "r",encoding="utf-8") as file:
+                with open(f"{path}/company_identifiers.json", "r",encoding="utf-8") as file:
                         company_identifiers = json.load(file)
                         for node in data["nodes"]:
                                 cid = node["composition"]["cid"]
@@ -121,9 +122,10 @@ def add_company(data):
         return data
         
 def add_model_name(data):
+        path = f"{os.path.abspath(__file__)[:-21]}resources/sig_data"
         try:
-                mmdl_file = open("resources/sig_data/mmdl_model_uuids.json", "r",encoding="utf-8")
-                mesh_file = open("resources/sig_data/mesh_model_uuids.json", "r",encoding="utf-8")
+                mmdl_file = open(f"{path}/mmdl_model_uuids.json", "r",encoding="utf-8")
+                mesh_file = open(f"{path}/mesh_model_uuids.json", "r",encoding="utf-8")
                 mmdl_models = json.load(mmdl_file)
                 mesh_models = json.load(mesh_file)
                 for node in data["nodes"]:
@@ -142,19 +144,19 @@ def add_model_name(data):
         finally:                
                 return data
         
-def fetch_sig_data(link,title):
+def fetch_sig_data(link,title, path):
         try:
                 response = requests.get(link)
                 response.raise_for_status()
                 data = response.text
                 print(".",end="")
-                f = open(f"resources/sig_data/{title}.yaml","w")
+                f = open(f"{path}/{title}.yaml","w")
                 f.write(data)
                 f.close()
                 print(".",end="")
                 pattern = re.compile(r'[^\x09\x0A\x0D\x20-\x7E]') # https://yaml.org/spec/1.1/#id868524
                 data_object = yaml.safe_load(pattern.sub('', data))
-                f = open(f"resources/sig_data/{title}.json","w")
+                f = open(f"{path}/{title}.json","w")
                 f.write(json.dumps(data_object))
                 f.close()
                 print(".",end="")
@@ -165,17 +167,18 @@ def fetch_sig_data(link,title):
                           
 def get_sig_data():
         
+        path = f"{os.path.abspath(__file__)[:-21]}resources/sig_data"
         title_arr = ["company_identifiers","mmdl_model_uuids","mesh_model_uuids"]
         link_arr = ["https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/company_identifiers/company_identifiers.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mmdl_model_uuids.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mesh_model_uuids.yaml"]
 
-        if not os.path.exists("resources/sig_data"):
-                os.makedirs("resources/sig_data")
+        if not os.path.exists(path):
+                os.makedirs(path)
                 print("Created folder for sig_data")
         
         time_record = {}
 
         try:
-              f = open("resources/sig_data/fetch_record.json","r")
+              f = open(f"{path}/fetch_record.json","r")
               file = json.loads(f.read())      
               f.close()
               for title in title_arr:
@@ -183,16 +186,16 @@ def get_sig_data():
         except Exception as e:
                 for title in title_arr:
                       time_record[title] = 0
-                f = open("resources/sig_data/fetch_record.json", "w")
+                f = open(f"{path}/fetch_record.json", "w")
                 f.write(json.dumps(time_record))
                 f.close()  
 
         for i, link in enumerate(link_arr):
                 if time.time() - time_record[title_arr[i]] > 86400:
                     print(f"Trying to fecth the latest {title_arr[i]} data",end="")
-                    fetch_sig_data(link,title_arr[i])
+                    fetch_sig_data(link,title_arr[i], path)
                     time_record[title_arr[i]] = time.time()
-        f = open("resources/sig_data/fetch_record.json", "w")
+        f = open(f"{path}/fetch_record.json", "w")
         f.write(json.dumps(time_record))
         f.close()
           

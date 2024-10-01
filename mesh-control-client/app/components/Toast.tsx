@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-const Toast = ({ message, timeout }) => {
+const Toast = ({ message, timeout }: {message:string, timeout: number}) => {
   const [visible, setVisible] = useState(true);
   const [progress, setProgress] = useState(90); // Initial progress value (100%)
 

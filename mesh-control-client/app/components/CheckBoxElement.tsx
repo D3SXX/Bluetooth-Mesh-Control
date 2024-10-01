@@ -14,8 +14,9 @@ const CheckBoxElement = ({apiUrl,query,postKey,text,interval = 2}: {apiUrl:strin
     
         try {
           const response = await fetcherPOST({ [postKey]: e.target.checked })(apiUrl,3000);
-          console.log('POST response:', response);
-          window.location.reload();   
+          setTimeout(function(){
+            window.location.reload(); 
+        }, 3000);
         } catch (err) {
           console.error('Error:', err);
         }
@@ -27,7 +28,7 @@ const CheckBoxElement = ({apiUrl,query,postKey,text,interval = 2}: {apiUrl:strin
     }
 
     const { data, error, isLoading } = useSWR(request, customFetcher, { refreshInterval: interval});
-    if (error) return <div>failed to load</div>
+    if (error) return <div></div>
     if (isLoading) return <div>loading <span className="loading loading-spinner text-primary"></span></div>
 
     let state = data[query];
