@@ -17,7 +17,7 @@ CORS(app)
 
 app.config['SERVER'] = {
     "STATUS": None,
-    "VERSION": "1.0 Preview",
+    "VERSION": "1.0 (R.C. 1)",
     "NAME": "MeshControl",
     "ALLOW_PROCESSES":True,
     "MESHCTL": None,

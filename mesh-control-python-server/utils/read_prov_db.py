@@ -91,15 +91,15 @@ def get_nodes_data():
                 mesh_info = load_config()
         except Exception as e:
                 return {"STATUS":False,"MESSAGE":str(e),"TYPE":"CONFIG"}
+        default = default_node()
         returned_obj = {"STATUS":True}
         returned_obj["nodes"] = mesh_info["nodes"] if "nodes" in mesh_info else []
         returned_obj["appKeys"] = mesh_info["appKeys"] if "appKeys" in mesh_info else []
-        returned_obj =  add_company(returned_obj)
-        returned_obj = add_model_name(returned_obj)
-        default = default_node()
         for i, node in enumerate(returned_obj["nodes"]):
                 if "composition" not in node:
                      returned_obj["nodes"][i]["composition"] = default["composition"]
+        returned_obj =  add_company(returned_obj)
+        returned_obj = add_model_name(returned_obj)
         return returned_obj
 
 def add_company(data):

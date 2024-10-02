@@ -219,7 +219,7 @@ async def configure_mesh(address, commandList, waitList):
                     stop("Reached timeout while trying...")
                     return
         else:
-            time.sleep(0.5)
+            time.sleep(1)
         current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
     
     if commandList[0] == "node-reset":
