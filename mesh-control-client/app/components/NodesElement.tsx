@@ -242,7 +242,7 @@ const NodesElement = () => {
                     <td>
                       <TooltipElement
                         tooltipText={tooltipText[nonceIndexes[nonceIndex] as keyof typeof tooltipText]}
-                        label={node[nonceIndexes[nonceIndex] as keyof typeof node].toString()}
+                        label={String(node[nonceIndexes[nonceIndex] as keyof typeof node])}
                         labelStyle="flex "
                         tooltipID={nonceTitle}
                       ></TooltipElement>

@@ -146,7 +146,8 @@ def normal_scan():
                 for i in range(start_index+2, len(str_arr)):
                     name += f"{str_arr[i]} "
                 name = name[:-1]
-
+        if UUID == "":
+            return
         print(f"normal_scan() - Found node: Address: {address} | Name: {name} | OOB: {OOB} | UUID: {UUID}")
         current_app.config['PROVISION']["UNPROVISIONED_NODES"][UUID] = {
             "name": name,
