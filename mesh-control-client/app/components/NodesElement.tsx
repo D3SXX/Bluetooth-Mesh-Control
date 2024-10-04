@@ -76,12 +76,13 @@ const tooltipText = {
   Location: "",
   Model: "",
   bind: "",
-  bindFirstRow: "",
-  bindSecondRow: "",
-  publish: "",
-  publishFirstRow: "",
-  publishSecondRow: "",
-  publishThirdRow: "",
+  bindElementModel: "",
+  bindApplicationKey: "",
+  subscribePublishElementModel: "",
+  subscribePublishAddress: "Everyone: Broadcasts to all nodes (0xFFFF).<br>Group address: Multicast to specific element groups.<br>Unicast address: Direct communication with one element.",
+  subscribePublishPublicationPeriod: "",
+  subscribePublishRetransmissionCount: "",
+  subscribePublishApplicationKey: "",
 };
 
 // Many descriptions are taken from https://www.bluetooth.com/learn-about-bluetooth/feature-enhancements/mesh/mesh-glossary/
@@ -169,13 +170,13 @@ const NodesElement = () => {
       >
         <div
           className="join-item text-center mt-1 font-bold text-lg"
-          data-tooltip-id={`tooltip-nodeid-${nodeIndex}`}
+          data-tooltip-id={`node-${nodeIndex}`}
           data-ripple-light="true"
         >
           Node {node.configuration.elements[0].unicastAddress || nodeIndex+1}
         </div>
         {/* Add useful icons based on models*/}
-        <Tooltip id={`tooltip-nodeid-${nodeIndex}`}>
+        <Tooltip id={`node-${nodeIndex}`}>
           <div>{node.deviceKey}</div>
         </Tooltip>
 
@@ -195,7 +196,7 @@ const NodesElement = () => {
                         tooltipText={tooltipText[title as keyof typeof tooltipText]}
                         label={node.composition[compositionIndexes[titleIndex] as keyof typeof node.composition].toString()}
                         labelStyle="flex"
-                        tooltipID={title}
+                        tooltipID={`node-${nodeIndex}-${title}`}
                       ></TooltipElement>
                     </td>
                   </tr>
@@ -208,11 +209,11 @@ const NodesElement = () => {
               {Object.entries(node.composition.features).map(([key, value]) => (
                 <div
                   className="stat hover:bg-base-200"
-                  data-tooltip-id={`tooltip-${key}-${nodeIndex}`}
+                  data-tooltip-id={`node-${nodeIndex}-${key}`}
                   key={`stat-${key}-${nodeIndex}`}
                 >
                   <div className="stat-value text-sm">{key}</div>
-                  <Tooltip id={`tooltip-${key}-${nodeIndex}`}>
+                  <Tooltip id={`node-${nodeIndex}-${key}`}>
                     <div>{tooltipText[key as keyof typeof tooltipText]}</div>
                   </Tooltip>
                   <div className="stat-desc">
@@ -231,7 +232,7 @@ const NodesElement = () => {
               tooltipText={tooltipText.nonce}
               label="Nonce"
               labelStyle=" font-bold mb-2 border-base-200 flex items-center justify-center"
-              tooltipID="nonce"
+              tooltipID={`node-${nodeIndex}-nonce`}
             ></TooltipElement>
             <table className="table border-t-2 border-base-200">
               <thead></thead>
@@ -244,7 +245,7 @@ const NodesElement = () => {
                         tooltipText={tooltipText[nonceIndexes[nonceIndex] as keyof typeof tooltipText]}
                         label={String(node[nonceIndexes[nonceIndex] as keyof typeof node])}
                         labelStyle="flex "
-                        tooltipID={nonceTitle}
+                        tooltipID={`node-${nodeIndex}-${nonceTitle}`}
                       ></TooltipElement>
                     </td>
                   </tr>
@@ -256,7 +257,7 @@ const NodesElement = () => {
             <input type="checkbox" className="peer" />
             <div
               className="collapse-title bg-base-100"
-              data-tooltip-id={`tooltip-netkey`}
+              data-tooltip-id={`node-${nodeIndex}-netkey`}
               data-ripple-light="true"
             >
               Network Keys
@@ -279,7 +280,7 @@ const NodesElement = () => {
                     ))}
                   </tbody>
                 </table>
-                <Tooltip id={`tooltip-netkey`}>
+                <Tooltip id={`node-${nodeIndex}-netkey`}>
                   <div>
                     NetKey enables decryption and authentication up to the
                     Network Layer
@@ -395,7 +396,10 @@ const NodesElement = () => {
                   </button>
                   </div>
                   <div className="flex justify-center items-center w-full py-2">
-                    {selectedBindElementIndex[nodeIndex] >= 0 && (
+                    {selectedBindElementIndex[nodeIndex] >= 0 && 
+                    selectedBindModelValue[nodeIndex] != "" &&
+                    selectedBindAppKeyIndex[nodeIndex] >= 0 &&
+                     (
                       <RegularButton
                         style="btn bg-base-100 w-full border border-base-300"
                         apiUrl="config"
@@ -429,7 +433,7 @@ const NodesElement = () => {
               <div className="divide-y divide-base-300">
                 <div className="inline-flex space-x-2 items-center w-full py-2">
                   <div>
-                  Publish
+                  Select
                   </div>
                   <select
                     className="select max-w-xs"
@@ -487,9 +491,9 @@ const NodesElement = () => {
                     ))}
                   </select>
                   <TooltipElement
-                    tooltipText=""
+                    tooltipText={<span dangerouslySetInnerHTML={{ __html: tooltipText["subscribePublishAddress"] }} />}
                     label=""
-                    tooltipID="publish-info-2"
+                    tooltipID={`node-${nodeIndex}-subscribe-publish-address`}
                     labelStyle=""
                   ></TooltipElement>
                   {allowAddressInput[nodeIndex] && (
@@ -554,7 +558,10 @@ const NodesElement = () => {
                   </button>
                 </div>
                 <div className="flex justify-center items-center w-full py-2">
-                  {selectedPublishModelValue[nodeIndex] && (
+                  {selectedPublishElementIndex[nodeIndex] >= 0 &&
+                  selectedPublishModelValue[nodeIndex] != "" &&
+                  inputPublishAddressValue[nodeIndex] != "" &&
+                  selectedPublishAppKeyIndex[nodeIndex] >= 0 && (
                     <div className="flex w-full space-x-2">
                       <RegularButton
                         style="btn bg-base-100 w-full border border-base-300"
