@@ -232,10 +232,12 @@ async def configure_mesh(address, commandList, waitList):
 def reset_config(reset, prov_db = None,local_node = None):
         home_path = os.path.expanduser('~')
         meshctl_path = home_path + "/.config/meshctl/"    
+        app_path = os.path.abspath(__file__)
+        app_path = app_path[:app_path.rfind("/")]
         if not os.path.exists(meshctl_path):
             os.makedirs(meshctl_path)
-        local_node_file = open("./resources/reset_config/local_node.json","r")
-        prov_db_file = open("./resources/reset_config/prov_db.json","r")
+        local_node_file = open(f"{app_path}/resources/reset_config/local_node.json","r")
+        prov_db_file = open(f"{app_path}/resources/reset_config/prov_db.json","r")
         if reset[1]:
             f = open(meshctl_path+"local_node.json","w")
             f.write(local_node or local_node_file.read())
