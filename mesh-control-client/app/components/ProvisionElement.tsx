@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import TerminalOutputElement from './TerminalOutputElement';
 import IconElement from './IconElement';
 
+import useIsMobile from './isMobile';
 import { fetcherGET, fetcherPOST, fetcherDELETE } from "../utils/fetcher";
 
 interface UnprovisionedNode {
@@ -18,6 +19,8 @@ interface NodesObj {
 const ProvisionElement = () => {
   const [scanStatus, setScanStatus] = useState(false);
   const [unprovisionedNodes, setUnprovisionedNodes] = useState<UnprovisionedNode[]>([]);
+
+  const isMobile = useIsMobile();
 
   const provision = async (uuid: string) => {
     setScanStatus(false)
@@ -68,8 +71,8 @@ const ProvisionElement = () => {
   };
 
   return (
-    <div className='join join-horizontal flex justify-between'>
-      <div className='bg-base-100 collapse collapse-open border-base-300 border  w-1/2 mr-2'>
+    <div className={`${isMobile == false ? "join join-horizontal flex justify-between" : "join join-vertical "}`}>
+      <div className={`${isMobile == false ? 'bg-base-100 collapse collapse-open border-base-300 border  w-1/2 mr-2' : 'bg-base-100 collapse collapse-open border-base-300 border mr-2'}`}>
         <div className="collapse-title text-xl font-medium flex items-center justify-between ">
           <div className="flex items-center ml-2">
             <span>Toggle Scan</span>
@@ -128,7 +131,8 @@ const ProvisionElement = () => {
           </div>
         </div>
       </div>
-      <div className='w-1/2'>
+      <div className={`${isMobile == false ? '' : 'mb-2'}`}></div>
+      <div className={`${isMobile == false ? 'w-1/2 ' : ''}`}>
       <TerminalOutputElement></TerminalOutputElement>
       </div>
     </div>

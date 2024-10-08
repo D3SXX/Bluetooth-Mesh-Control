@@ -8,6 +8,7 @@ import AdapterInfoElement from '../components/AdapterInfoElement';
 import SecuritySlider from '../components/SecuritySlider';
 
 const StatusPage = () => {
+  
   const titles = ["App version","Meshctl version","Default Adapter","Reset meshctl config"]
   const elements = [(<DataElement key="element_1" apiUrl="server" query='VERSION' interval = {0}></DataElement>),(<DataElement key="element_2" apiUrl="server" query='MESHCTL' interval = {0}></DataElement>),(<ListElement key="element_3" apiUrl='controller' query='LIST' postKey="address" interval = {2}></ListElement>),(<RegularButton key="element_4" apiUrl='config?config=PROV_DB, LOCAL_NODE' query='NODES' text='Request' style='border border-base-300 btn w-full' uniqueId='element_4'></RegularButton>)]
   const renderedElements = titles.map((title, index) => (
@@ -18,6 +19,7 @@ const StatusPage = () => {
   ));
   return (
     <div>
+      
      <NavBar></NavBar>
      <div className="stats shadow mt-2 ml-2">
     {renderedElements}

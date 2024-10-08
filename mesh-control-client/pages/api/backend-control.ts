@@ -38,9 +38,6 @@ const startPythonProcess = () => {
   });
 };
 
-if (!global.pythonProcess && global.forceState === null) {
-  startPythonProcess();
-}
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
