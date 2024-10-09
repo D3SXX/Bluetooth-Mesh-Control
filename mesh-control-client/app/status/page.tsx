@@ -1,34 +1,16 @@
 import React from 'react'
 import NavBar from "@/app/components/NavBar";
-import DataElement from "@/app/components/DataElement";
-import ListElement from '../components/ListElement';
-import RegularButton from '../components/RegularButton';
-import { version } from 'os';
-import AdapterInfoElement from '../components/AdapterInfoElement';
-import SecuritySlider from '../components/SecuritySlider';
+
+import StatusDataElements from '../components/StatusDataElements';
+
 
 const StatusPage = () => {
   
-  const titles = ["App version","Meshctl version","Default Adapter","Reset meshctl config"]
-  const elements = [(<DataElement key="element_1" apiUrl="server" query='VERSION' interval = {0}></DataElement>),(<DataElement key="element_2" apiUrl="server" query='MESHCTL' interval = {0}></DataElement>),(<ListElement key="element_3" apiUrl='controller' query='LIST' postKey="address" interval = {2}></ListElement>),(<RegularButton key="element_4" apiUrl='config?config=PROV_DB, LOCAL_NODE' query='NODES' text='Request' style='border border-base-300 btn w-full' uniqueId='element_4'></RegularButton>)]
-  const renderedElements = titles.map((title, index) => (
-    <div className="stat" key={`renderedElement-${index}`}>
-      <div className="stat-title font-bold text-base-content">{title}</div>
-      <div className="stat-desc text-base-content">{elements[index]}</div>
-    </div>
-  ));
-  return (
+return (
     <div>
       
      <NavBar></NavBar>
-     <div className="stats shadow mt-2 ml-2">
-    {renderedElements}
-  
-    </div><br></br>
-    <div className='mt-2 ml-2 flex'>
-<AdapterInfoElement></AdapterInfoElement>
-<SecuritySlider></SecuritySlider>
-</div>
+      <StatusDataElements></StatusDataElements>
     </div>
   )
 }

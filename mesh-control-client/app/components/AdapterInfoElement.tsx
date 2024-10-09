@@ -4,7 +4,7 @@ import useSWR from 'swr';
 
 import { fetcherGET } from '../utils/fetcher';
 
-const AdapterInfoElement = () => {
+const AdapterInfoElement = ({isMobile}:{isMobile:boolean}) => {
 
   const request = `/controller?query=DEFAULT_DATA`;
   const { data, error, isLoading } = useSWR(request, fetcherGET, { refreshInterval: 1 });
@@ -18,7 +18,7 @@ const AdapterInfoElement = () => {
   let returnData = data["DEFAULT_DATA"];
 
   return (
-    <div className='bg-base-100 divide-base-200 divide-y join join-vertical me-2 mb-2'>
+    <div className={isMobile == false ? 'bg-base-100 divide-base-200 divide-y join join-vertical m-2 mt-0' : 'bg-base-100 divide-base-200 divide-y join join-vertical rounded-none flex'}>
       <div className='join-item text-center mt-1 font-bold text-lg'>Bluetooth Adapter</div>
       <div className="overflow-x-auto">
         <table className="table">

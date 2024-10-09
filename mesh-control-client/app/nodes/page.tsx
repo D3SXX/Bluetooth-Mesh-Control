@@ -8,8 +8,7 @@ const NodesPage = () => {
   return (
     <div>
      <NavBar></NavBar>
-     <div className='m-2'><NodesElement></NodesElement></div>
-    
+     <NodesElement></NodesElement>
     </div>
   )
 }

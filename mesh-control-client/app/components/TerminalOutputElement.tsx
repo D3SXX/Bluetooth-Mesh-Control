@@ -9,7 +9,7 @@ interface TerminalData{
     PROVISION_OUTPUT: [];
 }
 
-const TerminalOutputElement = () => {
+const TerminalOutputElement = ({isMobile}: { isMobile:boolean}) => {
     const terminalOutputRef = useRef<HTMLUListElement>(null);
     const [terminalData, setTerminalData] = useState<TerminalData | null>(null);
 
@@ -33,7 +33,7 @@ const TerminalOutputElement = () => {
     if (isLoading) return <div>Loading <span className="loading loading-spinner text-primary"></span></div>;
 
     return (
-        <div tabIndex={0} className="collapse collapse-arrow bg-base-100">
+        <div className={isMobile == false ? "collapse collapse-arrow bg-base-100" : "collapse collapse-open bg-base-100 mb-16 rounded-none"}>
             <input type="checkbox" defaultChecked />
             <div className="collapse-title text-xl font-medium inline-flex">
                 <div>Terminal Output</div>

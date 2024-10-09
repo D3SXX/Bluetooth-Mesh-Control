@@ -71,8 +71,8 @@ const ProvisionElement = () => {
   };
 
   return (
-    <div className={`${isMobile == false ? "join join-horizontal flex justify-between" : "join join-vertical "}`}>
-      <div className={`${isMobile == false ? 'bg-base-100 collapse collapse-open border-base-300 border  w-1/2 mr-2' : 'bg-base-100 collapse collapse-open border-base-300 border mr-2'}`}>
+    <div className={isMobile == false ? "join join-horizontal flex justify-between m-2" : "join join-vertical flex"}>
+      <div className={`${isMobile == false ? 'bg-base-100 collapse collapse-open border-base-300 border  w-1/2 mr-2' : 'bg-base-100 collapse collapse-open border-base-300 border rounded-none'}`}>
         <div className="collapse-title text-xl font-medium flex items-center justify-between ">
           <div className="flex items-center ml-2">
             <span>Toggle Scan</span>
@@ -85,14 +85,14 @@ const ProvisionElement = () => {
             />
           </div>
           <div className='ml-2 items-center flex '>
-          <div className='tooltip tooltip-bottom' data-tip="Toggle Fallback Scan"><IconElement apiUrl='provision' query='USE_FAILBACK_SCAN' postKey='failback_scan' iconOn='/icons/scan.png' iconOff='/icons/scan.png' enableBlink={false}></IconElement></div>
+          <div className='tooltip tooltip-bottom' data-tip="Toggle Fallback Scan"><IconElement apiUrl='provision' query='USE_FAILBACK_SCAN' postKey='failback_scan' iconOn='/icons/scan.svg' iconOff='/icons/scan.svg' enableBlink={false}></IconElement></div>
           {unprovisionedNodes.length > 0 && <div className='tooltip tooltip-bottom' data-tip="Reset list"><div className='btn btn-ghost text-xl' onClick={reset_unprovisioned_list}>&#x2672;</div></div>}
           {scanStatus && <div className='items-center flex'>Scanning<span className="loading loading-spinner loading-md ml-2"></span></div>}
           </div>
         </div>
         <div className="collapse-content">
           {scanStatus && unprovisionedNodes.length <= 0 && <div className='text-gray-500 '>Scanning for unprovisioned nodes... <br></br>(Try to toggle power if the scan cannot find node)</div>}
-          <div className="rounded-lg h-60">
+          <div className="rounded-lg h-60 mb-4">
             {unprovisionedNodes.length > 0 ? (
               <div>
                 {unprovisionedNodes.map((node, index) => (
@@ -131,9 +131,8 @@ const ProvisionElement = () => {
           </div>
         </div>
       </div>
-      <div className={`${isMobile == false ? '' : 'mb-2'}`}></div>
       <div className={`${isMobile == false ? 'w-1/2 ' : ''}`}>
-      <TerminalOutputElement></TerminalOutputElement>
+      <TerminalOutputElement isMobile={isMobile}></TerminalOutputElement>
       </div>
     </div>
   );

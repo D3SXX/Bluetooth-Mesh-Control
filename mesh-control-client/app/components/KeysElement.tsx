@@ -9,6 +9,7 @@ import { json } from "stream/consumers";
 import NoProvisionedNodes from "./NoProvisionedNodes";
 
 import { fetcherGET } from "../utils/fetcher";
+import useIsMobile from "./isMobile";
 
 interface DataInterface {
   APPKEYS: {
@@ -87,6 +88,8 @@ const KeysElement = () => {
     }
   };
 
+  const isMobile = useIsMobile()
+
   const request = "keys";
   const { data, error, isLoading } = useSWR(request, fetcherGET, {
     refreshInterval: 0,
@@ -105,8 +108,8 @@ const KeysElement = () => {
 
   if ("APPKEYS" in obj) {
     renderedElements = (
-      <div className="w-full">
-        <div key={1} className="bg-base-100 join join-vertical me-2 mb-2 ">
+      <div className={isMobile == false ? "w-full m-2" : "flex join join-vertical rounded-none mb-16"}>
+        <div key={1} className={isMobile == false ? "bg-base-100 join join-vertical me-2 mb-2" : "bg-base-100 join-item join join-vertical rounded-none"}>
           <div className="join-item text-center mt-1 mb-1 font-bold border-base-300 border-b text-lg">
             Application Keys
           </div>
@@ -128,7 +131,7 @@ const KeysElement = () => {
                       <tr className="hover" key={index}>
                         <th>{appKey.index}</th>
                         <td>{appKey.boundNetKey}</td>
-                        <td>{appKey.key}</td>
+                        <td><span className="break-all">{appKey.key}</span></td>
                       </tr>
                     ))}
                   </tbody>
@@ -147,7 +150,7 @@ const KeysElement = () => {
             </div>
             <div className="collapse-content bg-base-100">
               <div className="overflow-x-auto">
-                <table className="table">
+                <table className="table table-auto w-full">
                   <thead>
                     <tr>
                       <th>Node Address</th>
@@ -164,7 +167,7 @@ const KeysElement = () => {
                             <th>{key}</th>
                             <td>Bind</td>
                             <td>{obj.BIND![key].MODEL}</td>
-                            <td>{obj.BIND![key].APPKEY_INDEX}</td>
+                            <td><span className="break-all">{obj.BIND![key].APPKEY_INDEX}</span></td>
                           </tr>
 
                           {obj.PUBLISH && obj.PUBLISH[key] && (
@@ -172,7 +175,7 @@ const KeysElement = () => {
                               <th>{key}</th>
                               <td>Publish</td>
                               <td>{obj.BIND![key].MODEL}</td>
-                              <td>{obj.PUBLISH![key].ADDRESS}</td>
+                              <td><span className="break-all">{obj.PUBLISH![key].ADDRESS}</span></td>
                             </tr>
                           )}
 
@@ -186,6 +189,7 @@ const KeysElement = () => {
                                   (address, addressIndex) => (
                                     <span
                                       key={`subscribe_${bindIndex}_${addressIndex}`}
+                                      className="break-all"
                                     >
                                       {address}
                                       {obj.SUBSCRIBE[key].ADDRESS_LIST && addressIndex <
@@ -391,7 +395,7 @@ const KeysElement = () => {
             </dialog>
           </div>
         </div>
-        <div key={2} className="bg-base-100 join join-vertical me-2 mb-2">
+        <div key={2} className={isMobile == false? "bg-base-100 join join-vertical me-2 mb-2" : "bg-base-100 join-item join join-vertical flex rounded-none"}>
           <div
             className="join-item text-center mt-1 mb-1 font-bold border-base-300 border-b text-lg"
             data-tooltip-id={`tooltip-nodeid-${1}`}
@@ -414,10 +418,10 @@ const KeysElement = () => {
                   </thead>
                   <tbody>
                     {obj.NETKEYS.map((netKey, index) => (
-                      <tr className="hover" key={index}>
+                      <tr className="hover " key={index}>
                         <th>{netKey.index}</th>
                         <td>{netKey.keyRefresh?.toString()}</td>
-                        <td>{netKey.key}</td>
+                        <td><span className="break-all">{netKey.key}</span></td>
                       </tr>
                     ))}
                   </tbody>
@@ -450,7 +454,7 @@ const KeysElement = () => {
                           className="hover"
                           key={`Netkey_${key}_${deviceKey}`}
                         >
-                          <td>{deviceKey}</td>
+                          <td><span className="break-all">{deviceKey}</span></td>
                           <td>{key.index}</td>
                         </tr>
                       ))

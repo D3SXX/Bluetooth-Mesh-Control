@@ -15,9 +15,9 @@ export default function Home() {
   return (
     <main>
       <NavBar></NavBar>
-      <div className="m-2">
+      <div className="">
         {items.i.map((item, itemIndex) => (
-          <div key={`item-${item}`} className="inline-flex mr-2 mb-2">
+          <div key={`item-${item}`} className="inline-flex m-2 mr-0">
             <Link href={item.link}>
             <button className="btn bg-base-100 h-44 w-32 inline">
               <Image src={item.icon || ""} width={100} height={100} alt={"Go to "}></Image>

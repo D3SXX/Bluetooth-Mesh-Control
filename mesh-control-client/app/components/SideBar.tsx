@@ -1,8 +1,13 @@
 import React from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
 const SideBar = () => {
   const elements = ["Home","Provision","Nodes","Keys","Status"];
   const linksForElements = ["/","/provision","/nodes","/keys","/status"];
+  
+  const pathname = usePathname()
+
   return (
     <div>
       <div className="drawer z-10">

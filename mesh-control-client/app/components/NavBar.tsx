@@ -39,10 +39,10 @@ const NavBar = () => {
           </div>
           <div className="flex-none">
             <div className='tooltip tooltip-bottom' data-tip="Unprovisioned scan status">
-              <IconElement apiUrl='provision' query='SCAN_ACTIVE' postKey='discovery' iconOn='/icons/bluetooth.png' iconOff='/icons/bluetooth.png' enableBlink={true} />
+              <IconElement apiUrl='provision' query='SCAN_ACTIVE' postKey='discovery' iconOn='/icons/bluetooth.svg' iconOff='/icons/bluetooth.svg' enableBlink={true} />
             </div>
             <div className='tooltip tooltip-bottom' data-tip="Toggle power">
-              <IconElement apiUrl='controller' query='POWER' postKey='power' iconOn='/icons/power.png' iconOff='/icons/power.png' enableBlink={false} />
+              <IconElement apiUrl='controller' query='POWER' postKey='power' iconOn='/icons/power.svg' iconOff='/icons/power.svg' enableBlink={false} />
             </div>
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-square btn-ghost">

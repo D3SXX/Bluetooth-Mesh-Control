@@ -9,9 +9,7 @@ const KeysPage = () => {
   return (
     <div>
      <NavBar></NavBar>
-     <div className='ml-2 mt-2'>
     <KeysElement></KeysElement>
-    </div>
     </div>
   )
 }
