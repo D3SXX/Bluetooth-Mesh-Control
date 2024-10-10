@@ -9,7 +9,7 @@ import { json } from "stream/consumers";
 import NoProvisionedNodes from "./NoProvisionedNodes";
 
 import { fetcherGET } from "../utils/fetcher";
-import useIsMobile from "./isMobile";
+import useIsMobile from "../helpers/isMobile";
 
 interface DataInterface {
   APPKEYS: {

@@ -8,7 +8,7 @@ import RegularButton from "./RegularButton";
 import NoProvisionedNodes from "./NoProvisionedNodes";
 
 import { fetcherGET } from "../utils/fetcher";
-import useIsMobile from "./isMobile";
+import useIsMobile from "../helpers/isMobile";
 
 
 interface nodeObject {
@@ -199,7 +199,7 @@ const NodesElement = () => {
                       <TooltipElement
                         tooltipText={tooltipText[title as keyof typeof tooltipText]}
                         label={node.composition[compositionIndexes[titleIndex] as keyof typeof node.composition].toString()}
-                        labelStyle="flex"
+                        labelStyle="flex items-center"
                         tooltipID={`node-${nodeIndex}-${title}`}
                       ></TooltipElement>
                     </td>
@@ -248,7 +248,7 @@ const NodesElement = () => {
                       <TooltipElement
                         tooltipText={tooltipText[nonceIndexes[nonceIndex] as keyof typeof tooltipText]}
                         label={String(node[nonceIndexes[nonceIndex] as keyof typeof node])}
-                        labelStyle="flex "
+                        labelStyle="flex items-center"
                         tooltipID={`node-${nodeIndex}-${nonceTitle}`}
                       ></TooltipElement>
                     </td>
@@ -498,7 +498,7 @@ const NodesElement = () => {
                     tooltipText={<span dangerouslySetInnerHTML={{ __html: tooltipText["subscribePublishAddress"] }} />}
                     label=""
                     tooltipID={`node-${nodeIndex}-subscribe-publish-address`}
-                    labelStyle=""
+                    labelStyle="flex items-center"
                   ></TooltipElement>
                   {allowAddressInput[nodeIndex] && (
                     <input

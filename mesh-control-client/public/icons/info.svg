@@ -1,53 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   version="1.1"
-   id="svg2"
-   width="24"
-   height="24"
-   viewBox="0 0 24 24"
-   sodipodi:docname="icons8-info.gif"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs6" />
-  <sodipodi:namedview
-     id="namedview4"
-     pagecolor="#ffffff"
-     bordercolor="#000000"
-     borderopacity="0.25"
-     inkscape:showpageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1" />
-  <g
-     inkscape:groupmode="layer"
-     inkscape:label="Image"
-     id="g8">
-    <image
-       width="24"
-       height="24"
-       preserveAspectRatio="none"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAuBJREFU
-SImtVs1K60AYPTNjQ12VqFBBUCiufQAfQHHnui3Fle8hBEJfQAkE6V5EUBfu3BWlz+DOLIqitqU/
-iZ2eu/BmqJ2Ey4UGsjgcJjPfOd/5JkiShCQ5nU5JksvGgiRnsxmklCAJIQSWiaXWGlJKfH9/QwiB
-eTwej3FxcYHj42Osra1hZWUFQghsbW3h4OAAl5eX6PV6ueuFEMDfCkiSWmumOAxDuq5LIQQBmHcR
-b2xsMAxDa32KsajZcDhko9EgACqluL29Td/32W63+fb2xtfXV3Y6HZ6dnXF3d5cAKKVktVrldDq1
-PMDizvV6nQDoOA5932ccx5knI8nJZELf96mUohCCtVrNqgTz7rdaLQJgsVjk9fW11R29Xo/v7+9W
-t9zf31MIQSklgyD4xRsPBoOB0dz3/UxNU9myPPN933jS7/dtD87Pz43mSZJk9nWhUCB++sLiR6OR
-8SQMQ8PLQqGA2WyGu7s7aK1xenoKpRSUUiCJlFdKIY5jkDR4nl9dXcXJyQkA4OrqyvDGA9d1KaVk
-u922Tv4vD1Lc6XQIgJubm7YHaV93u91MjVMPhBC5fBRFJicpL03iACilchOptTZl5/GO4/yMBykN
-bzwol8vQWiOKokyNlVLQWgNALv/y8gIAcF3X8GYW7e3tQUqJh4eH3NkipQSAXP7x8REAsL+/b8+i
-IAgIgJVKhZPJ5L89iOOYOzs7FEKYsP3KwdfXF8vlMgGw2Wxm5kAplZsDz/OolGKpVOJwOMyeRWEY
-mrTe3t5aJ/34+ODn56dV2c3NDR3HMSHLnUUkWa1WzfBqNpscjUa5fZ8kCT3PY7FYJAA2Gg2rMus+
-SJKEtVrN5KJSqdDzPD4/PzOKIna7XT49PdHzPKM5ANbrdY7HYy5+z7oPUhwEgfFESmmkW8SlUomt
-Viv3Trbug3nc7/cZBAEPDw/NZgC4vr7Oo6MjBkHAwWCQuz7Tg2VjwZ9n6X8TKf4DiD8RiSskT5wA
-AAAASUVORK5CYII=
-"
-       id="image10" />
-  </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Warning / Info">
+<path id="Vector" d="M12 11V16M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21ZM12.0498 8V8.1L11.9502 8.1002V8H12.0498Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
 </svg>

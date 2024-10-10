@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import TerminalOutputElement from './TerminalOutputElement';
 import IconElement from './IconElement';
 
-import useIsMobile from './isMobile';
+import useIsMobile from '../helpers/isMobile';
 import { fetcherGET, fetcherPOST, fetcherDELETE } from "../utils/fetcher";
 
 interface UnprovisionedNode {
@@ -83,24 +83,25 @@ const ProvisionElement = () => {
               onChange={handleCheckboxChange}
               id="scan-toggle"
             />
+            {scanStatus && isMobile == true && <span className="ml-4 loading loading-spinner loading-md"></span>}
           </div>
-          <div className='ml-2 items-center flex '>
+          <div className='ml-2 items-center flex'>
           <div className='tooltip tooltip-bottom' data-tip="Toggle Fallback Scan"><IconElement apiUrl='provision' query='USE_FAILBACK_SCAN' postKey='failback_scan' iconOn='/icons/scan.svg' iconOff='/icons/scan.svg' enableBlink={false}></IconElement></div>
-          {unprovisionedNodes.length > 0 && <div className='tooltip tooltip-bottom' data-tip="Reset list"><div className='btn btn-ghost text-xl' onClick={reset_unprovisioned_list}>&#x2672;</div></div>}
-          {scanStatus && <div className='items-center flex'>Scanning<span className="loading loading-spinner loading-md ml-2"></span></div>}
+          {unprovisionedNodes.length > 0 && <div className='tooltip tooltip-bottom' data-tip="Reset list"><div className='btn btn-ghost text-[26px]' onClick={reset_unprovisioned_list}>&#x2672;</div></div>}
+          {scanStatus && isMobile == false && <div className='items-center flex'>Scanning<span className="loading loading-spinner loading-md ml-2"></span></div>}
           </div>
         </div>
         <div className="collapse-content">
           {scanStatus && unprovisionedNodes.length <= 0 && <div className='text-gray-500 '>Scanning for unprovisioned nodes... <br></br>(Try to toggle power if the scan cannot find node)</div>}
-          <div className="rounded-lg h-60 mb-4">
+          <div className={isMobile == false ? "rounded-lg min-h-60 max-h-[75vh] mb-4 overflow-scroll" : "rounded-lg min-h-60 max-h-[75vh] mb-4 overflow-scroll mr"}>
             {unprovisionedNodes.length > 0 ? (
               <div>
                 {unprovisionedNodes.map((node, index) => (
-                  <div key={index} onClick={() => (document.getElementById(`modal-${index}`) as HTMLFormElement).showModal()} className="btn h-fit btn-ghost stats shadow w-full mb-1 mt-1">
+                  <div key={index} onClick={() => (document.getElementById(`modal-${index}`) as HTMLFormElement).showModal()} className="btn h-fit btn-ghost stats shadow w-full mb-1 mt-1 border-base-200 border">
                     <div className="join join-horizontal flex items-center flex-wrap justify-center text-center ">
                       <div className="stat join-item w-full sm:w-auto">Name:<br/><div className='font-normal mt-1'>{node.name}</div></div>
                       <div className="stat join-item w-full sm:w-auto">Address:<br/><div className='font-normal mt-1'>{node.address}</div></div>
-                      <div className="stat join-item w-full sm:w-auto">UUID:<br/><div className='font-normal mt-1'>{node.UUID}</div></div>
+                      <div className="stat join-item w-full sm:w-auto">UUID:<br/><div className='font-normal mt-1 break-all'>{node.UUID}</div></div>
                       <div className="stat join-item w-full sm:w-auto">OOB:<br/><div className='font-normal mt-1'>{node.OOB}</div></div>
                     </div>
                     <dialog id={`modal-${index}`} className="modal">
@@ -110,7 +111,7 @@ const ProvisionElement = () => {
                           <div className='mb-2'>Do you want to provision this node?</div>
                           <div>
                         <form method="dialog" className="w-full flex justify-between"><button className="btn btn-error">Cancel</button>
-                          <button className="btn btn-outline btn-success" onClick={() => provision(node.UUID)}>Provision {node.UUID}</button></form>
+                          <button className="btn btn-outline btn-success w-72 break-all" onClick={() => provision(node.UUID)}>Provision {node.UUID}</button></form>
                           </div>
                         </div>
                       </div>

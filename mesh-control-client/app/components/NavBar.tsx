@@ -7,7 +7,7 @@ import IconElement from './IconElement';
 import ErrorHandlerElement from './ErrorHandlerElement';
 import CheckBoxElement from './CheckBoxElement';
 import BottomNavBar from './BottomNavBar';
-import useIsMobile from './isMobile';
+import useIsMobile from '../helpers/isMobile';
 
 const NavBar = () => {
   const isMobile = useIsMobile();

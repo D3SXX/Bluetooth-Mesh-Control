@@ -6,7 +6,7 @@ import RegularButton from './RegularButton'
 import AdapterInfoElement from './AdapterInfoElement'
 import SecuritySlider from './SecuritySlider'
 
-import useIsMobile from './isMobile'
+import useIsMobile from '../helpers/isMobile'
 
 const StatusDataElements = () => {
 

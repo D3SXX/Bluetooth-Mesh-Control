@@ -8,6 +8,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      keyframes: {
+          resize: {
+            '0%': { width: '20px', height: '20px' },
+            '100%': { width: '18px', height: '18px' },
+      },
+    },
+    animation: {
+      resize: 'resize 2s ease-in-out infinite alternate',
+    },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

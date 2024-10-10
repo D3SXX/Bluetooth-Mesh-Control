@@ -3,29 +3,11 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
+import useIsDark from "../helpers/isDarkMode";
+
 const BottomNavBar = () => {
   const pathname = usePathname();
-
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  // Check for dark mode when component mounts
-  useEffect(() => {
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-    // Set initial value based on system preferences
-    setIsDarkMode(darkModeMediaQuery.matches);
-
-    // Add event listener for changes in the dark mode preference
-    const handleChange = (event) => {
-      setIsDarkMode(event.matches);
-    };
-    darkModeMediaQuery.addEventListener('change', handleChange);
-
-    // Cleanup the event listener
-    return () => {
-      darkModeMediaQuery.removeEventListener('change', handleChange);
-    };
-  }, []);
+  const isDarkMode = useIsDark();
 
   const items = {
     i: [

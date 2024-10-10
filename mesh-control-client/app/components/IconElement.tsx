@@ -39,10 +39,8 @@ const IconElement = ({apiUrl, query, postKey,iconOn, iconOff, enableBlink }: { a
         return (
                 <div>
                         <button className='btn btn-ghost' onClick={() => call()}>
-                                <div>
                                         <ReactIcon iconOn={iconOn} iconOff={iconOff} enableBlink={enableBlink} apiUrl={apiUrl} query={query} interval={1}>
                                         </ReactIcon>
-                                </div>
                         </button>
                 </div>
         )
