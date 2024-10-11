@@ -149,7 +149,7 @@ def normal_scan():
         if UUID == "":
             return
         print(f"normal_scan() - Found node: Address: {address} | Name: {name} | OOB: {OOB} | UUID: {UUID}")
-        current_app.config['PROVISION']["UNPROVISIONED_NODES"][f"UUID-{i}"] = {
+        current_app.config['PROVISION']["UNPROVISIONED_NODES"][UUID] = {
                 "name": name,
                 "OOB": OOB,
                 "address": address
