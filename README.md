@@ -21,6 +21,14 @@ sudo apt install bluez bluez-meshd
 
 #### Initial Setup (Debian/Ubuntu)
 
+##### Quick install by using script (recommended)
+
+```ruby
+curl -fsSL https://raw.githubusercontent.com/D3SXX/Bluetooth-Mesh-Control/refs/heads/main/quick_setup.sh | bash
+```
+
+##### Manual installation
+
 1. Clone the repository:
 
 ```ruby
@@ -48,8 +56,13 @@ sudo apt install python3-yaml python3-flask-cors python3-requests
 
 #### Running the Application
 
-After setting up, run the following script:
+After setting up/updating the application, always run:
 
+```ruby
+sh ./run_after_update_or_first_install.sh
+```
+
+To start the application, run:
 
 ```ruby
 sh ./start_mesh_control.sh
