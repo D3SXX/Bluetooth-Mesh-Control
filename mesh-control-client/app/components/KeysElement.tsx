@@ -9,7 +9,6 @@ import { json } from "stream/consumers";
 import NoProvisionedNodes from "./NoProvisionedNodes";
 
 import { fetcherGET } from "../utils/fetcher";
-import useIsMobile from "../helpers/isMobile";
 
 interface DataInterface {
   APPKEYS: {
@@ -88,8 +87,6 @@ const KeysElement = () => {
     }
   };
 
-  const isMobile = useIsMobile()
-
   const request = "keys";
   const { data, error, isLoading } = useSWR(request, fetcherGET, {
     refreshInterval: 0,
@@ -108,15 +105,15 @@ const KeysElement = () => {
 
   if ("APPKEYS" in obj) {
     renderedElements = (
-      <div className={isMobile == false ? "w-full m-2" : "flex join join-vertical rounded-none mb-16"}>
-        <div key={1} className={isMobile == false ? "bg-base-100 join join-vertical me-2 mb-2" : "bg-base-100 join-item join join-vertical rounded-none"}>
+      <div className={"w-full md:m-2 rounded-none md:rounded-xl"}>
+        <div key={1} className="bg-base-100 join join-vertical md:me-2 md:mb-2 rounded-none md:rounded-xl w-full md:w-fit">
           <div className="join-item text-center mt-1 mb-1 font-bold border-base-300 border-b text-lg">
             Application Keys
           </div>
           <div className="join-item collapse collapse-arrow border border-t-0 border-base-300 ">
             <input type="checkbox" className="peer" />
             <div className="collapse-title bg-base-100">Available Keys</div>
-            <div className="collapse-content">
+            <div className="collapse-content md:px-4 p-0">
               <div className="overflow-x-auto">
                 <table className="table">
                   <thead>
@@ -148,9 +145,9 @@ const KeysElement = () => {
             >
               Assigned Keys
             </div>
-            <div className="collapse-content bg-base-100">
-              <div className="overflow-x-auto">
-                <table className="table table-auto w-full">
+            <div className="collapse-content bg-base-100 md:px-4 p-0">
+              <div className="overflow-x-auto flex w-screen md:w-full">
+                <table className="table table-auto">
                   <thead>
                     <tr>
                       <th>Node Address</th>
@@ -212,7 +209,7 @@ const KeysElement = () => {
 
           <div className="join-item">
             <button
-              className="btn border border-base-300 bg-base-100 w-full"
+              className="btn border border-base-300 bg-base-100 w-full rounded-none md:rounded-xl "
               onClick={() => {          
                 (document.getElementById('appKeyConfigModal') as HTMLDialogElement).showModal()
               }
@@ -395,7 +392,7 @@ const KeysElement = () => {
             </dialog>
           </div>
         </div>
-        <div key={2} className={isMobile == false? "bg-base-100 join join-vertical me-2 mb-2" : "bg-base-100 join-item join join-vertical flex rounded-none"}>
+        <div key={2} className={"bg-base-100 join join-vertical md:me-2 md:mb-2 rounded-none md:rounded-xl"}>
           <div
             className="join-item text-center mt-1 mb-1 font-bold border-base-300 border-b text-lg"
             data-tooltip-id={`tooltip-nodeid-${1}`}
@@ -406,7 +403,7 @@ const KeysElement = () => {
           <div className="join-item collapse collapse-arrow border border-t-0 border-base-300 ">
             <input type="checkbox" className="peer" />
             <div className="collapse-title bg-base-100">Available Keys</div>
-            <div className="collapse-content ">
+            <div className="collapse-content md:px-4 p-0">
               <div className="overflow-x-auto">
                 <table className="table">
                   <thead>
@@ -438,7 +435,7 @@ const KeysElement = () => {
             >
               Assigned Keys
             </div>
-            <div className="collapse-content">
+            <div className="collapse-content md:px-4 p-0">
               <div className="overflow-x-auto">
                 <table className="table">
                   <thead>

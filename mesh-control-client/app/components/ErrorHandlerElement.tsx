@@ -63,7 +63,7 @@ const ErrorHandlerElement = () => {
       const dialog = document.getElementById('error_modal') as HTMLDialogElement | null; dialog?.showModal()}
   }>Fix error</button>
     <dialog id="error_modal" className="modal" open>
-      <div className="modal-box w-2/3 h-2/3 max-w-fit max-h-fit">
+      <div className="modal-box w-fit h-fit max-w-fit max-h-fit">
             {data.TYPE == "CONFIG" && <div>
                 <h3 className="font-bold text-lg">Setting up config files</h3>
                 <div>
@@ -94,17 +94,17 @@ const ErrorHandlerElement = () => {
                     </li>
                   </ul>
                 <div id="ErrorModal-1" className="space-y-2">
-                <textarea ref={textareaRef1} className="textarea textarea-bordered w-full h-full flex-grow resize-y min-h-56">{data["EXTRA_DATA"]["prov_db.json"]}</textarea>
+                <textarea ref={textareaRef1} rows={10} className="textarea textarea-bordered w-full h-full flex-grow resize-y">{data["EXTRA_DATA"]["prov_db.json"]}</textarea>
                 </div>
                 <div id="ErrorModal-2" className="hidden space-y-2">
-                <textarea ref={textareaRef2} className="textarea textarea-bordered w-full h-full flex-grow resize-y min-h-56">{data["EXTRA_DATA"]["local_node.json"]}</textarea>
+                <textarea ref={textareaRef2} rows={10} className="textarea textarea-bordered w-full h-full flex-grow resize-y">{data["EXTRA_DATA"]["local_node.json"]}</textarea>
                 </div>
                 </div>}
                 
         <div className="modal-action">
-          <form method="dialog" className="w-full flex justify-between">
+          <form method="dialog" className="w-full flex justify-end">
             <div className="flex items-center ml-2">
-            <button className="btn btn-error">Close</button>
+            <button className="btn btn-error ">Close</button>
             </div>
             <div className='ml-2 items-center flex'>
             <button className="btn btn-outline btn-success" onClick={start}>Start</button>

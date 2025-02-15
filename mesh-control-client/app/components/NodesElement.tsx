@@ -8,8 +8,6 @@ import RegularButton from "./RegularButton";
 import NoProvisionedNodes from "./NoProvisionedNodes";
 
 import { fetcherGET } from "../utils/fetcher";
-import useIsMobile from "../helpers/isMobile";
-
 
 interface nodeObject {
   appKeys: {
@@ -136,8 +134,6 @@ const NodesElement = () => {
     setAllowAddressInput(prevState => ({...prevState, [nodeIndex] : true}));
   };
 
-  const isMobile = useIsMobile();
-
   const key = `config?query=NODES`;
   const { data, error, isLoading } = useSWR(key, fetcherGET, {
     refreshInterval: 0,
@@ -170,7 +166,7 @@ const NodesElement = () => {
     renderedElements = obj.nodes.map((node, nodeIndex) => (
       <div
         key={node.deviceKey}
-        className={isMobile == false ? "bg-base-100 join join-vertical m-2 mr-0" : "bg-base-100 join join-vertical rounded-none flex"}
+        className={"bg-base-100 join join-vertical md:m-2 md:mr-0 rounded-none md:rounded-xl flex md:inline-block"}
       >
         <div
           className="join-item text-center mt-1 font-bold text-lg"
@@ -621,7 +617,7 @@ const NodesElement = () => {
               <RegularButton
                 apiUrl={`config?address=${node.configuration.elements[0].unicastAddress}`}
                 text="Reset node"
-                style="btn btn-outline btn-error bg-transparent w-full"
+                style="btn btn-outline btn-error bg-transparent w-full rounded-none md:rounded-xl"
                 uniqueId={`node${nodeIndex}`}
               ></RegularButton>
             </div>

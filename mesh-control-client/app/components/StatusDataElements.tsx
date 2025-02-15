@@ -17,16 +17,16 @@ const StatusDataElements = () => {
 
   return (
     <div>
-    <div className={isMobile == false ? 'stats shadow m-2' : 'stats stats-vertical w-full rounded-none'}>
+    <div className={'stats stats-vertical md:stats-horizontal md:shadow md:m-2 rounded-none md:rounded-xl block md:inline-grid'}>
         {(titles.map((title, index) => (
         <div className="stat" key={`renderedElement-${index}`}>
           <div className="stat-title font-bold text-base-content">{title}</div>
           <div className="stat-desc text-base-content">{elements[index]}</div>
         </div>)))}
         </div>
-        <div className={isMobile == false ? 'flex' : ''}>
-        <AdapterInfoElement isMobile={isMobile}></AdapterInfoElement>
-        <SecuritySlider isMobile={isMobile}></SecuritySlider>
+        <div className="block md:flex">
+        <AdapterInfoElement></AdapterInfoElement>
+        <SecuritySlider></SecuritySlider>
         </div>
         </div>
   )
