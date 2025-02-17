@@ -9,7 +9,7 @@ interface TerminalData{
     PROVISION_OUTPUT: [];
 }
 
-const TerminalOutputElement = ({isMobile}: { isMobile:boolean}) => {
+const TerminalOutputElement = () => {
     const terminalOutputRef = useRef<HTMLUListElement>(null);
     const [terminalData, setTerminalData] = useState<TerminalData | null>(null);
 
@@ -33,7 +33,7 @@ const TerminalOutputElement = ({isMobile}: { isMobile:boolean}) => {
     if (isLoading) return <div>Loading <span className="loading loading-spinner text-primary"></span></div>;
 
     return (
-        <div className={isMobile == false ? "collapse collapse-arrow bg-base-100" : "collapse collapse-open bg-base-100 mb-16 rounded-none"}>
+        <div className={`collapse collapse-open bg-base-100 rounded-none md:rounded-xl`}>
             <input type="checkbox" defaultChecked />
             <div className="collapse-title text-xl font-medium inline-flex">
                 <div>Terminal Output</div>
@@ -42,7 +42,7 @@ const TerminalOutputElement = ({isMobile}: { isMobile:boolean}) => {
             <div className="collapse-content">
                 <ul className='overflow-auto bg-black rounded-lg h-72 p-2' ref={terminalOutputRef}>
                         {terminalData != undefined && terminalData["PROVISION_OUTPUT"] != undefined && terminalData["PROVISION_OUTPUT"].map((line, index) => (
-                            <li className="leading-tight text-lg text-white font-mono break-all whitespace-normal" key={index}>{line}</li>
+                            <li className="leading-tight text-sm md:text-lg text-white font-mono break-all whitespace-normal" key={index}>{line}</li>
                         ))}
                 </ul>
             </div>

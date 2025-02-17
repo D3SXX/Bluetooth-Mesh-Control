@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import TerminalOutputElement from "./TerminalOutputElement";
 import IconElement from "./IconElement";
 
-import useIsMobile from "../helpers/isMobile";
 import { fetcherGET, fetcherPOST, fetcherDELETE } from "../utils/fetcher";
 
 interface UnprovisionedNode {
@@ -21,8 +20,6 @@ const ProvisionElement = () => {
   const [unprovisionedNodes, setUnprovisionedNodes] = useState<
     UnprovisionedNode[]
   >([]);
-
-  const isMobile = useIsMobile();
 
   const provision = async (uuid: string) => {
     setScanStatus(false);
@@ -76,20 +73,15 @@ const ProvisionElement = () => {
     }
   };
 
+
   return (
     <div
       className={
-        isMobile == false
-          ? "join join-horizontal flex justify-between m-2"
-          : "join join-vertical flex"
+        "join join-vertical md:join-horizontal flex justify-between md:m-2 mb-16"
       }
     >
       <div
-        className={`${
-          isMobile == false
-            ? "bg-base-100 collapse collapse-open border-base-300 border  w-1/2 mr-2"
-            : "bg-base-100 collapse collapse-open border-base-300 border rounded-none"
-        }`}
+        className={`bg-base-100 collapse collapse-open border-base-300 border w-full md:w-1/2 mr-2 rounded-none md:rounded-xl`}
       >
         <div className="collapse-title text-xl font-medium flex items-center justify-between ">
           <div className="flex items-center ml-2">
@@ -101,8 +93,8 @@ const ProvisionElement = () => {
               onChange={handleCheckboxChange}
               id="scan-toggle"
             />
-            {scanStatus && isMobile == true && (
-              <span className="ml-4 loading loading-spinner loading-md"></span>
+            {scanStatus && (
+              <span className="ml-4 loading loading-spinner loading-md block md:hidden"></span>
             )}
           </div>
           <div className="ml-2 items-center flex">
@@ -129,8 +121,8 @@ const ProvisionElement = () => {
                 </div>
               </div>
             )}
-            {scanStatus && isMobile == false && (
-              <div className="items-center flex">
+            {scanStatus && (
+              <div className="items-center hidden md:flex">
                 Scanning
                 <span className="loading loading-spinner loading-md ml-2"></span>
               </div>
@@ -139,16 +131,14 @@ const ProvisionElement = () => {
         </div>
         <div className="collapse-content">
           {scanStatus && unprovisionedNodes.length <= 0 && (
-            <div className="text-gray-500 ">
+            <div className="text-gray-500 animate-pulse">
               Scanning for unprovisioned nodes... <br></br>(Try to toggle power
               if the scan cannot find node)
             </div>
           )}
           <div
             className={
-              isMobile == false
-                ? "rounded-lg min-h-60 max-h-[75vh] mb-4 overflow-scroll"
-                : "rounded-lg min-h-60 max-h-[75vh] mb-4 overflow-scroll mr"
+                "rounded-lg min-h-60 max-h-[75vh] mb-4 overflow-scroll md:mr-2"
             }
           >
             {unprovisionedNodes.length > 0 ? (
@@ -199,16 +189,16 @@ const ProvisionElement = () => {
                           <div>
                             <form
                               method="dialog"
-                              className="w-full flex justify-between"
+                              className="w-full flex flex-col md:flex-row md:justify-between"
                             >
-                              <button className="btn btn-error">Cancel</button>
+                              <button className="btn btn-error hidden md:block">Cancel</button>
                               <button
                                 className="btn btn-outline btn-success break-all min-w-min"
                                 onClick={() => provision(node.UUID)}
                               >
                                 <p
                                   className={
-                                    isMobile ? "break-all max-w-48" : ""
+                                    "break-all md:break-normal"
                                   }
                                 >
                                   Provision {node.UUID}
@@ -235,8 +225,8 @@ const ProvisionElement = () => {
           </div>
         </div>
       </div>
-      <div className={`${isMobile == false ? "w-1/2 " : ""}`}>
-        <TerminalOutputElement isMobile={isMobile}></TerminalOutputElement>
+      <div className={`w-full md:w-1/2`}>
+        <TerminalOutputElement></TerminalOutputElement>
       </div>
     </div>
   );

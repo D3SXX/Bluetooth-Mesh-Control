@@ -7,25 +7,20 @@ import IconElement from './IconElement';
 import ErrorHandlerElement from './ErrorHandlerElement';
 import CheckBoxElement from './CheckBoxElement';
 import BottomNavBar from './BottomNavBar';
-import useIsMobile from '../helpers/isMobile';
 
 const NavBar = () => {
-  const isMobile = useIsMobile();
-
   const elements = [
-    (<DataElement key="1" apiUrl='server' query='NAME' interval={0} text='MeshControl' style='text-[#0082fc]' />),
-    (<DataElement key="2" apiUrl='controller' query='DEFAULT' interval={2} text="(Server is offline)" />)
+    (<DataElement key="1" apiUrl='server' query='NAME' interval={0} text='MeshControl' style='text-[#0082fc]'  />),
+    (<DataElement key="2" apiUrl='controller' query='DEFAULT' interval={2} text="(Server is offline)" style='hidden md:block'/>)
   ];
   
   const linksForElements = ["/", "/status"];
 
   return (
     <>
-      {isMobile ? (
-        <BottomNavBar />
-      ) : (
-        <div className="navbar bg-base-100">
-          <div className="flex-none">
+      <BottomNavBar></BottomNavBar>
+      <div className="navbar bg-base-100 flex">
+          <div className="flex-none hidden md:block">
             <SideBar />
           </div>
           <div className="flex-1">
@@ -57,7 +52,7 @@ const NavBar = () => {
           </div>
           <ErrorHandlerElement />
         </div>
-      )}
+      
     </>
   );
 };

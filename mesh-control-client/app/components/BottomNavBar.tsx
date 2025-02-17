@@ -19,7 +19,7 @@ const BottomNavBar = () => {
   };
   
   return (
-    <div className="btm-nav w-screen z-10 bg-base-200">
+    <div className="btm-nav w-screen z-10 bg-base-200 flex md:hidden">
       {items.i.map((item, index) => (
         <div
           key={`bottom-navbar-${index}`}

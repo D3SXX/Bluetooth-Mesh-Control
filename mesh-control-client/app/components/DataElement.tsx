@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import useSWR from 'swr'
 import React from 'react'
+import Image from 'next/image'
 
 import { fetcherGET } from '../utils/fetcher';
 
-const DataElement = ({apiUrl, interval,query="",text="", style="" }: { apiUrl: string; interval: number;text?:string,query?:string, style?:string }) => {
+const DataElement = ({apiUrl, interval,query="",text="", style="", image="" }: { apiUrl: string; interval: number;text?:string,query?:string, style?:string, image?:string }) => {
   let request = `/${apiUrl}`
   if (query){
     request += `?query=${query}`
@@ -17,7 +18,7 @@ const DataElement = ({apiUrl, interval,query="",text="", style="" }: { apiUrl: s
 
   let returnData = data[query];
 
-  return <div className={style}>{returnData}</div>
+  return <div className={style + " inline-flex items-center"}>{image && <Image src={image} width={35} height={35} alt={text}></Image>} {returnData}</div>
 };
 
 

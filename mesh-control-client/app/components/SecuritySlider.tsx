@@ -12,7 +12,7 @@ interface SecurityObject {
 
 const securityDescriptions = ["Low","Medium","High"]
   
-const SecuritySlider = ({isMobile}:{isMobile:boolean}) => {
+const SecuritySlider = () => {
     const [returnData, setReturnData] = useState<number | null>(null);
 
     const changeValue = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +42,7 @@ const SecuritySlider = ({isMobile}:{isMobile:boolean}) => {
     
     return (
         <div>
-            <div className={isMobile == false ? 'bg-base-100 join join-vertical m-2 ml-0 mt-0' : 'bg-base-100 join join-vertical flex h-40 rounded-none'}>
+            <div className={'bg-base-100 join join-vertical rounded-none md:rounded-xl block md:inline-block md:h-auto h-40'}>
                 <div className='join-item text-center mt-1 font-bold border-base-200 border-b-2 text-lg'>Security Status</div>
                 <div className='join-item'>
                     <label htmlFor="steps-range" id="steps-label" className="block mt-2 mb-2 mr-2 ml-2 text-sm font-medium text-center">
