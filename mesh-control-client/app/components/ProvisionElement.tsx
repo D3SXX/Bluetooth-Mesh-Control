@@ -77,7 +77,7 @@ const ProvisionElement = () => {
   return (
     <div
       className={
-        "join join-vertical md:join-horizontal flex justify-between md:m-2"
+        "join join-vertical md:join-horizontal flex justify-between md:m-2 mb-16"
       }
     >
       <div
@@ -131,7 +131,7 @@ const ProvisionElement = () => {
         </div>
         <div className="collapse-content">
           {scanStatus && unprovisionedNodes.length <= 0 && (
-            <div className="text-gray-500 ">
+            <div className="text-gray-500 animate-pulse">
               Scanning for unprovisioned nodes... <br></br>(Try to toggle power
               if the scan cannot find node)
             </div>

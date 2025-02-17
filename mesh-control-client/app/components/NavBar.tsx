@@ -10,8 +10,8 @@ import BottomNavBar from './BottomNavBar';
 
 const NavBar = () => {
   const elements = [
-    (<DataElement key="1" apiUrl='server' query='NAME' interval={0} text='MeshControl' style='text-[#0082fc]' />),
-    (<DataElement key="2" apiUrl='controller' query='DEFAULT' interval={2} text="(Server is offline)" />)
+    (<DataElement key="1" apiUrl='server' query='NAME' interval={0} text='MeshControl' style='text-[#0082fc]'  />),
+    (<DataElement key="2" apiUrl='controller' query='DEFAULT' interval={2} text="(Server is offline)" style='hidden md:block'/>)
   ];
   
   const linksForElements = ["/", "/status"];
@@ -19,8 +19,8 @@ const NavBar = () => {
   return (
     <>
       <BottomNavBar></BottomNavBar>
-      <div className="navbar bg-base-100 hidden md:flex">
-          <div className="flex-none">
+      <div className="navbar bg-base-100 flex">
+          <div className="flex-none hidden md:block">
             <SideBar />
           </div>
           <div className="flex-1">

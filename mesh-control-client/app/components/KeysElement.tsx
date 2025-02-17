@@ -467,7 +467,7 @@ const KeysElement = () => {
   }
 
   return (
-    <div>{renderedElements ? renderedElements : <NoProvisionedNodes />}</div>
+    <div className="mb-16">{renderedElements ? renderedElements : <NoProvisionedNodes />}</div>
   );
 };
 

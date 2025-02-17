@@ -3,7 +3,7 @@ import React from 'react'
 
 const NoProvisionedNodes = () => {
   return (
-    <div className='collapse border-base-300 bg-base-100 border collapse-open'>
+    <div className='collapse border-base-300 bg-base-100 border collapse-open rounded-none md:rounded-xl'>
         <div className="collapse-title">
         Could not find any provisioned nodes...
         </div>
