@@ -26,11 +26,16 @@ const RegularButton = ({
   const [logs, setLogs] = useState<string[]>([]);
   const [processStatus, setProcessStatus] = useState(false);
   const outputRef = useRef<HTMLUListElement>(null);
-  
-  const call = async () => {
+
+  const call = async (attempt: number) => {
     try {
+
       setOutputData(null);
       setIsCalled(true);
+      const attemptElement = document.getElementById(`process-retry-status-${uniqueId}-${apiUrl}-${text}`);
+      if (attemptElement) {
+        attemptElement.innerHTML = `(Attempt ${attempt}/3)`;
+      }
       let data;
       if (await isEmpty(requestData)) {
         if (method === "DELETE"){
@@ -46,8 +51,10 @@ const RegularButton = ({
       setOutputData(data["message"]);
       setIsCalled(false);
 
+      console.log(data);
+
       if (data["status"] === "success") {
-        pollProcessStatus();
+        pollProcessStatus(attempt);
         (document.getElementById(`modal-${uniqueId}-${apiUrl}-${text}`) as HTMLFormElement).showModal()
       }
 
@@ -60,9 +67,11 @@ const RegularButton = ({
     }
   };
 
-  const pollProcessStatus = async () => {
+  const pollProcessStatus = async (attempt: number) => {
     const interval = setInterval(async () => {
       const processResponse = await fetcherGET(`${apiUrl}?query=PROCESS`);
+
+      console.log(processResponse);
 
       if (processResponse && processResponse["PROCESS"]) {
         setLogs(processResponse["PROCESS"]["LOGS"]);
@@ -71,6 +80,15 @@ const RegularButton = ({
         if (outputRef.current) {
           outputRef.current.scrollTop = outputRef.current.scrollHeight;
       }
+        if (processResponse["PROCESS"]["ERROR"]) {
+          setIsCalled(false);
+          setProgressValue(100);
+          clearInterval(interval);
+          console.log(attempt);
+          if (attempt < 3) {
+            call(attempt + 1);
+          }
+        }
         if (!processResponse["PROCESS"]["STATUS"]) {
           clearInterval(interval);
         }
@@ -78,16 +96,23 @@ const RegularButton = ({
     }, 1000);
   };
 
+  const openModal = () => {
+    const modal = document.getElementById(`modal-${uniqueId}-${apiUrl}-${text}`) as HTMLFormElement;
+    if (modal) {
+      modal.showModal();
+    }
+  };
+
   return (
     <div className="w-full">
-      <button onClick={call} className={style}>
+      <button onClick={() => call(1)} className={style}>
         {text || ""}
       </button>
-
+      <p>{`process-retry-status-${uniqueId}-${apiUrl}-${text}`}</p>
       {outputData && <Toast message={outputData} timeout={10000}></Toast>}
       <dialog id={`modal-${uniqueId}-${apiUrl}-${text}`} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg items-center flex">Configuring Mesh {processStatus && (<span className="loading loading-spinner loading-md ml-2"></span>)}</h3>
+          <h3 className="font-bold text-lg items-center flex">Configuring Mesh <p className="ml-1" id={`process-retry-status-${uniqueId}-${apiUrl}-${text}`}></p> {processStatus && (<span className="loading loading-spinner loading-md ml-2"></span>)}</h3>
           <ul className="overflow-auto h-32 mt-2 border border-base-200 rounded-lg" ref={outputRef}>
             {logs.map((log, index) => (
               <li

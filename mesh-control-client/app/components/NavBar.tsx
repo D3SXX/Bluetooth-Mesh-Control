@@ -33,6 +33,7 @@ const NavBar = () => {
             }
           </div>
           <div className="flex-none">
+          <div className='btn btn-square btn-ghost' id="navbar-logs-modal">Logs</div>
             <div className='tooltip tooltip-bottom' data-tip="Unprovisioned scan status">
               <IconElement apiUrl='provision' query='SCAN_ACTIVE' postKey='discovery' iconOn='/icons/bluetooth.svg' iconOff='/icons/bluetooth.svg' enableBlink={true} />
             </div>

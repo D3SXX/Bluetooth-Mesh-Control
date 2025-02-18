@@ -150,11 +150,12 @@ def update_security(level = ""):
         current_app.config["CONFIG"]["SECURITY_LEVEL"] = int(out[index])
 
 async def configure_mesh(address, commandList, waitList):
-    def stop(msg):
+    def stop(msg, error):
         write_to_meshctl("back\ndisconnect")
         current_app.config['CONFIG']["PROCESS"]["LOGS"].append(msg)
         current_app.config['CONFIG']["PROCESS"]["PROGRESS"] = 100
         current_app.config['CONFIG']["PROCESS"]["STATUS"] = False
+        current_app.config['CONFIG']["PROCESS"]["ERROR"] = error
 
     if current_app.config['CONFIG']["PROCESS"]["STATUS"] == True:
         return
@@ -162,6 +163,7 @@ async def configure_mesh(address, commandList, waitList):
     progressIncrement = 100 / progressMax
 
     current_app.config['CONFIG']["PROCESS"]["STATUS"] = True
+    current_app.config['CONFIG']["PROCESS"]["ERROR"] = False
     current_app.config['TERMINAL_OUTPUT'].clear()
     current_app.config['CONFIG']["PROCESS"]["LOGS"] = []
     if current_app.config['TERMINAL_SESSIONS']['CONFIG']["STATUS"] is not True:
@@ -182,7 +184,7 @@ async def configure_mesh(address, commandList, waitList):
 
     while "Connection successful" not in "".join(current_app.config['TERMINAL_OUTPUT']):
         if time.time() - start > 10.0:
-            stop("Reached timeout while trying...")
+            stop("Reached timeout while trying...", True)
             return
 
     current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Waiting for mesh session to open")
@@ -191,7 +193,7 @@ async def configure_mesh(address, commandList, waitList):
 
     while "Mesh session is open" not in "".join(current_app.config['TERMINAL_OUTPUT']):
         if time.time() - start > 5.0:
-            stop("Reached timeout while trying...")
+            stop("Reached timeout while trying...", True)
             return
     current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
     
@@ -206,7 +208,7 @@ async def configure_mesh(address, commandList, waitList):
 
     while "Configuring node" not in "".join(current_app.config['TERMINAL_OUTPUT']):
         if time.time() - start > 10.0:
-            stop("Reached timeout while trying...")
+            stop("Reached timeout while trying...", True)
             return
     current_app.config['CONFIG']["PROCESS"]["PROGRESS"] = progressIncrement
 
@@ -216,7 +218,7 @@ async def configure_mesh(address, commandList, waitList):
         if waitList[i]: 
             while f"{waitList[i]} status Success" not in "".join(current_app.config['TERMINAL_OUTPUT']):
                 if time.time() - start > 10.0:
-                    stop("Reached timeout while trying...")
+                    stop("Reached timeout while trying...", True)
                     return
         else:
             time.sleep(1)
@@ -227,7 +229,7 @@ async def configure_mesh(address, commandList, waitList):
         current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Trying to remove node from prov_db")
         remove_node_from_config(address)
 
-    stop("Success!")
+    stop("Success!", False)
 
 def reset_config(reset, prov_db = None,local_node = None):
         home_path = os.path.expanduser('~')

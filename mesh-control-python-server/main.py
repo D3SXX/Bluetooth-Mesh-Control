@@ -39,17 +39,14 @@ app.config['CONTROLLER'] = {
 app.config['PROVISION'] = {
         "SCAN_ACTIVE":False,
         "USE_FAILBACK_SCAN":False,
-        "PROVISION_ACTIVE":False,
-        "PROVISION_STATUS":"",
-        "PROVISION_START_TIME":0.0,
         "UNPROVISIONED_NODES":{},
-        "PROVISION_OUTPUT":[]
+        "PROCESS":{"STATUS":False, "PROGRESS":0, "LOGS":[], "ERROR":False, "START_TIME":0.0}
 }
 
 app.config['CONFIG'] = {
         "SECURITY_LEVEL":None,
         "NODES":[],
-        "PROCESS":{"STATUS":False,"PROGRESS":0,"LOGS":[]}
+        "PROCESS":{"STATUS":False,"PROGRESS":0,"LOGS":[], "ERROR":False}
 }
 
 app.config['KEYS'] = {
@@ -93,6 +90,10 @@ def initialize_meshctl():
     if app.config['SERVER']['STATUS'] is None:
         start_meshctl(app)
         app.config['SERVER']['STATUS'] = "Server is running"
+
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({"server": app.config['SERVER'], "controller": app.config['CONTROLLER'], "provision": app.config['PROVISION'], "config": app.config['CONFIG'], "keys": app.config['KEYS']}), 200
 
 @app.route('/main', methods=['POST'])
 def main():

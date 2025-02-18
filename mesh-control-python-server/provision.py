@@ -19,7 +19,7 @@ def handle_config():
                 failback_scan()
             else:
                 normal_scan()
-        if current_app.config['PROVISION']["PROVISION_ACTIVE"]:
+        if current_app.config['PROVISION']["PROCESS"]["STATUS"]:
             node_provision_output()
             stop_node_provision()
 
@@ -103,29 +103,35 @@ def restart_scan():
 
 def start_node_provision(node):
     scan_unprovisioned(False)
-    current_app.config['PROVISION']['PROVISION_ACTIVE'] = True
-    current_app.config['PROVISION']["UNPROVISIONED_NODES"].clear()
-    current_app.config['PROVISION']['PROVISION_START_TIME'] = time.time()
+    current_app.config['PROVISION']['PROCESS']['STATUS'] = True
+    current_app.config['PROVISION']['PROCESS']['LOGS'] = []
+    current_app.config['PROVISION']['PROCESS']['ERROR'] = False
+    current_app.config['PROVISION']['PROCESS']['PROGRESS'] = 0
+    #current_app.config['PROVISION']["UNPROVISIONED_NODES"].clear()
+    current_app.config['PROVISION']['PROCESS']['START_TIME'] = time.time()
     write_to_meshctl(f"provision {node}")
 
 def stop_node_provision():
     error_arr = ["Failed to connect:","Stale services? Remove device and re-discover","Services resolved no","Could not find device proxy"]
-    out = "".join(current_app.config['PROVISION']['PROVISION_OUTPUT'])
-    if time.time() - current_app.config['PROVISION']['PROVISION_START_TIME'] >= 60:
-        current_app.config['PROVISION']['PROVISION_ACTIVE'] = False
-        current_app.config['PROVISION']['PROVISION_STATUS'] = "Provision failed on timeout!"
+    out = "".join(current_app.config['PROVISION']['PROCESS']['LOGS'])
+    if time.time() - current_app.config['PROVISION']['PROCESS']['START_TIME'] >= 60:
+        current_app.config['PROVISION']['PROCESS']['STATUS'] = False
+        current_app.config['PROVISION']['PROCESS']['ERROR'] = True
+        current_app.config['PROVISION']['PROCESS']['LOGS'].append("Provision failed on timeout!")
     for error in error_arr:
         if error in out:
-            current_app.config['PROVISION']['PROVISION_ACTIVE'] = False
-            current_app.config['PROVISION']['PROVISION_STATUS'] = "Provision failed on error!"
+            current_app.config['PROVISION']['PROCESS']['STATUS'] = False
+            current_app.config['PROVISION']['PROCESS']['ERROR'] = True
+            current_app.config['PROVISION']['PROCESS']['LOGS'].append("Provision failed on error!")
     if "Provision success." in out:
         time.sleep(5)
-        current_app.config['PROVISION']['PROVISION_ACTIVE'] = False
-        current_app.config['PROVISION']['PROVISION_STATUS'] = "Provision success!"
+        current_app.config['PROVISION']['PROCESS']['STATUS'] = False
+        current_app.config['PROVISION']['PROCESS']['ERROR'] = False
+        current_app.config['PROVISION']['PROCESS']['LOGS'].append("Provision success!")
 
 def node_provision_output():
-    if current_app.config['PROVISION']['PROVISION_ACTIVE'] == True:
-        current_app.config['PROVISION']['PROVISION_OUTPUT'] = current_app.config['TERMINAL_OUTPUT'].copy()
+    if current_app.config['PROVISION']['PROCESS']['STATUS'] == True:
+        current_app.config['PROVISION']['PROCESS']['LOGS'] = current_app.config['TERMINAL_OUTPUT'].copy()
 
 def scan_unprovisioned(state):
     current_app.config['TERMINAL_OUTPUT'].clear()

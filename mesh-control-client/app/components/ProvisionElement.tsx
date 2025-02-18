@@ -4,6 +4,7 @@ import TerminalOutputElement from "./TerminalOutputElement";
 import IconElement from "./IconElement";
 
 import { fetcherGET, fetcherPOST, fetcherDELETE } from "../utils/fetcher";
+import RegularButton from "./RegularButton";
 
 interface UnprovisionedNode {
   OOB: string;
@@ -81,7 +82,7 @@ const ProvisionElement = () => {
       }
     >
       <div
-        className={`bg-base-100 collapse collapse-open border-base-300 border w-full md:w-1/2 mr-2 rounded-none md:rounded-xl`}
+        className={`bg-base-100 collapse collapse-open border-base-300 border w-full  mr-2 rounded-none md:rounded-xl`}
       >
         <div className="collapse-title text-xl font-medium flex items-center justify-between ">
           <div className="flex items-center ml-2">
@@ -144,6 +145,7 @@ const ProvisionElement = () => {
             {unprovisionedNodes.length > 0 ? (
               <div>
                 {unprovisionedNodes.map((node, index) => (
+                  <div key={index}>
                   <div
                     key={index}
                     onClick={() =>
@@ -192,18 +194,14 @@ const ProvisionElement = () => {
                               className="w-full flex flex-col md:flex-row md:justify-between"
                             >
                               <button className="btn btn-error hidden md:block">Cancel</button>
-                              <button
-                                className="btn btn-outline btn-success break-all min-w-min"
-                                onClick={() => provision(node.UUID)}
-                              >
-                                <p
-                                  className={
-                                    "break-all md:break-normal"
-                                  }
-                                >
-                                  Provision {node.UUID}
-                                </p>
-                              </button>
+                              <RegularButton
+                                apiUrl="provision"
+                                requestData={{ provision_node: node.UUID }}
+                                text="Provision"
+                                style="btn btn-outline btn-success break-all min-w-min"
+                                uniqueId={node.UUID}
+                                method="POST"
+                              ></RegularButton>
                             </form>
                           </div>
                         </div>
@@ -212,6 +210,7 @@ const ProvisionElement = () => {
                         <button>close</button>
                       </form>
                     </dialog>
+                  </div>
                   </div>
                 ))}
               </div>
@@ -225,9 +224,11 @@ const ProvisionElement = () => {
           </div>
         </div>
       </div>
-      <div className={`w-full md:w-1/2`}>
-        <TerminalOutputElement></TerminalOutputElement>
-      </div>
+      {false && (
+        <div className={`w-full md:w-1/2`}>
+          <TerminalOutputElement></TerminalOutputElement>
+        </div>
+      )}              
     </div>
   );
 };
