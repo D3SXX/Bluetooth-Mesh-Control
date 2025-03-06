@@ -108,7 +108,6 @@ const RegularButton = ({
       <button onClick={() => call(1)} className={style}>
         {text || ""}
       </button>
-      <p>{`process-retry-status-${uniqueId}-${apiUrl}-${text}`}</p>
       {outputData && <Toast message={outputData} timeout={10000}></Toast>}
       <dialog id={`modal-${uniqueId}-${apiUrl}-${text}`} className="modal">
         <div className="modal-box">

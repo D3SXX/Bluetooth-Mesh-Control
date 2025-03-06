@@ -1,6 +1,7 @@
 import { spawn } from "child_process";
 import { NextApiRequest, NextApiResponse } from "next";
 
+
 if (typeof global.pythonProcess === 'undefined') {
   global.pythonProcess = null;
   global.pythonProcessPID = null;
