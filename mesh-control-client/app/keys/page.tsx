@@ -1,7 +1,7 @@
 import React from 'react'
-import NavBar from "@/app/components/NavBar";
-import NodesElement from '../components/NodesElement';
-import KeysElement from '../components/KeysElement';
+import NavBar from "@/app/components-old/NavBar";
+import NodesElement from '../components-old/NodesElement';
+import KeysElement from '../components-old/KeysElement';
 
 
 const KeysPage = () => {

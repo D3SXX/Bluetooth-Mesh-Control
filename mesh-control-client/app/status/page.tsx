@@ -1,7 +1,7 @@
 import React from 'react'
-import NavBar from "@/app/components/NavBar";
+import NavBar from "@/app/components-old/NavBar";
 
-import StatusDataElements from '../components/StatusDataElements';
+import StatusDataElements from '../components-old/StatusDataElements';
 
 
 const StatusPage = () => {

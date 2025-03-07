@@ -1,35 +1,331 @@
-import React from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+"use client"
+import React from 'react';
 
-const SideBar = () => {
-  const elements = ["Home","Provision","Nodes","Keys","Status"];
-  const linksForElements = ["/","/provision","/nodes","/keys","/status"];
+import { styled, useTheme, Theme, CSSObject, createTheme, ThemeProvider } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import CssBaseline from '@mui/material/CssBaseline';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+
+import HomeIcon from '@mui/icons-material/Home';
+import HubIcon from '@mui/icons-material/Hub';
+import BatchPredictionIcon from '@mui/icons-material/BatchPrediction';
+import KeyIcon from '@mui/icons-material/Key';
+
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import BluetoothIcon from '@mui/icons-material/Bluetooth';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import Stack from '@mui/material/Stack';
+
+const drawerWidth = 240;
+
+const openedMixin = (theme: Theme): CSSObject => ({
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    overflowX: 'hidden',
+  });
   
-  const pathname = usePathname()
+  const closedMixin = (theme: Theme): CSSObject => ({
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    overflowX: 'hidden',
+    width: `calc(${theme.spacing(7)} + 1px)`,
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(${theme.spacing(8)} + 1px)`,
+    },
+  });
+  
+  interface AppBarProps extends MuiAppBarProps {
+    open?: boolean;
+  }
 
-  return (
-    <div>
-      <div className="drawer z-10">
-        <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-content">
-          <label htmlFor="my-drawer" className="btn btn-square btn-ghost">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </label>
+  const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0, 1),
+    ...theme.mixins.toolbar,
+  }));
 
-        </div>
-        <div className="drawer-side">
-          <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-          <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content text-xl font-bold">
-            <li><label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay">&#11148; Go back</label></li>
-            {elements.map((element, index) => <li className={pathname === linksForElements[index] ? "filter-invert-selected opacity-40" : ""} key={`SideBar-${index}`}><Link href={linksForElements[index]}>{element}</Link></li>)}
-          </ul>
-        </div>
-      </div>
-    </div>
-  )
-}
 
-export default SideBar
+
+  const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+    ({ theme }) => ({
+      width: drawerWidth,
+      flexShrink: 0,
+      whiteSpace: 'nowrap',
+      boxSizing: 'border-box',
+      variants: [
+        {
+          props: ({ open }) => open,
+          style: {
+            ...openedMixin(theme),
+            '& .MuiDrawer-paper': openedMixin(theme),
+          },
+        },
+        {
+          props: ({ open }) => !open,
+          style: {
+            ...closedMixin(theme),
+            '& .MuiDrawer-paper': closedMixin(theme),
+          },
+        },
+      ],
+    }),
+  );
+  
+  const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+  })<AppBarProps>(({ theme }) => ({
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    variants: [
+      {
+        props: ({ open }) => open,
+        style: {
+          marginLeft: drawerWidth,
+          width: `calc(100% - ${drawerWidth}px)`,
+          transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+        },
+      },
+    ],
+  }));
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        light: '#0082FC',
+        main: '#0082FC',
+        dark: '#0082FC',
+        contrastText: '#fff',
+      }
+    },
+  });
+
+const SideBar = ({children}: {children: React.ReactNode}) => {
+
+    
+    const [open, setOpen] = React.useState(false);
+  
+    const handleDrawerOpen = () => {
+      setOpen(true);
+    };
+  
+    const handleDrawerClose = () => {
+      setOpen(false);
+    };
+  
+    const listItems = [
+        {
+            text: "Home",
+            icon: <HomeIcon />
+        },
+        {
+            text: "Provisioning",
+            icon: <HubIcon />
+        },
+        {
+            text: "Nodes",
+            icon: <BatchPredictionIcon />
+        },
+        {
+            text: "Keys",
+            icon: <KeyIcon />
+        },
+    ]
+    const nodesList = [
+         // TODO
+    ]
+
+    const appBarElements = [
+        {
+            text: "Server logs",
+            icon: <EventNoteIcon />
+        },
+        {
+            text: "Discovery",
+            icon: <BluetoothIcon />
+        },
+        {
+            text: "Power",
+            icon: <PowerSettingsNewIcon />
+        },
+    ]
+
+
+    return (
+        <ThemeProvider theme={theme}>
+        <Box sx={{ display: 'flex' }}>
+          <CssBaseline />
+          <AppBar position="fixed" open={open}>
+            <Toolbar>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                sx={[
+                  {
+                    marginRight: 5,
+                  },
+                  open && { display: 'none' },
+                ]}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" noWrap component="div">
+                Mesh Control
+              </Typography>
+              <Stack direction="row" spacing={2} sx={{marginLeft: 'auto'}}>
+                {appBarElements.map((element, index) => (
+                  <IconButton key={index} color="inherit" aria-label={element.text}>
+                    {element.icon}
+                  </IconButton>
+                ))}
+              </Stack>
+            </Toolbar>
+          </AppBar>
+          <Drawer variant="permanent" open={open}>
+            <DrawerHeader>
+              <IconButton onClick={handleDrawerClose}>
+                {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+              </IconButton>
+            </DrawerHeader>
+            <Divider />
+            <List>
+              {listItems.map((item, index) => (
+                <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
+                  <ListItemButton
+                    sx={[
+                      {
+                        minHeight: 48,
+                        px: 2.5,
+                      },
+                      open
+                        ? {
+                            justifyContent: 'initial',
+                          }
+                        : {
+                            justifyContent: 'center',
+                          },
+                    ]}
+                  >
+                    <ListItemIcon
+                      sx={[
+                        {
+                          minWidth: 0,
+                          justifyContent: 'center',
+                        },
+                        open
+                          ? {
+                              mr: 3,
+                            }
+                          : {
+                              mr: 'auto',
+                            },
+                      ]}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.text}
+                      sx={[
+                        open
+                          ? {
+                              opacity: 1,
+                            }
+                          : {
+                              opacity: 0,
+                            },
+                      ]}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+            <Divider />
+            <List>
+              {nodesList.map((node, index) => (
+                <ListItem key={node.name} disablePadding sx={{ display: 'block' }}>
+                  <ListItemButton
+                    sx={[
+                      {
+                        minHeight: 48,
+                        px: 2.5,
+                      },
+                      open
+                        ? {
+                            justifyContent: 'initial',
+                          }
+                        : {
+                            justifyContent: 'center',
+                          },
+                    ]}
+                  >
+                    <ListItemIcon
+                      sx={[
+                        {
+                          minWidth: 0,
+                          justifyContent: 'center',
+                        },
+                        open
+                          ? {
+                              mr: 3,
+                            }
+                          : {
+                              mr: 'auto',
+                            },
+                      ]}
+                    >
+                      {node.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={node.name}
+                      sx={[
+                        open
+                          ? {
+                              opacity: 1,
+                            }
+                          : {
+                              opacity: 0,
+                            },
+                      ]}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Drawer>
+          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <DrawerHeader />
+                {children}
+          </Box>
+        </Box>
+        </ThemeProvider>
+      );
+};
+
+export default SideBar;

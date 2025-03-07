@@ -1,6 +1,6 @@
 import React from 'react'
-import NavBar from "@/app/components/NavBar";
-import NodesElement from '../components/NodesElement';
+import NavBar from "@/app/components-old/NavBar";
+import NodesElement from '../components-old/NodesElement';
 
 
 const NodesPage = () => {

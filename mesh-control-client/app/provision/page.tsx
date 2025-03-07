@@ -1,6 +1,6 @@
 "use client"
-import NavBar from "../components/NavBar";
-import ProvisionElement from "../components/ProvisionElement";
+import NavBar from "../components-old/NavBar";
+import ProvisionElement from "../components-old/ProvisionElement";
 
 
 export default function Home() {
