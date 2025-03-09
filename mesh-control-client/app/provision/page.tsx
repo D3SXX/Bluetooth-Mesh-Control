@@ -1,14 +1,13 @@
-"use client"
-import NavBar from "../components-old/NavBar";
-import ProvisionElement from "../components-old/ProvisionElement";
 
-
+import { Box } from "@mui/material";
+import ScanElement from "../components/ScanElement";
 export default function Home() {
+  
   return (
     <main>
-      <NavBar></NavBar>
-      <ProvisionElement></ProvisionElement>
-        
+      <Box sx={{width: '100%', borderRadius: '10px', alignItems: 'center', display: 'flex', justifyContent: 'center'}}>
+        <ScanElement></ScanElement>
+      </Box>
     </main>
   );
 }

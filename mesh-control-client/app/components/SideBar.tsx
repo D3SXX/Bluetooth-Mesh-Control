@@ -23,11 +23,20 @@ import HomeIcon from '@mui/icons-material/Home';
 import HubIcon from '@mui/icons-material/Hub';
 import BatchPredictionIcon from '@mui/icons-material/BatchPrediction';
 import KeyIcon from '@mui/icons-material/Key';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import Stack from '@mui/material/Stack';
+import ExecuteDialog from './ExecuteDialog';
+import DynamicIcon from './DynamicIcon';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import useSWR from 'swr';
+import { fetcherGET } from '../utils/fetcher';
+
+import { ServerResponse } from '../interfaces/server';
 
 const drawerWidth = 240;
 
@@ -138,42 +147,61 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
       setOpen(false);
     };
   
+
+    const { data, error, isLoading } = useSWR<ServerResponse["config"]>("/config?query=NODES", fetcherGET, {
+      refreshInterval: 1000,
+  });
+
     const listItems = [
         {
             text: "Home",
-            icon: <HomeIcon />
+            icon: <HomeIcon />,
+            link: "/"
         },
         {
             text: "Provisioning",
-            icon: <HubIcon />
+            icon: <HubIcon />,
+            link: "/provision"
         },
         {
             text: "Nodes",
-            icon: <BatchPredictionIcon />
+            icon: <BatchPredictionIcon />,
+            link: "/nodes"
         },
         {
             text: "Keys",
-            icon: <KeyIcon />
+            icon: <KeyIcon />,
+            link: "/keys"
         },
     ]
-    const nodesList = [
-         // TODO
-    ]
+
+    const nodesList = data && data.NODES ? data.NODES.nodes.map((node) => ({
+        name: `Node ${node.configuration.elements[0].unicastAddress}`,
+        icon: <LightbulbIcon />
+    })) : []
 
     const appBarElements = [
         {
-            text: "Server logs",
-            icon: <EventNoteIcon />
-        },
-        {
             text: "Discovery",
-            icon: <BluetoothIcon />
+            iconOn: <BluetoothIcon sx={{color: 'skyblue'}}/>,
+            iconOff: <BluetoothIcon sx={{color: 'white'}}/>,
+            enableBlink: true,
+            apiUrl: "provision",
+            query: "SCAN_ACTIVE",
+            interval: 1000
         },
         {
             text: "Power",
-            icon: <PowerSettingsNewIcon />
+            iconOn: <PowerSettingsNewIcon sx={{color: 'skyblue'}}/>,
+            iconOff: <PowerSettingsNewIcon sx={{color: 'white'}}/>,
+            enableBlink: false,
+            apiUrl: "controller",
+            query: "POWER",
+            interval: 1000
         },
     ]
+
+    const pathname = usePathname();
 
 
     return (
@@ -200,11 +228,12 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
                 Mesh Control
               </Typography>
               <Stack direction="row" spacing={2} sx={{marginLeft: 'auto'}}>
+                <IconButton id="logs-button">
+                  <EventNoteIcon/>
+                </IconButton>
                 {appBarElements.map((element, index) => (
-                  <IconButton key={index} color="inherit" aria-label={element.text}>
-                    {element.icon}
-                  </IconButton>
-                ))}
+                    <DynamicIcon key={index} iconOn={element.iconOn} iconOff={element.iconOff} enableBlink={element.enableBlink} apiUrl={element.apiUrl} query={element.query} interval={element.interval} />
+                ))} 
               </Stack>
             </Toolbar>
           </AppBar>
@@ -217,7 +246,8 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
             <Divider />
             <List>
               {listItems.map((item, index) => (
-                <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
+                <Link href={item.link} key={item.text}>
+                <ListItem disablePadding sx={{ display: 'block', backgroundColor: pathname === item.link ? 'lightgray' : 'transparent' }}>
                   <ListItemButton
                     sx={[
                       {
@@ -264,6 +294,7 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
                     />
                   </ListItemButton>
                 </ListItem>
+                </Link>
               ))}
             </List>
             <Divider />

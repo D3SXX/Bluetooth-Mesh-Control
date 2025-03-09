@@ -47,6 +47,7 @@ def handle_config():
         if discovery_status is not None:
             if discovery_status == "any":
                 discovery_status = not current_app.config['PROVISION']['SCAN_ACTIVE']
+            current_app.config['PROVISION']['UNPROVISIONED_NODES'].clear()
             scan_unprovisioned(discovery_status)
             response = {
                 "status": "success",

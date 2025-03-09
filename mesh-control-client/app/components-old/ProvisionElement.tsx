@@ -61,8 +61,12 @@ const ProvisionElement = () => {
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [scanStatus]);
-
+  }, [scanStatus]          const nodesArray = Object.entries(nodesObj).map(
+    ([UUID, nodeInfo]: [string, UnprovisionedNode]) => ({
+      ...nodeInfo,
+      UUID,
+    })
+  );
   const handleCheckboxChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
