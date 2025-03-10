@@ -1,14 +1,12 @@
 import React from 'react'
 import NavBar from "@/app/components-old/NavBar";
-import NodesElement from '../components-old/NodesElement';
-import KeysElement from '../components-old/KeysElement';
+import KeysElement from '../components/KeysElement';
 
 
 const KeysPage = () => {
 
   return (
     <div>
-     <NavBar></NavBar>
     <KeysElement></KeysElement>
     </div>
   )

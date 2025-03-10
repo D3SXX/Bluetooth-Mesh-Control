@@ -34,6 +34,7 @@ const DynamicIcon = ({iconOn, iconOff, enableBlink, apiUrl, query, interval}: {i
         refreshInterval: interval,
     });
 
+
     useEffect(() => {
       if(data) {
         setIconState(data[query]);

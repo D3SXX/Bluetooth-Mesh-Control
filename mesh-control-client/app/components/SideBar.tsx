@@ -149,7 +149,7 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
   
 
     const { data, error, isLoading } = useSWR<ServerResponse["config"]>("/config?query=NODES", fetcherGET, {
-      refreshInterval: 1000,
+      refreshInterval: 3000,
   });
 
     const listItems = [

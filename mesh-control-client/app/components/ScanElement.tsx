@@ -13,7 +13,11 @@ import { fetcherGET, fetcherPOST } from "../utils/fetcher";
 import ExecuteDialog from "./ExecuteDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 import LightbulbCircleIcon from "@mui/icons-material/LightbulbCircle";
+import LinearProgress from "@mui/material/LinearProgress";
 
+import BluetoothSearchingIcon from "@mui/icons-material/BluetoothSearching";
+import BluetoothDisabledIcon from "@mui/icons-material/BluetoothDisabled";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
 interface UnprovisionedNode {
   OOB: string;
   UUID: string;
@@ -73,34 +77,49 @@ const ScanElement = () => {
   };
 
   return (
+    <Box sx={{ width: "60%", borderRadius: "10px", border: "1px solid lightgray",overflow: "hidden" }}>
+      {scanStatus ? <LinearProgress sx={{ height: "6px" }} /> : <></>}
     <Box
       sx={{
-        width: "60%",
-        border: "1px solid lightgray",
-        borderRadius: "10px",
         padding: "20px",
       }}
     >
       <Box>
-        <FormGroup>
+        <Button
+          variant="text"
+          sx={{
+            color: "black",
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+          onClick={() =>
+            handleCheckboxChange({ target: { checked: !scanStatus } })
+          }
+        >
+          {scanStatus ? (
+            <p className="flex items-center gap-2">
+              <BluetoothSearchingIcon /> Scanning
+            </p>
+          ) : (
+            <p className="flex items-center gap-2">
+              <BluetoothDisabledIcon /> Not Scanning
+            </p>
+          )}
           <Stack direction="row" justifyContent="space-between">
-            <FormControlLabel
-              control={
-                <Switch checked={scanStatus} onChange={handleCheckboxChange} />
-              }
-            label="Scan"
-          />
-          {scanStatus ? <CircularProgress size={30} /> : ""}
+            <Stack direction="row"></Stack>
+            <Switch checked={scanStatus} />
           </Stack>
-        </FormGroup>
+        </Button>
       </Box>
-      <Box sx={{ marginTop: 3 }}>
+      <Box>
+        {scanStatus ? <Box sx={{ marginLeft: "8px", marginTop: "8px", marginBottom: "8px"}}>Available Nodes</Box> : <></>}
         <Stack spacing={2}>
           {unprovisionedNodes.map((node) => (
             <ExecuteDialog
-              sx={{ color: "black", borderColor: "lightgray", height: "50px" }}
+              sx={{ color: "black", border: "0px", height: "50px", textAlign: "left", justifyContent: "flex-start"}}
               data={node}
-              buttonTitle={node.name || node.address}
+              buttonTitle={node.name ? (<p className="flex items-center gap-2"><LightbulbIcon /> {node.name}</p>) : (<p className="flex items-center gap-2"><LightbulbIcon /> {node.address}</p>)}
               dialogTitle="Provision Node"
               text={[
                 `Name: ${node.name}`,
@@ -113,14 +132,14 @@ const ScanElement = () => {
               fetcherData={{
                 type: "POST",
                 executeUrl: "/provision",
-                getDataUrl:
-                  "/provision?query=PROCESS",
+                getDataUrl: "/provision?query=PROCESS",
                 data: { provision_node: node.UUID },
               }}
             />
           ))}
         </Stack>
       </Box>
+    </Box>
     </Box>
   );
 };

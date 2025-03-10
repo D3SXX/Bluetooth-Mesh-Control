@@ -27,6 +27,7 @@ import {
 import ListItemText from "@mui/material/ListItemText";
 import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
 
 interface fetcherData {
   type: string; // POST, PUT, DELETE
@@ -45,10 +46,10 @@ const ExecuteDialog = ({
   fetcherData,
 }: {
   sx: any;
-  data: any;
-  buttonTitle: string;
+  data?: any;
+  buttonTitle: React.ReactNode;
   dialogTitle: string;
-  text: string[];
+  text: React.ReactNode[];
   key: string;
   fetcherData: fetcherData;
 }) => {
@@ -182,11 +183,13 @@ const ExecuteDialog = ({
                 sx={{ height: "100%", overflow: "auto" }}
                 ref={processOutputRef}
               >
-                <List>
-                  {processOutput ? (
+                <List disablePadding>
+                {processOutput ? (
                     processOutput.map((t, index) => (
-                      <ListItem key={`${index}-${t}`} disablePadding>
-                        <ListItemText primary={t} />
+                      <ListItem key={index} disablePadding>
+                        <ListItemButton>
+                          <ListItemText>{t}</ListItemText>
+                        </ListItemButton>
                       </ListItem>
                     ))
                   ) : (

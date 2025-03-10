@@ -46,10 +46,12 @@ def handle_config():
             if power_status is False:
                 scan_unprovisioned(False)
 
+            update_controller()
+
             response = {
                 "status": "success",
                 "message": f"Controller power updated to {power_status}",
-                "POWER": power_status
+                "POWER": current_app.config['CONTROLLER']["POWER"]
             }
         else:
             response = {
@@ -63,6 +65,7 @@ def stop_meshctl():
     """Endpoint to stop the controller meshctl process"""
     stop_custom_process() 
     return jsonify({"message": "meshctl process stopping"}), 200
+
 
 def update_controller():
     if current_app.config['CONFIG']['PROCESS']['STATUS'] == True:
