@@ -77,7 +77,7 @@ const ScanElement = () => {
   };
 
   return (
-    <Box sx={{ width: "60%", borderRadius: "10px", border: "1px solid lightgray",overflow: "hidden" }}>
+    <Box sx={{ width: {xs: "100%", md: "60%"}, borderRadius: "10px", border: {xs: "none", md: "1px solid lightgray"},overflow: "hidden" }}>
       {scanStatus ? <LinearProgress sx={{ height: "6px" }} /> : <></>}
     <Box
       sx={{

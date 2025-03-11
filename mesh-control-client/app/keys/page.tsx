@@ -1,14 +1,15 @@
 import React from 'react'
 import NavBar from "@/app/components-old/NavBar";
 import KeysElement from '../components/KeysElement';
+import { Box } from '@mui/material';
 
 
 const KeysPage = () => {
 
   return (
-    <div>
+    <Box sx={{width: '100%', borderRadius: '10px', alignItems: 'center', display: 'flex', justifyContent: 'center'}}>
     <KeysElement></KeysElement>
-    </div>
+    </Box>
   )
 }
 

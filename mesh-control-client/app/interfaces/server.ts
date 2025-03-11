@@ -100,10 +100,25 @@ interface NetKey {
 
 interface Keys {
     APPKEYS: AppKey[];
-    BIND: Record<string, unknown>;
+    BIND: Bind[];
     NETKEYS: NetKey[];
-    PUBLISH: Record<string, unknown>;
-    SUBSCRIBE: Record<string, unknown>;
+    PUBLISH: Publish[];
+    SUBSCRIBE: Subscribe[];
+}
+
+interface Bind {
+    APPKEY_INDEX?: number;
+    MODEL?: string;
+}
+
+interface Publish {
+    ADDRESS?: string;
+    APPKEY_INDEX?: number;
+    TTL?: number;
+}
+
+interface Subscribe {
+    ADDRESS_LIST?: [];
 }
 
 interface ProvisionProcess {
