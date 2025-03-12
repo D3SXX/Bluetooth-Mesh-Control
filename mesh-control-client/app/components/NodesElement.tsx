@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import ExecuteDialog from "./ExecuteDialog";
+import { wrap } from "module";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -152,13 +153,20 @@ const NodesElement = () => {
   };
 
   return (
-    <Box sx={{ width: {xs: "100%", md: "500px"}, minHeight: "60px" }}>
+    <Box sx={{  minHeight: "60px",display: "flex",flexWrap: "wrap",justifyContent: "center", flexDirection: {xs: "column", md: "row"}}}>
       {nodesList.map((node) => (
-        <Box key={node.data.configuration.elements[0].unicastAddress}>
+        <Box key={node.data.configuration.elements[0].unicastAddress}
+        sx={{
+          width: {xs: "100%", md: "500px"},
+          overflow: "wrap",
+          margin: "10px",
+          flexShrink: 0,
+        }}
+        >
           <Button
             variant="text"
             sx={{
-              border: "1px solid lightgray",
+              border: {md: "1px solid lightgray", xs: "0px"},
               color: "black",
               width: "100%",
               minHeight: "60px",
@@ -190,7 +198,7 @@ const NodesElement = () => {
             node.data.configuration.elements[0]
               .unicastAddress as keyof typeof openDescription
           ] && (
-            <Box sx={{ border: "1px solid lightgray", borderTop: "0px" }}>
+            <Box sx={{ border: {md: "1px solid lightgray", xs: "0px"}, borderTop: "0px" }}>
               <Grid
                 container
                 rowSpacing={1}
@@ -754,7 +762,7 @@ const NodesElement = () => {
                     width: "30%",
                     borderRadius: "18px",
                     fontSize: "1.1rem",
-                    border: "1px solid lightgray",
+                    border: {md: "1px solid lightgray", xs: "0px"},
                     color: "black",
                   }}
                   onClick={() =>
@@ -774,7 +782,7 @@ const NodesElement = () => {
                     width: "30%",
                     borderRadius: "18px",
                     fontSize: "1.1rem",
-                    border: "1px solid lightgray",
+                    border: {md: "1px solid lightgray", xs: "0px"},
                     color: "black",
                   }}
                   onClick={() =>
@@ -794,7 +802,7 @@ const NodesElement = () => {
                     width: "30%",
                     borderRadius: "18px",
                     fontSize: "1.1rem",
-                    border: "1px solid lightgray",
+                    border: {md: "1px solid lightgray", xs: "0px"},
                     color: "black",
                   }}
                   onClick={() =>
@@ -821,7 +829,7 @@ const NodesElement = () => {
                 minHeight: "50px",
                 color: "red",
                 borderRadius: "18px",
-                border: "1px solid lightgray",
+                border: {md: "1px solid lightgray", xs: "0px"},
                 borderTop: "0px",
                 borderTopLeftRadius: "0px",
                 borderTopRightRadius: "0px",

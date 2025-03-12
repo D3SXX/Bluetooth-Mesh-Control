@@ -65,6 +65,10 @@ def get_keys_data():
                                 if "ASSIGNED_NODES" not in returned_obj["NETKEYS"][index]:
                                         returned_obj["NETKEYS"][index]["ASSIGNED_NODES"] = []
                                 returned_obj["NETKEYS"][index]["ASSIGNED_NODES"].append(node["deviceKey"])
+                                if "ASSIGNED_NODES_UNICAST_ADDRESS" not in returned_obj["NETKEYS"][index]:
+                                        returned_obj["NETKEYS"][index]["ASSIGNED_NODES_UNICAST_ADDRESS"] = []
+                                        print(node)
+                                returned_obj["NETKEYS"][index]["ASSIGNED_NODES_UNICAST_ADDRESS"].append(node["configuration"]["elements"][0]["unicastAddress"])
                 for element in node["configuration"]["elements"]:
                         if not "models" in element:
                                break

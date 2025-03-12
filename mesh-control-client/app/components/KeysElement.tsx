@@ -1,5 +1,5 @@
 "use client"
-import { ListItemButton, Tab, Tabs, Typography } from '@mui/material'
+import { Divider, ListItemButton, Tab, Tabs, Typography } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { Box } from '@mui/material'
 import React from 'react'
@@ -75,16 +75,17 @@ const KeysElement = () => {
         </Tabs>
         <CustomTabPanel value={value} index={0}>
           <Box>
-            <Typography>Available keys</Typography>
+            <Typography sx={{fontSize: "24px"}}>Available keys</Typography>
+            <Divider sx={{marginTop: "10px", marginBottom: "10px"}}/>
             <Grid container spacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
               <Grid size={2}>
-                <Typography>Index</Typography>
+                <Typography sx={{fontWeight: "bold"}}>Index</Typography>
               </Grid>
               <Grid size={3}>
-                <Typography>Bound network key</Typography>
+                <Typography sx={{fontWeight: "bold"}}>Bound network key</Typography>
               </Grid>
               <Grid size={7}>
-                <Typography>Key</Typography>
+                <Typography sx={{fontWeight: "bold"}}>Key</Typography>
               </Grid>
               {keysData && keysData.APPKEYS && keysData.APPKEYS.map((key) => (
                 <ListItemButton
@@ -108,19 +109,20 @@ const KeysElement = () => {
                 </ListItemButton>
               ))}
             </Grid>
-            <Typography>Assigned keys</Typography>
+            <Typography sx={{fontSize: "24px",}}>Assigned keys</Typography>
+            <Divider sx={{marginTop: "10px", marginBottom: "10px"}}/>
             <Grid container spacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
               <Grid size={3}>
-                <Typography>Unicast Address</Typography>
+                <Typography sx={{fontWeight: "bold"}}>Unicast Address</Typography>
               </Grid>
               <Grid size={3}>
-                <Typography>Type</Typography>
+                <Typography sx={{fontWeight: "bold"}}>Type</Typography>
               </Grid>
               <Grid size={3}>
-                <Typography>Model ID</Typography>
+                <Typography sx={{fontWeight: "bold"}}>Model ID</Typography>
               </Grid>
               <Grid size={3}>
-                <Typography>Key Index / Address</Typography>
+                <Typography sx={{fontWeight: "bold"}}>Key Index / Address</Typography>
               </Grid>
               {keysData && keysData.BIND && Object.keys(keysData.BIND).map((bind, bindIndex) => (
                 <React.Fragment key={bindIndex}>
@@ -203,7 +205,70 @@ const KeysElement = () => {
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
           <Box>
-            <Typography>Network Keys</Typography>
+            <Typography sx={{fontSize: "24px"}}>Available keys</Typography>
+            <Divider sx={{marginTop: "10px", marginBottom: "10px"}}/>
+            <Grid container spacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+              <Grid size={2}>
+                <Typography sx={{fontWeight: "bold"}}>Index</Typography>
+              </Grid>
+              <Grid size={3}>
+                <Typography sx={{fontWeight: "bold"}}>Key Refresh</Typography>
+              </Grid>
+              <Grid size={7}>
+                <Typography sx={{fontWeight: "bold"}}>Key</Typography>
+              </Grid>
+              {keysData && keysData.NETKEYS && keysData.NETKEYS.map((key) => (
+                <ListItemButton
+                  key={key.index}
+                  component="a"
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Grid size={2}>
+                    <Typography>{key.index}</Typography>
+                  </Grid>
+                  <Grid size={3}>
+                    <Typography>{key.keyRefresh}</Typography>
+                  </Grid>
+                  <Grid size={7}>
+                    <Typography>{key.key}</Typography>
+                  </Grid>
+                </ListItemButton>
+              ))}
+            </Grid>
+            <Typography sx={{fontSize: "24px"}}>Assigned keys</Typography>
+            <Divider sx={{marginTop: "10px", marginBottom: "10px"}}/>
+            <Grid container spacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+              <Grid size={6}>
+                <Typography sx={{fontWeight: "bold"}}>Unicast Address</Typography>
+              </Grid>
+              <Grid size={6}>
+                <Typography sx={{fontWeight: "bold"}}>Key Index</Typography>
+              </Grid>
+              {keysData && keysData.NETKEYS && keysData.NETKEYS.map((key) => (
+                <ListItemButton
+                  key={key.index}
+                  component="a"
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Grid size={6}>
+                    <Typography>{key.ASSIGNED_NODES_UNICAST_ADDRESS.map((address) => (
+                      <Typography key={address}>{address}</Typography>
+                    ))}</Typography>
+                  </Grid>
+                  <Grid size={6}>
+                    <Typography>{key.index}</Typography>
+                  </Grid>
+                </ListItemButton>
+              ))}
+            </Grid>
           </Box>
         </CustomTabPanel>
     </Box>

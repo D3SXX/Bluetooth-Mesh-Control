@@ -93,6 +93,7 @@ interface Controller {
 
 interface NetKey {
     ASSIGNED_NODES: string[];
+    ASSIGNED_NODES_UNICAST_ADDRESS: string[];
     index: number;
     key: string;
     keyRefresh: number;
