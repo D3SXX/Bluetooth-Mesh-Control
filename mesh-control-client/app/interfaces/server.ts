@@ -14,6 +14,16 @@ interface NodeElement {
 interface NodeConfigurationElement {
     elementIndex: number;
     unicastAddress: string;
+    models?: {
+        bind?: number[];
+        modelId?: string;
+        publish?: {
+            address: string;
+            index: string;
+            ttl: number;
+        };
+        subscribe?: string[];
+    }[];
 }
 
 interface NodeComposition {

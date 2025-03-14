@@ -153,20 +153,29 @@ const NodesElement = () => {
   };
 
   return (
-    <Box sx={{  minHeight: "60px",display: "flex",flexWrap: "wrap",justifyContent: "center", flexDirection: {xs: "column", md: "row"}}}>
+    <Box
+      sx={{
+        minHeight: "60px",
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        flexDirection: { xs: "column", md: "row" },
+      }}
+    >
       {nodesList.map((node) => (
-        <Box key={node.data.configuration.elements[0].unicastAddress}
-        sx={{
-          width: {xs: "100%", md: "500px"},
-          overflow: "wrap",
-          margin: "10px",
-          flexShrink: 0,
-        }}
+        <Box
+          key={node.data.configuration.elements[0].unicastAddress}
+          sx={{
+            width: { xs: "100%", md: "500px" },
+            overflow: "wrap",
+            margin: "10px",
+            flexShrink: 0,
+          }}
         >
           <Button
             variant="text"
             sx={{
-              border: {md: "1px solid lightgray", xs: "0px"},
+              border: { md: "1px solid lightgray", xs: "0px" },
               color: "black",
               width: "100%",
               minHeight: "60px",
@@ -198,7 +207,12 @@ const NodesElement = () => {
             node.data.configuration.elements[0]
               .unicastAddress as keyof typeof openDescription
           ] && (
-            <Box sx={{ border: {md: "1px solid lightgray", xs: "0px"}, borderTop: "0px" }}>
+            <Box
+              sx={{
+                border: { md: "1px solid lightgray", xs: "0px" },
+                borderTop: "0px",
+              }}
+            >
               <Grid
                 container
                 rowSpacing={1}
@@ -358,7 +372,125 @@ const NodesElement = () => {
                 </Grid>
               </CustomTabPanel>
               <CustomTabPanel value={valueDescriptionTab} index={1}>
-                Item Two
+                <Grid container>
+                  <Grid size={3}>
+                    <Typography variant="body2" fontWeight="bold">
+                      Unicast
+                    </Typography>
+                  </Grid>
+                  <Grid size={3}>
+                    <Typography variant="body2" fontWeight="bold">
+                      Type
+                    </Typography>
+                  </Grid>
+                  <Grid size={3}>
+                    <Typography variant="body2" fontWeight="bold">
+                      Model ID
+                    </Typography>
+                  </Grid>
+                  <Grid size={3}>
+                    <Typography variant="body2" fontWeight="bold">
+                      AppKey Index / Address
+                    </Typography>
+                  </Grid>
+
+                  {node.data.configuration.elements.map((element) => (
+                    <React.Fragment key={element.elementIndex}>
+                      {element.models &&
+                        element.models.map((model, index) => (
+                          <React.Fragment key={index}>
+                            {model.bind &&
+                              model.bind.map((bind, index) => (
+                                <ListItemButton
+                                  key={index}
+                                  component="a"
+                                  sx={{ width: "100%" }}
+                                >
+                                  <Grid size={3}>
+                                    <Typography
+                                      variant="body2"
+                                      fontWeight="bold"
+                                    >
+                                      {element.unicastAddress}
+                                    </Typography>
+                                  </Grid>
+
+                                  <Grid key={index} size={3}>
+                                    <Typography variant="body2">
+                                      Bind
+                                    </Typography>
+                                  </Grid>
+                                  <Grid key={index} size={3}>
+                                    <Typography variant="body2">
+                                      {model.modelId}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid key={index} size={3}>
+                                    <Typography variant="body2">
+                                      {model.bind}
+                                    </Typography>
+                                  </Grid>
+                                </ListItemButton>
+                              ))}
+                            {model.publish && (
+                              <ListItemButton
+                                component="a"
+                                sx={{ width: "100%" }}
+                              >
+                                <Grid size={3}>
+                                  <Typography variant="body2" fontWeight="bold">
+                                    {element.unicastAddress}
+                                  </Typography>
+                                </Grid>
+                                <Grid key={index} size={3}>
+                                  <Typography variant="body2">
+                                    Publish
+                                  </Typography>
+                                </Grid>
+                                <Grid key={index} size={3}>
+                                  <Typography variant="body2">
+                                    {model.modelId}
+                                  </Typography>
+                                </Grid>
+                                <Grid key={index} size={3}>
+                                  <Typography variant="body2">
+                                    {model.publish.address}
+                                  </Typography>
+                                </Grid>
+                              </ListItemButton>
+                            )}
+                                                        {model.subscribe && (
+                              <ListItemButton
+                                component="a"
+                                sx={{ width: "100%" }}
+                              >
+                                <Grid size={3}>
+                                  <Typography variant="body2" fontWeight="bold">
+                                    {element.unicastAddress}
+                                  </Typography>
+                                </Grid>
+                                <Grid key={index} size={3}>
+                                  <Typography variant="body2">
+                                    Subscribe
+                                  </Typography>
+                                </Grid>
+                                <Grid key={index} size={3}>
+                                  <Typography variant="body2">
+                                    {model.modelId}
+                                  </Typography>
+                                </Grid>
+                                <Grid key={index} size={3}>
+                                  <Typography variant="body2">
+                                    {model.subscribe}
+                                  </Typography>
+                                </Grid>
+                              </ListItemButton>
+                            )}
+                          </React.Fragment>
+                        ))}
+                    </React.Fragment>
+                  ))}
+                </Grid>
               </CustomTabPanel>
               <CustomTabPanel value={valueDescriptionTab} index={2}>
                 <Grid
@@ -706,7 +838,8 @@ const NodesElement = () => {
                             setupData[
                               node.data.configuration.elements[0]
                                 .unicastAddress as keyof typeof setupData
-                            ]?.bind?.unicastAddressIndex as keyof typeof node.data.composition.elements
+                            ]?.bind
+                              ?.unicastAddressIndex as keyof typeof node.data.composition.elements
                           ].models.map((model, index) => (
                             <MenuItem value={model} key={model}>
                               {model}
@@ -762,7 +895,7 @@ const NodesElement = () => {
                     width: "30%",
                     borderRadius: "18px",
                     fontSize: "1.1rem",
-                    border: {md: "1px solid lightgray", xs: "0px"},
+                    border: { md: "1px solid lightgray", xs: "0px" },
                     color: "black",
                   }}
                   onClick={() =>
@@ -782,7 +915,7 @@ const NodesElement = () => {
                     width: "30%",
                     borderRadius: "18px",
                     fontSize: "1.1rem",
-                    border: {md: "1px solid lightgray", xs: "0px"},
+                    border: { md: "1px solid lightgray", xs: "0px" },
                     color: "black",
                   }}
                   onClick={() =>
@@ -802,7 +935,7 @@ const NodesElement = () => {
                     width: "30%",
                     borderRadius: "18px",
                     fontSize: "1.1rem",
-                    border: {md: "1px solid lightgray", xs: "0px"},
+                    border: { md: "1px solid lightgray", xs: "0px" },
                     color: "black",
                   }}
                   onClick={() =>
@@ -829,7 +962,7 @@ const NodesElement = () => {
                 minHeight: "50px",
                 color: "red",
                 borderRadius: "18px",
-                border: {md: "1px solid lightgray", xs: "0px"},
+                border: { md: "1px solid lightgray", xs: "0px" },
                 borderTop: "0px",
                 borderTopLeftRadius: "0px",
                 borderTopRightRadius: "0px",

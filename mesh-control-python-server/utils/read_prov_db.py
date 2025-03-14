@@ -67,7 +67,6 @@ def get_keys_data():
                                 returned_obj["NETKEYS"][index]["ASSIGNED_NODES"].append(node["deviceKey"])
                                 if "ASSIGNED_NODES_UNICAST_ADDRESS" not in returned_obj["NETKEYS"][index]:
                                         returned_obj["NETKEYS"][index]["ASSIGNED_NODES_UNICAST_ADDRESS"] = []
-                                        print(node)
                                 returned_obj["NETKEYS"][index]["ASSIGNED_NODES_UNICAST_ADDRESS"].append(node["configuration"]["elements"][0]["unicastAddress"])
                 for element in node["configuration"]["elements"]:
                         if not "models" in element:
@@ -99,6 +98,7 @@ def get_nodes_data():
         returned_obj = {"STATUS":True}
         returned_obj["nodes"] = mesh_info["nodes"] if "nodes" in mesh_info else []
         returned_obj["appKeys"] = mesh_info["appKeys"] if "appKeys" in mesh_info else []
+        returned_obj["netKeys"] = mesh_info["netKeys"] if "netKeys" in mesh_info else []
         for i, node in enumerate(returned_obj["nodes"]):
                 if "composition" not in node:
                      returned_obj["nodes"][i]["composition"] = default["composition"]
