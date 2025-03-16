@@ -35,7 +35,7 @@ function CustomTabPanel(props: TabPanelProps) {
 
 const KeysElement = () => {
 
-  const [keysData, setKeysData] = React.useState<ServerResponse["keys"]>(null);
+  const [keysData, setKeysData] = React.useState<ServerResponse["keys"]>();
 
 
   const { data, error, isLoading } = useSWR<ServerResponse["keys"]>(

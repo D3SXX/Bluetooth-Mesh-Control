@@ -111,15 +111,17 @@ interface NetKey {
 
 interface Keys {
     APPKEYS: AppKey[];
-    BIND: Bind[];
+    BIND: Bind;
     NETKEYS: NetKey[];
-    PUBLISH: Publish[];
-    SUBSCRIBE: Subscribe[];
+    PUBLISH: Record<string, Publish>;
+    SUBSCRIBE: Record<string, Subscribe>;
 }
 
 interface Bind {
-    APPKEY_INDEX?: number;
-    MODEL?: string;
+    [key: string]: {
+        APPKEY_INDEX?: number;
+        MODEL?: string;
+    };
 }
 
 interface Publish {
@@ -129,7 +131,7 @@ interface Publish {
 }
 
 interface Subscribe {
-    ADDRESS_LIST?: [];
+    ADDRESS_LIST?: string[];
 }
 
 interface ProvisionProcess {
