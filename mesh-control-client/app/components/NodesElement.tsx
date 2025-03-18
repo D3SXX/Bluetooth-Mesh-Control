@@ -187,7 +187,7 @@ const NodesElement = () => {
 
   const handleClose = (node: string, type: string, reset: boolean = true) => {
     if (type === "bind" || type === "publish" || type === "subscribe") {
-      if (!(setupData[node]?.[type]?.saved) && reset) {
+      if (!setupData[node]?.[type]?.saved && reset) {
         console.log(setupData[node]?.[type]?.saved);
         console.log("reset!");
         setDefaultValues(node, type);
@@ -734,74 +734,83 @@ const NodesElement = () => {
                     </p>
                     <p></p>
                   </DialogContentText>
-                  <Box sx={{ padding: "10px" }}>
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    sx={{ padding: "10px" }}
+                  >
                     <Stack
                       direction="row"
                       spacing={2}
                       sx={{ alignItems: "center" }}
                     >
                       <p>Unicast Address:</p>
-                      <Select
-                        required
-                        variant="standard"
-                        sx={{ width: "20%" }}
-                        label="Unicast Address"
-                        value={
-                          setupData[
-                            node.data.configuration.elements[0]
-                              .unicastAddress as keyof typeof setupData
-                          ]?.bind?.unicastAddressIndex
-                        }
-                        onChange={(event) =>
-                          handleChange(
-                            node.data.configuration.elements[0].unicastAddress,
-                            "bind",
-                            "unicastAddressIndex",
-                            Number(event.target.value)
-                          )
-                        }
-                      >
-                        {node.data.configuration.elements.map(
-                          (element, index) => (
-                            <MenuItem value={index} key={index}>
-                              {element.unicastAddress}
+                      <Box sx={{ flex: 1 }}>
+                        <Select
+                          required
+                          variant="standard"
+                          sx={{ width: "100%" }}
+                          label="Unicast Address"
+                          value={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.bind?.unicastAddressIndex
+                          }
+                          onChange={(event) =>
+                            handleChange(
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
+                              "bind",
+                              "unicastAddressIndex",
+                              Number(event.target.value)
+                            )
+                          }
+                        >
+                          {node.data.configuration.elements.map(
+                            (element, index) => (
+                              <MenuItem value={index} key={index}>
+                                {element.unicastAddress}
+                              </MenuItem>
+                            )
+                          )}
+                        </Select>
+                      </Box>
+                      <p style={{ marginLeft: "10px" }}>Model:</p>
+                      <Box sx={{ flex: 1 }}>
+                        <Select
+                          required
+                          variant="standard"
+                          sx={{ width: "100%" }}
+                          value={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.bind?.model
+                          }
+                          label="Model"
+                          onChange={(event) => {
+                            handleChange(
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
+                              "bind",
+                              "model",
+                              event.target.value
+                            );
+                          }}
+                        >
+                          {node.data.composition.elements[
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.bind?.unicastAddressIndex as number
+                          ]?.models?.map((model, index) => (
+                            <MenuItem value={model} key={model}>
+                              {model}
                             </MenuItem>
-                          )
-                        )}
-                      </Select>
-                      <p>Model:</p>
-
-                      <Select
-                        required
-                        variant="standard"
-                        sx={{ width: "20%" }}
-                        value={
-                          setupData[
-                            node.data.configuration.elements[0]
-                              .unicastAddress as keyof typeof setupData
-                          ]?.bind?.model
-                        }
-                        label="Model"
-                        onChange={(event) => {
-                          handleChange(
-                            node.data.configuration.elements[0].unicastAddress,
-                            "bind",
-                            "model",
-                            event.target.value
-                          );
-                        }}
-                      >
-                        {node.data.composition.elements[
-                          setupData[
-                            node.data.configuration.elements[0]
-                              .unicastAddress as keyof typeof setupData
-                          ]?.bind?.unicastAddressIndex as number
-                        ]?.models?.map((model, index) => (
-                          <MenuItem value={model} key={model}>
-                            {model}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                          ))}
+                        </Select>
+                      </Box>
                     </Stack>
                     <Stack
                       direction="row"
@@ -809,34 +818,37 @@ const NodesElement = () => {
                       sx={{ alignItems: "center" }}
                     >
                       <p>Application Key:</p>
-                      <Select
-                        required
-                        name="appKey"
-                        variant="standard"
-                        sx={{ width: "313px" }}
-                        value={
-                          setupData[
-                            node.data.configuration.elements[0]
-                              .unicastAddress as keyof typeof setupData
-                          ]?.bind?.appKey
-                        }
-                        onChange={(event) => {
-                          handleChange(
-                            node.data.configuration.elements[0].unicastAddress,
-                            "bind",
-                            "appKey",
-                            event.target.value
-                          );
-                        }}
-                      >
-                        {appKeysList.map((appKey, index) => (
-                          <MenuItem value={appKey.key} key={index}>
-                            Key {index}: {appKey.key}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      <Box sx={{ flex: 1 }}>
+                        <Select
+                          required
+                          sx={{ width: "100%" }}
+                          name="appKey"
+                          variant="standard"
+                          value={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.bind?.appKey
+                          }
+                          onChange={(event) => {
+                            handleChange(
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
+                              "bind",
+                              "appKey",
+                              event.target.value
+                            );
+                          }}
+                        >
+                          {appKeysList.map((appKey, index) => (
+                            <MenuItem value={appKey.key} key={index}>
+                              Key {index}: {appKey.key}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Box>
                     </Stack>
-                  </Box>
+                  </Stack>
                 </DialogContent>
                 <DialogActions>
                   <Button
@@ -909,69 +921,72 @@ const NodesElement = () => {
                         sx={{ alignItems: "center" }}
                       >
                         <p>Unicast Address:</p>
-                        <Select
-                          required
-                          variant="standard"
-                          sx={{ width: "20%" }}
-                          value={
-                            setupData[
-                              node.data.configuration.elements[0]
-                                .unicastAddress as keyof typeof setupData
-                            ]?.publish?.unicastAddressIndex
-                          }
-                          label="Unicast Address"
-                          onChange={(event) => {
-                            handleChange(
-                              node.data.configuration.elements[0]
-                                .unicastAddress,
-                              "publish",
-                              "unicastAddressIndex",
-                              Number(event.target.value)
-                            );
-                          }}
-                        >
-                          {node.data.configuration.elements.map(
-                            (element, index) => (
-                              <MenuItem value={index} key={index}>
-                                {element.unicastAddress}
-                              </MenuItem>
-                            )
-                          )}
-                        </Select>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.publish?.unicastAddressIndex
+                            }
+                            label="Unicast Address"
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "publish",
+                                "unicastAddressIndex",
+                                Number(event.target.value)
+                              );
+                            }}
+                          >
+                            {node.data.configuration.elements.map(
+                              (element, index) => (
+                                <MenuItem value={index} key={index}>
+                                  {element.unicastAddress}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
                         <p>Model:</p>
-
-                        <Select
-                          required
-                          variant="standard"
-                          sx={{ width: "20%" }}
-                          value={
-                            setupData[
-                              node.data.configuration.elements[0]
-                                .unicastAddress as keyof typeof setupData
-                            ]?.publish?.model
-                          }
-                          label="Model"
-                          onChange={(event) => {
-                            handleChange(
-                              node.data.configuration.elements[0]
-                                .unicastAddress,
-                              "publish",
-                              "model",
-                              event.target.value
-                            );
-                          }}
-                        >
-                          {node.data.composition.elements[
-                            setupData[
-                              node.data.configuration.elements[0]
-                                .unicastAddress as keyof typeof setupData
-                            ]?.publish?.unicastAddressIndex as number
-                          ]?.models?.map((model, index) => (
-                            <MenuItem value={model} key={model}>
-                              {model}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.publish?.model
+                            }
+                            label="Model"
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "publish",
+                                "model",
+                                event.target.value
+                              );
+                            }}
+                          >
+                            {node.data.composition.elements[
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.publish?.unicastAddressIndex as number
+                            ]?.models?.map((model, index) => (
+                              <MenuItem value={model} key={model}>
+                                {model}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </Box>
                       </Stack>
                       <Stack direction="row" spacing={1}>
                         <p>Publish Period:</p>
@@ -1006,87 +1021,124 @@ const NodesElement = () => {
                         </p>
                         <p>seconds</p>
                       </Stack>
-                      <Stack
-                        direction="row"
-                        spacing={2}
-                        sx={{ alignItems: "center" }}
-                      >
-                        <Slider
-                          aria-label="Number of Steps"
-                          defaultValue={
-                            setupData[
-                              node.data.configuration.elements[0].unicastAddress
-                            ]?.publish?.publicationPeriod?.step || 0
-                          }
-                          valueLabelDisplay="auto"
-                          shiftStep={10}
-                          step={1}
-                          marks
-                          valueLabelFormat={(value) => {
-                            return `${value} steps`;
-                          }}
-                          min={0} // 0x00 (0b000000) - Publication Period disabled (Mesh profile 4.2.2.2)
-                          max={63} // 0x3F (0b111111) - Publication Period enabled (Mesh profile 4.2.2.2)
-                          onChange={(event, value) => {
-                            handleChange(
-                              node.data.configuration.elements[0]
-                                .unicastAddress,
-                              "publish",
-                              "publicationPeriod",
-                              {
-                                step: value as number,
-                                res:
+                      <Box>
+                        <Stack direction="column" spacing={0}>
+                        <Stack
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            spacing={1}
+                          >
+                            <Stack direction="row" spacing={1}>
+                              <p>Number of Steps:</p>
+                              <p>
+                                {setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.publish?.publicationPeriod?.step || 0}
+                              </p>
+                            </Stack>
+                            <Stack direction="row" spacing={1}>
+                              <p>Step Resolution:</p>
+                              <p>
+                                {convertStepToSeconds(
                                   setupData[
                                     node.data.configuration.elements[0]
                                       .unicastAddress
-                                  ]?.publish?.publicationPeriod?.res || 0,
+                                  ]?.publish?.publicationPeriod?.res || 0
+                                )}
+                              </p>
+                              <p>ms</p>
+                            </Stack>
+                          </Stack>
+                          
+
+
+                          <Stack
+                            direction="row"
+                            spacing={2}
+                            sx={{ alignItems: "center" }}
+                          >
+                            <Slider
+                              aria-label="Number of Steps"
+                              defaultValue={
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.publish?.publicationPeriod?.step || 0
                               }
-                            );
-                          }}
-                        />
-                        <Slider
-                          aria-label="Step Resolution"
-                          defaultValue={
-                            setupData[
-                              node.data.configuration.elements[0].unicastAddress
-                            ]?.publish?.publicationPeriod?.res || 0
-                          }
-                          valueLabelDisplay="auto"
-                          shiftStep={1}
-                          step={1}
-                          valueLabelFormat={(value) => {
-                            switch (value) {
-                              case 0: // 0b00
-                                return "100 milliseconds";
-                              case 1: // 0b01
-                                return "1 second";
-                              case 2: // 0b10
-                                return "10 seconds";
-                              case 3: // 0b11
-                                return "10 minutes";
-                            }
-                          }}
-                          marks
-                          min={0} // 0x00 (0b00) - 100 milliseconds (Mesh profile 4.2.2.2)
-                          max={3} // 0x03 (0b11) - 10 minutes (Mesh profile 4.2.2.2)
-                          onChange={(event, value) => {
-                            handleChange(
-                              node.data.configuration.elements[0]
-                                .unicastAddress,
-                              "publish",
-                              "publicationPeriod",
-                              {
-                                step:
-                                  setupData[
-                                    node.data.configuration.elements[0]
-                                      .unicastAddress
-                                  ]?.publish?.publicationPeriod?.step || 0,
-                                res: value as number,
+                              valueLabelDisplay="auto"
+                              shiftStep={10}
+                              step={1}
+                              marks
+                              valueLabelFormat={(value) => {
+                                return `${value} steps`;
+                              }}
+                              min={0} // 0x00 (0b000000) - Publication Period disabled (Mesh profile 4.2.2.2)
+                              max={63} // 0x3F (0b111111) - Publication Period enabled (Mesh profile 4.2.2.2)
+                              onChange={(event, value) => {
+                                handleChange(
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress,
+                                  "publish",
+                                  "publicationPeriod",
+                                  {
+                                    step: value as number,
+                                    res:
+                                      setupData[
+                                        node.data.configuration.elements[0]
+                                          .unicastAddress
+                                      ]?.publish?.publicationPeriod?.res || 0,
+                                  }
+                                );
+                              }}
+                            />
+                            <Slider
+                              aria-label="Step Resolution"
+                              defaultValue={
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.publish?.publicationPeriod?.res || 0
                               }
-                            );
-                          }}
-                        />
-                      </Stack>
+                              valueLabelDisplay="auto"
+                              shiftStep={1}
+                              step={1}
+                              valueLabelFormat={(value) => {
+                                switch (value) {
+                                  case 0: // 0b00
+                                    return "100 milliseconds";
+                                  case 1: // 0b01
+                                    return "1 second";
+                                  case 2: // 0b10
+                                    return "10 seconds";
+                                  case 3: // 0b11
+                                    return "10 minutes";
+                                }
+                              }}
+                              marks
+                              min={0} // 0x00 (0b00) - 100 milliseconds (Mesh profile 4.2.2.2)
+                              max={3} // 0x03 (0b11) - 10 minutes (Mesh profile 4.2.2.2)
+                              onChange={(event, value) => {
+                                handleChange(
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress,
+                                  "publish",
+                                  "publicationPeriod",
+                                  {
+                                    step:
+                                      setupData[
+                                        node.data.configuration.elements[0]
+                                          .unicastAddress
+                                      ]?.publish?.publicationPeriod?.step || 0,
+                                    res: value as number,
+                                  }
+                                );
+                              }}
+                            />
+                          </Stack>
+                        </Stack>
+                      </Box>
                       <Box>
                         <Stack direction="column">
                           <Stack
@@ -1190,12 +1242,20 @@ const NodesElement = () => {
                         </Stack>
                       </Box>
                       <Box>
-                        <Stack direction="row" spacing={2}>
+                        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
                           <p>Address:</p>
-                          <Select
-                            required
-                            name="address"
+                          <Box sx={{ flex: 1 }}>
+                            <Select
+                              required
+                              name="address"
                             variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.publish?.address?.type
+                            }
                             value={
                               setupData[
                                 node.data.configuration.elements[0]
@@ -1227,9 +1287,12 @@ const NodesElement = () => {
                               Virtual (0x8000–0xBFFF)
                             </MenuItem>
                           </Select>
+                          </Box>
+                          <Box sx={{ flex: 1 }}>
                           <TextField
                             id="standard-error"
                             variant="standard"
+                            sx={{ width: "100%" }}
                             defaultValue={
                               setupData[
                                 node.data.configuration.elements[0]
@@ -1247,8 +1310,9 @@ const NodesElement = () => {
                                     .unicastAddress
                                 ]?.publish?.address?.type as string
                               )
-                            }
-                          />
+                              }
+                            />
+                          </Box>
                         </Stack>
                       </Box>
                       <Stack
@@ -1257,10 +1321,17 @@ const NodesElement = () => {
                         sx={{ alignItems: "center" }}
                       >
                         <p>Application Key:</p>
+                        <Box sx={{ flex: 1 }}>
                         <Select
                           required
                           name="appKey"
                           variant="standard"
+                          sx={{ width: "100%" }}
+                          defaultValue={
+                            setupData[
+                              node.data.configuration.elements[0].unicastAddress
+                            ]?.publish?.appKey
+                          }
                           value={
                             setupData[
                               node.data.configuration.elements[0].unicastAddress
@@ -1280,8 +1351,9 @@ const NodesElement = () => {
                             <MenuItem value={appKey.key} key={index}>
                               Key {index}: {appKey.key}
                             </MenuItem>
-                          ))}
-                        </Select>
+                            ))}
+                          </Select>
+                        </Box>
                       </Stack>
                     </Stack>
                   </Box>
@@ -1319,6 +1391,13 @@ const NodesElement = () => {
                     onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
                       event.preventDefault();
 
+                      handleChange(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "subscribe",
+                        "saved",
+                        true
+                      );
+
                       handleClose(
                         node.data.configuration.elements[0].unicastAddress,
                         "subscribe",
@@ -1344,13 +1423,24 @@ const NodesElement = () => {
                       <Stack
                         direction="row"
                         spacing={2}
-                        sx={{ alignItems: "center" }}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                        }}
                       >
                         <p>Unicast Address:</p>
+                        <Box sx={{ flex: 1 }}>
                         <Select
                           required
                           variant="standard"
-                          sx={{ width: "20%" }}
+                          sx={{ width: "100%" }}
+                          defaultValue={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.subscribe?.unicastAddressIndex
+                          }
                           value={
                             setupData[
                               node.data.configuration.elements[0]
@@ -1376,12 +1466,19 @@ const NodesElement = () => {
                             )
                           )}
                         </Select>
+                        </Box>
                         <p>Model:</p>
-
+                        <Box sx={{ flex: 1 }}>
                         <Select
                           required
                           variant="standard"
-                          sx={{ width: "20%" }}
+                          defaultValue={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.subscribe?.model
+                          }
+                          sx={{ width: "100%" }}
                           value={
                             setupData[
                               node.data.configuration.elements[0]
@@ -1410,74 +1507,114 @@ const NodesElement = () => {
                             </MenuItem>
                           ))}
                         </Select>
+                        </Box>
                       </Stack>
-                      <Box>
-                        <Stack direction="row" spacing={2}>
-                          <p>Address:</p>
-                          <Select
-                            required
-                            name="address"
-                            variant="standard"
-                            onChange={(event) => {
-                              handleChange(
-                                node.data.configuration.elements[0]
-                                  .unicastAddress,
-                                "subscribe",
-                                "address",
-                                {
-                                  type: event.target.value,
-                                  value: getAddressValue(
-                                    event.target.value as string
-                                  ),
-                                }
-                              );
-                            }}
-                          >
-                            <MenuItem value="unicast">
-                              Unicast (0x0001–0x7FFF)
-                            </MenuItem>
-                            <MenuItem value="group">
-                              Group (0xC000–0xFFFF)
-                            </MenuItem>
-                            <MenuItem value="virtual">
-                              Virtual (0x8000–0xBFFF)
-                            </MenuItem>
-                          </Select>
-                          <TextField
-                            required
-                            id="standard-error"
-                            variant="standard"
-                            defaultValue={
-                              setupData[
-                                node.data.configuration.elements[0]
-                                  .unicastAddress
-                              ]?.subscribe?.address?.value
-                            }
-                            error={
-                              !verifyAddressValue(
-                                setupData[
-                                  node.data.configuration.elements[0]
-                                    .unicastAddress
-                                ]?.subscribe?.address?.value as string,
-                                setupData[
-                                  node.data.configuration.elements[0]
-                                    .unicastAddress
-                                ]?.subscribe?.address?.type as string
-                              )
-                            }
-                          />
-                        </Stack>
-                      </Box>
                       <Stack
                         direction="row"
                         spacing={2}
-                        sx={{ alignItems: "center" }}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                        }}
+                      >
+                        <p>Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                        <Select
+                          required
+                          name="address"
+                          variant="standard"
+                          sx={{ width: "100%" }}
+                          defaultValue={
+                            setupData[
+                              node.data.configuration.elements[0].unicastAddress
+                            ]?.subscribe?.address?.type
+                          }
+                          value={
+                            setupData[
+                              node.data.configuration.elements[0].unicastAddress
+                            ]?.subscribe?.address?.type
+                          }
+                          onChange={(event) => {
+                            handleChange(
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
+                              "subscribe",
+                              "address",
+                              {
+                                type: event.target.value,
+                                value: getAddressValue(
+                                  event.target.value as string
+                                ),
+                              }
+                            );
+                          }}
+                        >
+                          <MenuItem value="unicast">
+                            Unicast (0x0001–0x7FFF)
+                          </MenuItem>
+                          <MenuItem value="group">
+                            Group (0xC000–0xFFFF)
+                          </MenuItem>
+                          <MenuItem value="virtual">
+                            Virtual (0x8000–0xBFFF)
+                          </MenuItem>
+                        </Select>
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                        <TextField
+                          required
+                          id="standard-error"
+                          variant="standard"
+                          sx={{ width: "100%" }}
+                          defaultValue={
+                            setupData[
+                              node.data.configuration.elements[0].unicastAddress
+                            ]?.subscribe?.address?.value
+                          }
+                          error={
+                            !verifyAddressValue(
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.subscribe?.address?.value as string,
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.subscribe?.address?.type as string
+                            )
+                          }
+                        />
+                        </Box>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                        }}
                       >
                         <p>Application Key:</p>
+                        <Box sx={{ flex: 1 }}>
                         <Select
                           required
                           name="appKey"
                           variant="standard"
+                          sx={{ width: "100%" }}
+                          defaultValue={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.subscribe?.appKey
+                          }
+                          value={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.subscribe?.appKey
+                          }
                           onChange={(event) => {
                             handleChange(
                               node.data.configuration.elements[0]
@@ -1494,6 +1631,7 @@ const NodesElement = () => {
                             </MenuItem>
                           ))}
                         </Select>
+                        </Box>
                       </Stack>
                     </Stack>
                   </Box>
