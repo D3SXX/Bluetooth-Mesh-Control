@@ -20,6 +20,22 @@ def handle_config():
         with app_ctx.app_context(): 
             asyncio.run(configure_mesh(address, commandList, waitList))
 
+    def execute_queue(queue):
+        if len(queue[0]) > 0:
+            print("queue[0]")
+            print(queue[0])
+            print("queue[1]")
+            print(queue[1])
+            print("queue[2]")
+            print(queue[2])
+            queue[0].pop(0)
+            queue[1].pop(0)
+            queue[2].pop(0)
+            threading.Thread(target=run_async_in_thread, args=(queue[2], queue[0], queue[1], current_app._get_current_object())).start()
+        else:
+            return
+        
+
     if request.method == 'GET':
 
         status = request.args.get('query')
@@ -42,9 +58,15 @@ def handle_config():
     elif request.method == 'POST':
         req_data = request.get_json()
         security_level = req_data.get("security_level")
+        
+        # For new UI
+        setupData = req_data.get("setupData")
+        
+        # For old UI
         add_bind = req_data.get("add_bind")
         pub_set = req_data.get("pub_set")
         sub_add = req_data.get("sub_add")
+        
         config = req_data.get("config")
 
         response_value = {}
@@ -77,6 +99,34 @@ def handle_config():
             response_value = {
                 "status": "success",
                 "message": f'Initiated sub add for node {sub_add["unicastAddress"]}',
+            }
+            
+        elif setupData:
+            commandListBind = [f'appkey-add {setupData["bind"]["appKeyIndex"]}', f'bind {setupData["bind"]["model"]["index"]} {setupData["bind"]["appKeyIndex"]} {setupData["bind"]["model"]["value"]}']
+            waitListBind = [False, "Model App"]
+            #commandListPublish = [f'appkey-add {setupData["publish"]["appKeyIndex"]}',f'pub-set {setupData["publish"]["elementAddress"]} {setupData["publish"]["address"][2:]} {setupData["publish"]["appKeyIndex"]} {setupData["publish"]["publicationPeriod"]} {setupData["publish"]["retransmissionCount"]} {setupData["publish"]["modelValue"]}']
+            waitListPublish = [False, "Publication"]
+            #commandListSubscribe = [f'appkey-add {setupData["subscribe"]["appKeyIndex"]}',f'sub-add {setupData["subscribe"]["elementAddress"]} {setupData["subscribe"]["address"][2:]} {setupData["subscribe"]["modelValue"]}']
+            waitListSubscribe = [False, "Subscription"]
+            commandListQueue = [[]]
+            waitListQueue = [[]]
+            addressListQueue = [[]]
+            if setupData["bind"]["saved"]:
+                commandListQueue.append(commandListBind)
+                waitListQueue.append(waitListBind)
+                addressListQueue.append(setupData["bind"]["unicastAddress"])
+            if setupData["publish"]["saved"]:
+                commandListQueue.append(commandListPublish)
+                waitListQueue.append(waitListPublish)
+                addressListQueue.append(setupData["publish"]["unicastAddress"])
+            if setupData["subscribe"]["saved"]:
+                commandListQueue.append(commandListSubscribe)
+                waitListQueue.append(waitListSubscribe)
+                addressListQueue.append(setupData["subscribe"]["unicastAddress"])
+            execute_queue([commandListQueue, waitListQueue, addressListQueue])
+            response_value = {
+                "status": "success",
+                "message": "Initiated process"
             }
         elif config:
             prov_db = config["prov_db"]
@@ -149,7 +199,7 @@ def update_security(level = ""):
         index = len(out) - 1 - out[::-1].index('Level') + 3
         current_app.config["CONFIG"]["SECURITY_LEVEL"] = int(out[index])
 
-async def configure_mesh(address, commandList, waitList):
+async def configure_mesh(address, commandList, waitList, callback = None, queue = None):
     def stop(msg, error):
         write_to_meshctl("back\ndisconnect")
         current_app.config['CONFIG']["PROCESS"]["LOGS"].append(msg)
@@ -230,6 +280,8 @@ async def configure_mesh(address, commandList, waitList):
         remove_node_from_config(address)
 
     stop("Success!", False)
+    if callback:
+        callback(queue)
 
 def reset_config(reset, prov_db = None,local_node = None):
         home_path = os.path.expanduser('~')
