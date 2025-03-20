@@ -31,7 +31,7 @@ def handle_config():
             queue[0].pop(0)
             queue[1].pop(0)
             queue[2].pop(0)
-            threading.Thread(target=run_async_in_thread, args=(queue[2], queue[0], queue[1], current_app._get_current_object())).start()
+            threading.Thread(target=run_async_in_thread, args=(queue[2][0], queue[0][0], queue[1][0], current_app._get_current_object())).start()
         else:
             return
         
@@ -102,9 +102,10 @@ def handle_config():
             }
             
         elif setupData:
-            commandListBind = [f'appkey-add {setupData["bind"]["appKeyIndex"]}', f'bind {setupData["bind"]["model"]["index"]} {setupData["bind"]["appKeyIndex"]} {setupData["bind"]["model"]["value"]}']
+            commandListBind = [f'appkey-add {setupData["bind"]["appKeyIndex"]}', f'bind {setupData["bind"]["unicastAddress"]["index"]} {setupData["bind"]["appKeyIndex"]} {setupData["bind"]["model"]["value"]}']
             waitListBind = [False, "Model App"]
-            #commandListPublish = [f'appkey-add {setupData["publish"]["appKeyIndex"]}',f'pub-set {setupData["publish"]["elementAddress"]} {setupData["publish"]["address"][2:]} {setupData["publish"]["appKeyIndex"]} {setupData["publish"]["publicationPeriod"]} {setupData["publish"]["retransmissionCount"]} {setupData["publish"]["modelValue"]}']
+            commandListPublish = [f'appkey-add {setupData["publish"]["appKeyIndex"]}',
+                                  f'pub-set {setupData["publish"]["unicastAddress"]["value"]} {setupData["publish"]["address"]["value"]} {setupData["publish"]["appKeyIndex"]} {hex((setupData["publish"]["publicationPeriod"]["step"] << 2) | setupData["publish"]["publicationPeriod"]["res"])} {hex((setupData["publish"]["retransmitionCount"]["cnt"] << 3) | setupData["publish"]["retransmitionCount"]["per"])} {setupData["publish"]["model"]["value"]}']
             waitListPublish = [False, "Publication"]
             #commandListSubscribe = [f'appkey-add {setupData["subscribe"]["appKeyIndex"]}',f'sub-add {setupData["subscribe"]["elementAddress"]} {setupData["subscribe"]["address"][2:]} {setupData["subscribe"]["modelValue"]}']
             waitListSubscribe = [False, "Subscription"]
@@ -114,15 +115,15 @@ def handle_config():
             if setupData["bind"]["saved"]:
                 commandListQueue.append(commandListBind)
                 waitListQueue.append(waitListBind)
-                addressListQueue.append(setupData["bind"]["unicastAddress"])
+                addressListQueue.append(setupData["bind"]["unicastAddress"]["value"])
             if setupData["publish"]["saved"]:
                 commandListQueue.append(commandListPublish)
                 waitListQueue.append(waitListPublish)
-                addressListQueue.append(setupData["publish"]["unicastAddress"])
+                addressListQueue.append(setupData["publish"]["unicastAddress"]["value"])
             if setupData["subscribe"]["saved"]:
                 commandListQueue.append(commandListSubscribe)
                 waitListQueue.append(waitListSubscribe)
-                addressListQueue.append(setupData["subscribe"]["unicastAddress"])
+                addressListQueue.append(setupData["subscribe"]["unicastAddress"]["value"])
             execute_queue([commandListQueue, waitListQueue, addressListQueue])
             response_value = {
                 "status": "success",
@@ -227,6 +228,10 @@ async def configure_mesh(address, commandList, waitList, callback = None, queue 
     write_to_meshctl("power on")
     time.sleep(1)
     write_to_meshctl("connect")
+    
+    if "Failed to start discovery" in "".join(current_app.config['TERMINAL_OUTPUT']):
+        stop("Failed to start discovery", True)
+        return
     
     start = time.time()
     current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Trying to connect to the mesh network")

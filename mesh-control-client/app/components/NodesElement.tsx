@@ -48,7 +48,10 @@ interface SetupData {
     };
     publish?: {
       unicastAddress: { index: number; value: string };
-      model: string;
+      model: {
+        index: number;
+        value: string;
+      };
       address: {
         type: string;
         value: string;
@@ -66,7 +69,10 @@ interface SetupData {
     };
     subscribe?: {
       unicastAddress: { index: number; value: string };
-      model: string;
+      model: {
+        index: number;
+        value: string;
+      };
       address: {
         type: string;
         value: string;
@@ -109,7 +115,7 @@ const NodesElement = () => {
 
   const [setupData, setSetupData] = React.useState<SetupData>({});
 
-  const setDefaultValues = (node: string, type: string) => {
+  const setDefaultValues = (node: string, type: string, defaultModel: string) => {
     switch (type) {
       case "bind":
         setSetupData((prev) => ({
@@ -117,8 +123,8 @@ const NodesElement = () => {
           [node]: {
             ...prev[node],
             bind: {
-              unicastAddress: { index: 0, value: "" },
-              model: { index: 0, value: "" },
+              unicastAddress: { index: 0, value: node },
+              model: { index: 0, value: defaultModel },
               appKeyIndex: 0,
               saved: false,
             },
@@ -131,8 +137,8 @@ const NodesElement = () => {
           [node]: {
             ...prev[node],
             publish: {
-              unicastAddress: { index: 0, value: "" },
-              model: "",
+              unicastAddress: { index: 0, value: node },
+              model: { index: 0, value: defaultModel },
               address: {
                 type: "unicast",
                 value: "0x0001",
@@ -157,8 +163,8 @@ const NodesElement = () => {
           [node]: {
             ...prev[node],
             subscribe: {
-              unicastAddress: { index: 0, value: "" },
-              model: "",
+              unicastAddress: { index: 0, value: node },
+              model: { index: 0, value: defaultModel },
               address: {
                 type: "unicast",
                 value: "0x0001",
@@ -172,11 +178,11 @@ const NodesElement = () => {
     }
   };
 
-  const handleClickOpen = (node: string, type: string) => {
+  const handleClickOpen = (node: string, type: string, defaultModel: string) => {
     if (type === "bind" || type === "publish" || type === "subscribe") {
       if (!setupData[node]?.[type]?.saved) {
         console.log("reset!");
-        setDefaultValues(node, type);
+        setDefaultValues(node, type, defaultModel);
       }
       setOpenSetupDialog({
         ...openSetupDialog,
@@ -188,12 +194,12 @@ const NodesElement = () => {
     }
   };
 
-  const handleClose = (node: string, type: string, reset: boolean = true) => {
+  const handleClose = (node: string, type: string, defaultModel: string, reset: boolean = true) => {
     if (type === "bind" || type === "publish" || type === "subscribe") {
       if (!setupData[node]?.[type]?.saved && reset) {
         console.log(setupData[node]?.[type]?.saved);
         console.log("reset!");
-        setDefaultValues(node, type);
+        setDefaultValues(node, type, defaultModel);
       }
       setOpenSetupDialog({
         ...openSetupDialog,
@@ -293,9 +299,9 @@ const NodesElement = () => {
       data.NODES.nodes.forEach((node) => {
         const nodeAddress = node.configuration.elements[0].unicastAddress;
         if (!setupData[nodeAddress]) {
-          setDefaultValues(nodeAddress, "bind");
-          setDefaultValues(nodeAddress, "publish");
-          setDefaultValues(nodeAddress, "subscribe");
+          setDefaultValues(nodeAddress, "bind", node.composition.elements[0].models[0]);
+          setDefaultValues(nodeAddress, "publish", node.composition.elements[0].models[0]);
+          setDefaultValues(nodeAddress, "subscribe", node.composition.elements[0].models[0]);
         }
       });
     }
@@ -592,17 +598,17 @@ const NodesElement = () => {
                                     </Typography>
                                   </Grid>
 
-                                  <Grid key={index} size={3}>
+                                  <Grid size={3}>
                                     <Typography variant="body2">
                                       Bind
                                     </Typography>
                                   </Grid>
-                                  <Grid key={index} size={3}>
+                                  <Grid size={3}>
                                     <Typography variant="body2">
                                       {model.modelId}
                                     </Typography>
                                   </Grid>
-                                  <Grid key={index} size={3}>
+                                  <Grid size={3}>
                                     <Typography variant="body2">
                                       {model.bind}
                                     </Typography>
@@ -619,17 +625,17 @@ const NodesElement = () => {
                                     {element.unicastAddress}
                                   </Typography>
                                 </Grid>
-                                <Grid key={index} size={3}>
+                                <Grid size={3}>
                                   <Typography variant="body2">
                                     Publish
                                   </Typography>
                                 </Grid>
-                                <Grid key={index} size={3}>
+                                <Grid size={3}>
                                   <Typography variant="body2">
                                     {model.modelId}
                                   </Typography>
                                 </Grid>
-                                <Grid key={index} size={3}>
+                                <Grid size={3}>
                                   <Typography variant="body2">
                                     {model.publish.address}
                                   </Typography>
@@ -715,7 +721,8 @@ const NodesElement = () => {
                 onClose={() =>
                   handleClose(
                     node.data.configuration.elements[0].unicastAddress,
-                    "bind"
+                    "bind",
+                    node.data.composition.elements[0].models[0]
                   )
                 }
                 slotProps={{
@@ -732,6 +739,7 @@ const NodesElement = () => {
                       handleClose(
                         node.data.configuration.elements[0].unicastAddress,
                         "bind",
+                        node.data.composition.elements[0].models[0],
                         false
                       );
                     },
@@ -782,6 +790,18 @@ const NodesElement = () => {
                                   node.data.configuration.elements[
                                     Number(event.target.value)
                                   ].unicastAddress,
+                              }
+                            );
+                            handleChange(
+                              node.data.configuration.elements[0].unicastAddress,
+                              "bind",
+                              "model",
+                              {
+                                index: 0,
+                                value:
+                                  node.data.composition.elements[
+                                    Number(event.target.value)
+                                  ].models[0],
                               }
                             );
                           }}
@@ -886,7 +906,8 @@ const NodesElement = () => {
                     onClick={() =>
                       handleClose(
                         node.data.configuration.elements[0].unicastAddress,
-                        "bind"
+                        "bind",
+                        node.data.composition.elements[0].models[0]
                       )
                     }
                   >
@@ -905,7 +926,8 @@ const NodesElement = () => {
                 onClose={() =>
                   handleClose(
                     node.data.configuration.elements[0].unicastAddress,
-                    "publish"
+                    "publish",
+                    node.data.composition.elements[0].models[0]
                   )
                 }
                 slotProps={{
@@ -922,6 +944,7 @@ const NodesElement = () => {
                       handleClose(
                         node.data.configuration.elements[0].unicastAddress,
                         "publish",
+                        node.data.composition.elements[0].models[0],
                         false
                       );
                     },
@@ -978,6 +1001,18 @@ const NodesElement = () => {
                                     ].unicastAddress,
                                 }
                               );
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "publish",
+                                "model",
+                                {
+                                  index: 0,
+                                  value:
+                                    node.data.composition.elements[
+                                      Number(event.target.value)
+                                    ].models[0],
+                                }
+                              );
                             }}
                           >
                             {node.data.configuration.elements.map(
@@ -1002,7 +1037,7 @@ const NodesElement = () => {
                               setupData[
                                 node.data.configuration.elements[0]
                                   .unicastAddress as keyof typeof setupData
-                              ]?.publish?.model
+                              ]?.publish?.model.index
                             }
                             label="Model"
                             onChange={(event) => {
@@ -1011,7 +1046,16 @@ const NodesElement = () => {
                                   .unicastAddress,
                                 "publish",
                                 "model",
-                                event.target.value
+                                {
+                                  index: Number(event.target.value),
+                                  value:
+                                    node.data.composition.elements[
+                                      setupData[
+                                        node.data.configuration.elements[0]
+                                          .unicastAddress as keyof typeof setupData
+                                      ]?.publish?.unicastAddress.index as number
+                                    ]?.models[Number(event.target.value)],
+                                }
                               );
                             }}
                           >
@@ -1021,7 +1065,7 @@ const NodesElement = () => {
                                   .unicastAddress as keyof typeof setupData
                               ]?.publish?.unicastAddress.index as number
                             ]?.models?.map((model, index) => (
-                              <MenuItem value={model} key={model}>
+                              <MenuItem value={index} key={index}>
                                 {model}
                               </MenuItem>
                             ))}
@@ -1088,7 +1132,7 @@ const NodesElement = () => {
                                   ]?.publish?.publicationPeriod?.res || 0
                                 )}
                               </p>
-                              <p>ms</p>
+                              <p>s</p>
                             </Stack>
                           </Stack>
 
@@ -1287,7 +1331,7 @@ const NodesElement = () => {
                             justifyContent="space-between"
                             spacing={1}
                           >
-                            <Stack direction="row" spacing={1}>
+                            <Stack direction="row" sx={{ alignItems: "center" }} spacing={1}>
                               <p>Address:</p>
                               <Box sx={{ flex: 1 }}>
                                 <Select
@@ -1336,9 +1380,10 @@ const NodesElement = () => {
                               <Box sx={{ flex: 1 }}>
                                 <TextField
                                   id="standard-error"
+                                  required
                                   variant="standard"
                                   sx={{ width: "100%" }}
-                                  defaultValue={
+                                  value={
                                     setupData[
                                       node.data.configuration.elements[0]
                                         .unicastAddress
@@ -1356,6 +1401,20 @@ const NodesElement = () => {
                                       ]?.publish?.address?.type as string
                                     )
                                   }
+                                  onChange={(event) => {
+                                    handleChange(
+                                      node.data.configuration.elements[0].unicastAddress,
+                                      "publish",
+                                      "address",
+                                      {
+                                        type: setupData[
+                                          node.data.configuration.elements[0]
+                                            .unicastAddress
+                                        ]?.publish?.address?.type,
+                                        value: event.target.value,
+                                      }
+                                    );
+                                  }}
                                 />
                               </Box>
                             </Stack>
@@ -1412,7 +1471,8 @@ const NodesElement = () => {
                     onClick={() =>
                       handleClose(
                         node.data.configuration.elements[0].unicastAddress,
-                        "publish"
+                        "publish",
+                        node.data.composition.elements[0].models[0]
                       )
                     }
                   >
@@ -1431,7 +1491,8 @@ const NodesElement = () => {
                 onClose={() =>
                   handleClose(
                     node.data.configuration.elements[0].unicastAddress,
-                    "subscribe"
+                    "subscribe",
+                    node.data.composition.elements[0].models[0]
                   )
                 }
                 slotProps={{
@@ -1450,6 +1511,7 @@ const NodesElement = () => {
                       handleClose(
                         node.data.configuration.elements[0].unicastAddress,
                         "subscribe",
+                        node.data.composition.elements[0].models[0],
                         false
                       );
                     },
@@ -1494,7 +1556,7 @@ const NodesElement = () => {
                               setupData[
                                 node.data.configuration.elements[0]
                                   .unicastAddress as keyof typeof setupData
-                              ]?.subscribe?.unicastAddress.index.toString()
+                              ]?.subscribe?.unicastAddress.index
                             }
                             label="Unicast Address"
                             onChange={(event) => {
@@ -1509,6 +1571,18 @@ const NodesElement = () => {
                                     node.data.configuration.elements[
                                       Number(event.target.value)
                                     ].unicastAddress,
+                                }
+                              );
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "subscribe",
+                                "model",
+                                {
+                                  index: 0,
+                                  value:
+                                    node.data.composition.elements[
+                                      Number(event.target.value)
+                                    ].models[0],
                                 }
                               );
                             }}
@@ -1531,14 +1605,14 @@ const NodesElement = () => {
                               setupData[
                                 node.data.configuration.elements[0]
                                   .unicastAddress as keyof typeof setupData
-                              ]?.subscribe?.model
+                              ]?.subscribe?.model.index
                             }
                             sx={{ width: "100%" }}
                             value={
                               setupData[
                                 node.data.configuration.elements[0]
                                   .unicastAddress as keyof typeof setupData
-                              ]?.subscribe?.model
+                              ]?.subscribe?.model.index
                             }
                             label="Model"
                             onChange={(event) => {
@@ -1547,7 +1621,16 @@ const NodesElement = () => {
                                   .unicastAddress,
                                 "subscribe",
                                 "model",
-                                event.target.value
+                                {
+                                  index: Number(event.target.value),
+                                  value:
+                                  node.data.composition.elements[
+                                    setupData[
+                                      node.data.configuration.elements[0]
+                                        .unicastAddress as keyof typeof setupData
+                                    ]?.subscribe?.unicastAddress.index as number
+                                  ]?.models[Number(event.target.value)],
+                                }
                               );
                             }}
                           >
@@ -1557,7 +1640,7 @@ const NodesElement = () => {
                                   .unicastAddress as keyof typeof setupData
                               ]?.subscribe?.unicastAddress.index as number
                             ]?.models?.map((model, index) => (
-                              <MenuItem value={model} key={model}>
+                              <MenuItem value={index} key={index}>
                                 {model}
                               </MenuItem>
                             ))}
@@ -1630,6 +1713,26 @@ const NodesElement = () => {
                                   .unicastAddress
                               ]?.subscribe?.address?.value
                             }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.subscribe?.address?.value
+                            }
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "subscribe",
+                                "address",
+                                {
+                                  type: setupData[
+                                    node.data.configuration.elements[0]
+                                      .unicastAddress
+                                  ]?.subscribe?.address?.type,
+                                  value: event.target.value,
+                                }
+                              );
+                            }}
                             error={
                               !verifyAddressValue(
                                 setupData[
@@ -1699,7 +1802,8 @@ const NodesElement = () => {
                     onClick={() =>
                       handleClose(
                         node.data.configuration.elements[0].unicastAddress,
-                        "subscribe"
+                        "subscribe",
+                        node.data.composition.elements[0].models[0]
                       )
                     }
                   >
@@ -1728,7 +1832,8 @@ const NodesElement = () => {
                   onClick={() =>
                     handleClickOpen(
                       node.data.configuration.elements[0].unicastAddress,
-                      "bind"
+                      "bind",
+                      node.data.composition.elements[0].models[0]
                     )
                   }
                 >
@@ -1748,7 +1853,8 @@ const NodesElement = () => {
                   onClick={() =>
                     handleClickOpen(
                       node.data.configuration.elements[0].unicastAddress,
-                      "publish"
+                      "publish",
+                      node.data.composition.elements[0].models[0]
                     )
                   }
                 >
@@ -1768,7 +1874,8 @@ const NodesElement = () => {
                   onClick={() =>
                     handleClickOpen(
                       node.data.configuration.elements[0].unicastAddress,
-                      "subscribe"
+                      "subscribe",
+                      node.data.composition.elements[0].models[0]
                     )
                   }
                 >
