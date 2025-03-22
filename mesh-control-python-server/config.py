@@ -18,23 +18,7 @@ def handle_config():
 
     def run_async_in_thread(address, commandList, waitList, app_ctx):
         with app_ctx.app_context(): 
-            asyncio.run(configure_mesh(address, commandList, waitList))
-
-    def execute_queue(queue):
-        if len(queue[0]) > 0:
-            print("queue[0]")
-            print(queue[0])
-            print("queue[1]")
-            print(queue[1])
-            print("queue[2]")
-            print(queue[2])
-            queue[0].pop(0)
-            queue[1].pop(0)
-            queue[2].pop(0)
-            threading.Thread(target=run_async_in_thread, args=(queue[2][0], queue[0][0], queue[1][0], current_app._get_current_object())).start()
-        else:
-            return
-        
+            asyncio.run(configure_mesh(address, commandList, waitList))        
 
     if request.method == 'GET':
 
@@ -62,11 +46,6 @@ def handle_config():
         # For new UI
         setupData = req_data.get("setupData")
         
-        # For old UI
-        add_bind = req_data.get("add_bind")
-        pub_set = req_data.get("pub_set")
-        sub_add = req_data.get("sub_add")
-        
         config = req_data.get("config")
 
         response_value = {}
@@ -77,41 +56,19 @@ def handle_config():
                 "status": "success",
                 "message": f"Security level is set to {security_level}",
                 "SECURITY_LEVEL":security_level
-            }
-        elif add_bind:
-            commandList = [f'appkey-add {add_bind["appKeyIndex"]}', f'bind {add_bind["elementIndex"]} {add_bind["appKeyIndex"]} {add_bind["modelValue"]}']
-            threading.Thread(target=run_async_in_thread, args=(add_bind["unicastAddress"], commandList,[False, "Model App"],current_app._get_current_object())).start()
-            response_value = {
-                "status": "success",
-                "message": f'Initiated add bind for node {add_bind["unicastAddress"]}',
-                "SECURITY_LEVEL":security_level
-            }
-        elif pub_set:
-            commandList = [f'appkey-add {pub_set["appKeyIndex"]}',f'pub-set {pub_set["elementAddress"]} {pub_set["address"][2:]} {pub_set["appKeyIndex"]} {pub_set["publicationPeriod"]} {pub_set["retransmissionCount"]} {pub_set["modelValue"]}']
-            threading.Thread(target=run_async_in_thread, args=(pub_set["unicastAddress"], commandList,[False, "Publication"],current_app._get_current_object())).start()
-            response_value = {
-                "status": "success",
-                "message": f'Initiated pub set for node {pub_set["unicastAddress"]}',
-            }
-        elif sub_add:
-            commandList = [f'appkey-add {sub_add["appKeyIndex"]}',f'sub-add {sub_add["elementAddress"]} {sub_add["address"][2:]} {sub_add["modelValue"]}']
-            threading.Thread(target=run_async_in_thread, args=(sub_add["unicastAddress"], commandList,[False, "Subscription"],current_app._get_current_object())).start()
-            response_value = {
-                "status": "success",
-                "message": f'Initiated sub add for node {sub_add["unicastAddress"]}',
-            }
-            
+            }            
         elif setupData:
             commandListBind = [f'appkey-add {setupData["bind"]["appKeyIndex"]}', f'bind {setupData["bind"]["unicastAddress"]["index"]} {setupData["bind"]["appKeyIndex"]} {setupData["bind"]["model"]["value"]}']
             waitListBind = [False, "Model App"]
             commandListPublish = [f'appkey-add {setupData["publish"]["appKeyIndex"]}',
                                   f'pub-set {setupData["publish"]["unicastAddress"]["value"]} {setupData["publish"]["address"]["value"]} {setupData["publish"]["appKeyIndex"]} {hex((setupData["publish"]["publicationPeriod"]["step"] << 2) | setupData["publish"]["publicationPeriod"]["res"])} {hex((setupData["publish"]["retransmitionCount"]["cnt"] << 3) | setupData["publish"]["retransmitionCount"]["per"])} {setupData["publish"]["model"]["value"]}']
             waitListPublish = [False, "Publication"]
-            #commandListSubscribe = [f'appkey-add {setupData["subscribe"]["appKeyIndex"]}',f'sub-add {setupData["subscribe"]["elementAddress"]} {setupData["subscribe"]["address"][2:]} {setupData["subscribe"]["modelValue"]}']
+            commandListSubscribe = [f'appkey-add {setupData["subscribe"]["appKeyIndex"]}',
+                                    f'sub-add {setupData["subscribe"]["unicastAddress"]["value"]} {setupData["subscribe"]["address"]["value"]} {setupData["subscribe"]["model"]["value"]}']
             waitListSubscribe = [False, "Subscription"]
-            commandListQueue = [[]]
-            waitListQueue = [[]]
-            addressListQueue = [[]]
+            commandListQueue = []
+            waitListQueue = []
+            addressListQueue = []
             if setupData["bind"]["saved"]:
                 commandListQueue.append(commandListBind)
                 waitListQueue.append(waitListBind)
@@ -124,7 +81,7 @@ def handle_config():
                 commandListQueue.append(commandListSubscribe)
                 waitListQueue.append(waitListSubscribe)
                 addressListQueue.append(setupData["subscribe"]["unicastAddress"]["value"])
-            execute_queue([commandListQueue, waitListQueue, addressListQueue])
+            threading.Thread(target=run_async_in_thread, args=(addressListQueue, commandListQueue, waitListQueue, current_app._get_current_object())).start()
             response_value = {
                 "status": "success",
                 "message": "Initiated process"
@@ -200,7 +157,7 @@ def update_security(level = ""):
         index = len(out) - 1 - out[::-1].index('Level') + 3
         current_app.config["CONFIG"]["SECURITY_LEVEL"] = int(out[index])
 
-async def configure_mesh(address, commandList, waitList, callback = None, queue = None):
+async def configure_mesh(addressList, commandList, waitList, callback = None, queue = None):
     def stop(msg, error):
         write_to_meshctl("back\ndisconnect")
         current_app.config['CONFIG']["PROCESS"]["LOGS"].append(msg)
@@ -256,35 +213,38 @@ async def configure_mesh(address, commandList, waitList, callback = None, queue 
     write_to_meshctl("menu config")
     current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
     
-    current_app.config['CONFIG']["PROCESS"]["LOGS"].append(f"Trying to put target on node {address}")    
-    write_to_meshctl(f"target {address}") 
+    for i, address in enumerate(addressList):
     
-    start = time.time()
+        current_app.config['CONFIG']["PROCESS"]["LOGS"].append(f"Trying to put target on node {address}")    
+        write_to_meshctl(f"target {address}") 
+        
+        start = time.time()
 
-    while "Configuring node" not in "".join(current_app.config['TERMINAL_OUTPUT']):
-        if time.time() - start > 10.0:
-            stop("Reached timeout while trying...", True)
-            return
-    current_app.config['CONFIG']["PROCESS"]["PROGRESS"] = progressIncrement
+        while "Configuring node" not in "".join(current_app.config['TERMINAL_OUTPUT']):
+            if time.time() - start > 10.0:
+                stop("Reached timeout while trying...", True)
+                return
+        current_app.config['CONFIG']["PROCESS"]["PROGRESS"] = progressIncrement
 
-    for i, command in enumerate(commandList):
-        current_app.config['CONFIG']["PROCESS"]["LOGS"].append(f"Trying to {(command).split()[0]}") 
-        write_to_meshctl(command)
-        if waitList[i]: 
-            while f"{waitList[i]} status Success" not in "".join(current_app.config['TERMINAL_OUTPUT']):
-                if time.time() - start > 10.0:
-                    stop("Reached timeout while trying...", True)
-                    return
-        else:
-            time.sleep(1)
-        current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
-    
-    if commandList[0] == "node-reset":
-        current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
-        current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Trying to remove node from prov_db")
-        remove_node_from_config(address)
+        for k, command in enumerate(commandList[i]):
+            current_app.config['CONFIG']["PROCESS"]["LOGS"].append(f"Trying to {(command).split()[0]}") 
+            write_to_meshctl(command)
+            if waitList[i][k]: 
+                while f"{waitList[i][k]} status Success" not in "".join(current_app.config['TERMINAL_OUTPUT']):
+                    if time.time() - start > 10.0:
+                        stop("Reached timeout while trying...", True)
+                        return
+            else:
+                time.sleep(1)
+            current_app.config['CONFIG']["PROCESS"]["LOGS"].append(f"Success!")
+            current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
+        
+        if commandList[i][0] == "node-reset":
+            current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
+            current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Trying to remove node from prov_db")
+            remove_node_from_config(address)
 
-    stop("Success!", False)
+    stop("Done all tasks!", False)
     if callback:
         callback(queue)
 
