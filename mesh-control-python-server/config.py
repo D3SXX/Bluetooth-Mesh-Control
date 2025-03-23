@@ -177,37 +177,48 @@ async def configure_mesh(addressList, commandList, waitList, callback = None, qu
     if current_app.config['TERMINAL_SESSIONS']['CONFIG']["STATUS"] is not True:
         current_app.config['TERMINAL_SESSIONS']['CONFIG']["STATUS"] = True
     
-    current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Restarting controller")
-    current_app.config['CONFIG']["PROCESS"]["PROGRESS"] = 0
+    current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Trying to connect to the mesh network (3 attempts)")
     
-    write_to_meshctl("power off")
-    time.sleep(1)
-    write_to_meshctl("power on")
-    time.sleep(1)
-    write_to_meshctl("connect")
+    attempts = 0
+    while attempts < 3:
+        
+        attempts += 1
+        
+        current_app.config['CONFIG']["PROCESS"]["LOGS"].append(f"Restarting controller ({attempts}/3)")
+        current_app.config['CONFIG']["PROCESS"]["PROGRESS"] = 0
+        write_to_meshctl("power off")
+        time.sleep(1)
+        write_to_meshctl("power on")
+        time.sleep(1)
+        write_to_meshctl("connect")
+        time.sleep(1)
     
-    if "Failed to start discovery" in "".join(current_app.config['TERMINAL_OUTPUT']):
-        stop("Failed to start discovery", True)
+        if "Failed to start discovery" in "".join(current_app.config['TERMINAL_OUTPUT']):
+            #stop("Failed to start discovery", True)
+            #return
+            continue
+        start = time.time()
+        current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Trying to connect to the mesh network")
+        current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
+
+        while "Connection successful" not in "".join(current_app.config['TERMINAL_OUTPUT']):
+            if time.time() - start > 10.0:
+                current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Reached timeout while trying...")
+                break
+        current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Waiting for mesh session to open")
+        current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
+        start = time.time()
+
+        while "Mesh session is open" not in "".join(current_app.config['TERMINAL_OUTPUT']):
+            if time.time() - start > 5.0:
+                current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Reached timeout while trying...")
+                break
+        current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
+        break
+    
+    if attempts >= 3:
+        stop("Failed to connect to the mesh network, try again later", True)
         return
-    
-    start = time.time()
-    current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Trying to connect to the mesh network")
-    current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
-
-    while "Connection successful" not in "".join(current_app.config['TERMINAL_OUTPUT']):
-        if time.time() - start > 10.0:
-            stop("Reached timeout while trying...", True)
-            return
-
-    current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Waiting for mesh session to open")
-    current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
-    start = time.time()
-
-    while "Mesh session is open" not in "".join(current_app.config['TERMINAL_OUTPUT']):
-        if time.time() - start > 5.0:
-            stop("Reached timeout while trying...", True)
-            return
-    current_app.config['CONFIG']["PROCESS"]["PROGRESS"] += progressIncrement
     
     current_app.config['CONFIG']["PROCESS"]["LOGS"].append("Openning configuration menu")
     write_to_meshctl("menu config")

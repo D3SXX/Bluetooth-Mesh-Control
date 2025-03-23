@@ -213,7 +213,7 @@ const NodesElement = () => {
 
   const handleChange = (
     node: string,
-    type: string,
+    type: keyof SetupData[string],
     key: string,
     value: any
   ) => {
@@ -227,7 +227,7 @@ const NodesElement = () => {
         },
       },
     }));
-    console.log(setupData);
+    //console.log(setupData);
   };
 
   const convertStepToSeconds = (res: number) => {
@@ -281,10 +281,6 @@ const NodesElement = () => {
         return false;
     }
   };
-
-  useEffect(() => {
-    console.log(setupData);
-  }, [setupData]);
 
   const { data, error, isLoading } = useSWR<ServerResponse["config"]>(
     "/config?query=NODES",
@@ -1898,21 +1894,21 @@ const NodesElement = () => {
                     borderRadius: "0px",
                   }}
                   buttonTitle="Apply changes"
-                  dialogTitle={`Apply changes ${node.data.configuration.elements[0].unicastAddress}`}
+                  dialogTitle={`Apply changes for node ${node.data.configuration.elements[0].unicastAddress}`}
                   text={[
                     "Are you sure you want to apply these changes?",
                     setupData[
                       node.data.configuration.elements[0].unicastAddress
                     ]?.bind?.saved
-                      ? `Bind: Add bind to unicast: ${
+                      ? `Bind: Add bind to unicast address: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.bind?.unicastAddress.value
-                        } model: ${
+                        }, model: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
-                          ]?.bind?.model
-                        } appKey: ${
+                          ]?.bind?.model.value
+                        }, application key index: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.bind?.appKeyIndex
@@ -1921,23 +1917,24 @@ const NodesElement = () => {
                     setupData[
                       node.data.configuration.elements[0].unicastAddress
                     ]?.publish?.saved
-                      ? `Publish: Add publish to unicast: ${
+                      ? `Publish: Add publish to unicast address: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.publish?.unicastAddress.value
-                        } model: ${
+                        }, model: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
-                          ]?.publish?.model
-                        } address: ${
+                          ]?.publish?.model.value
+                        },  ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.publish?.address?.type
-                        } value: ${
+                        }
+                        address: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.publish?.address?.value
-                        } publicationPeriod: ${
+                        }, publication period: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.publish?.publicationPeriod?.step
@@ -1953,7 +1950,7 @@ const NodesElement = () => {
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.publish?.retransmitionCount?.per
-                        } appKey: ${
+                        } Application key index: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.publish?.appKeyIndex
@@ -1962,15 +1959,24 @@ const NodesElement = () => {
                     setupData[
                       node.data.configuration.elements[0].unicastAddress
                     ]?.subscribe?.saved
-                      ? `Subscribe: Add subscribe to unicast: ${
+                      ? `Subscribe: Add subscribe to unicast address: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.subscribe?.unicastAddress.value
-                        } model: ${
+                        }, model: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
-                          ]?.subscribe?.model
-                        } appKey: ${
+                          ]?.subscribe?.model.value
+                        },  ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.subscribe?.address?.type
+                        }
+                        address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.subscribe?.address?.value
+                        }, application key index: ${
                           setupData[
                             node.data.configuration.elements[0].unicastAddress
                           ]?.subscribe?.appKeyIndex
