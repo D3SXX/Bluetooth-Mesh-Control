@@ -80,6 +80,36 @@ interface SetupData {
       appKeyIndex: number;
       saved: boolean;
     };
+    identity?: {
+      saved: boolean;
+      unicastAddress: { index: number; value: string };
+      netKeyIndex: number;
+      state: number;
+    };
+    beacon?: {
+      saved: boolean;
+      unicastAddress: { index: number; value: string };
+      state: number;
+    };
+    heartbeat_publish?: {
+      saved: boolean;
+      unicastAddress: { index: number; value: string };
+      relay: number;
+      retransmitCount: number;
+      retransmitInterval: number;
+      ttl: number;
+      features: number;
+      netKeyIndex: number;
+    };
+    heartbeat_subscribe?: {
+      saved: boolean;
+      unicastAddress: { index: number; value: string };
+      address: {
+        type: string;
+        value: string;
+      };
+      period: number;
+    };
   };
 }
 
@@ -115,7 +145,11 @@ const NodesElement = () => {
 
   const [setupData, setSetupData] = React.useState<SetupData>({});
 
-  const setDefaultValues = (node: string, type: string, defaultModel: string) => {
+  const setDefaultValues = (
+    node: string,
+    type: string,
+    defaultModel: string
+  ) => {
     switch (type) {
       case "bind":
         setSetupData((prev) => ({
@@ -175,40 +209,104 @@ const NodesElement = () => {
           },
         }));
         break;
+      case "identity":
+        setSetupData((prev) => ({
+          ...prev,
+          [node]: {
+            ...prev[node],
+            identity: {
+              unicastAddress: { index: 0, value: node },
+              netKeyIndex: 0,
+              saved: false,
+              state: 0,
+            },
+          },
+        }));
+        break;
+      case "beacon":
+        setSetupData((prev) => ({
+          ...prev,
+          [node]: {
+            ...prev[node],
+            beacon: {
+              unicastAddress: { index: 0, value: node },
+              saved: false,
+              state: 0,
+            },
+          },
+        }));
+        break;
+      case "heartbeat_publish":
+        setSetupData((prev) => ({
+          ...prev,
+          [node]: {
+            ...prev[node],
+            heartbeat_publish: {
+              unicastAddress: { index: 0, value: node },
+              saved: false,
+              relay: 0,
+              retransmitCount: 0,
+              retransmitInterval: 0,
+              ttl: 0,
+              features: 0,
+              netKeyIndex: 0,
+            },
+          },
+        }));
+        break;
+      case "heartbeat_subscribe":
+        setSetupData((prev) => ({
+          ...prev,
+          [node]: {
+            ...prev[node],
+            heartbeat_subscribe: {
+              unicastAddress: { index: 0, value: node },
+              saved: false,
+              address: { type: "unicast", value: "0x0001" },
+              period: 0,
+            },
+          },
+        }));
+        break;
     }
   };
 
-  const handleClickOpen = (node: string, type: string, defaultModel: string) => {
-    if (type === "bind" || type === "publish" || type === "subscribe") {
-      if (!setupData[node]?.[type]?.saved) {
-        console.log("reset!");
-        setDefaultValues(node, type, defaultModel);
-      }
-      setOpenSetupDialog({
-        ...openSetupDialog,
-        [node]: {
-          ...(openSetupDialog[node as keyof typeof openSetupDialog] || {}),
-          [type]: true,
-        },
-      });
+  const handleClickOpen = (
+    node: string,
+    type: keyof SetupData[string],
+    defaultModel: string
+  ) => {
+    if (!setupData[node]?.[type]?.saved) {
+      console.log("reset!");
+      setDefaultValues(node, type, defaultModel);
     }
+    setOpenSetupDialog({
+      ...openSetupDialog,
+      [node]: {
+        ...(openSetupDialog[node as keyof typeof openSetupDialog] || {}),
+        [type]: true,
+      },
+    });
   };
 
-  const handleClose = (node: string, type: string, defaultModel: string, reset: boolean = true) => {
-    if (type === "bind" || type === "publish" || type === "subscribe") {
-      if (!setupData[node]?.[type]?.saved && reset) {
-        console.log(setupData[node]?.[type]?.saved);
-        console.log("reset!");
-        setDefaultValues(node, type, defaultModel);
-      }
-      setOpenSetupDialog({
-        ...openSetupDialog,
-        [node]: {
-          ...(openSetupDialog[node] || {}),
-          [type]: false,
-        },
-      });
+  const handleClose = (
+    node: string,
+    type: keyof SetupData[string],
+    defaultModel: string,
+    reset: boolean = true
+  ) => {
+    if (!setupData[node]?.[type]?.saved && reset) {
+      console.log(setupData[node]?.[type]?.saved);
+      console.log("reset!");
+      setDefaultValues(node, type, defaultModel);
     }
+    setOpenSetupDialog({
+      ...openSetupDialog,
+      [node]: {
+        ...(openSetupDialog[node] || {}),
+        [type]: false,
+      },
+    });
   };
 
   const handleChange = (
@@ -295,13 +393,29 @@ const NodesElement = () => {
       data.NODES.nodes.forEach((node) => {
         const nodeAddress = node.configuration.elements[0].unicastAddress;
         if (!setupData[nodeAddress]) {
-          setDefaultValues(nodeAddress, "bind", node.composition.elements[0].models[0]);
-          setDefaultValues(nodeAddress, "publish", node.composition.elements[0].models[0]);
-          setDefaultValues(nodeAddress, "subscribe", node.composition.elements[0].models[0]);
+          setDefaultValues(
+            nodeAddress,
+            "bind",
+            node.composition.elements[0].models[0]
+          );
+          setDefaultValues(
+            nodeAddress,
+            "publish",
+            node.composition.elements[0].models[0]
+          );
+          setDefaultValues(
+            nodeAddress,
+            "subscribe",
+            node.composition.elements[0].models[0]
+          );
         }
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    console.log(setupData);
+  }, [setupData]);
 
   const nodesList =
     data && data.NODES
@@ -321,12 +435,20 @@ const NodesElement = () => {
   };
 
   const [valueDescriptionTab, setValueDescriptionTab] = React.useState(0);
+  const [valueSetupTab, setValueSetupTab] = React.useState(0);
 
   const handleChangeDescriptionTab = (
     event: React.SyntheticEvent,
     newValue: number
   ) => {
     setValueDescriptionTab(newValue);
+  };
+
+  const handleChangeSetupTab = (
+    event: React.SyntheticEvent,
+    newValue: number
+  ) => {
+    setValueSetupTab(newValue);
   };
 
   return (
@@ -454,6 +576,25 @@ const NodesElement = () => {
                     </ListItemButton>
                   </React.Fragment>
                 ))}
+                <ListItemButton
+                  component="a"
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Grid size={6}>
+                    <Typography variant="body2" fontWeight="bold">
+                      Device Key
+                    </Typography>
+                  </Grid>
+                  <Grid size={6}>
+                    <Typography variant="body2">
+                      {node.data.deviceKey}
+                    </Typography>
+                  </Grid>
+                </ListItemButton>
                 {Object.entries({
                   Relay: node.data.composition.features.relay,
                   Proxy: node.data.composition.features.proxy,
@@ -771,9 +912,11 @@ const NodesElement = () => {
                           variant="standard"
                           sx={{ width: "100%" }}
                           label="Unicast Address"
-                          value={setupData[
-                            node.data.configuration.elements[0].unicastAddress
-                          ]?.bind?.unicastAddress.index}
+                          value={
+                            setupData[
+                              node.data.configuration.elements[0].unicastAddress
+                            ]?.bind?.unicastAddress.index
+                          }
                           onChange={(event) => {
                             handleChange(
                               node.data.configuration.elements[0]
@@ -789,7 +932,8 @@ const NodesElement = () => {
                               }
                             );
                             handleChange(
-                              node.data.configuration.elements[0].unicastAddress,
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
                               "bind",
                               "model",
                               {
@@ -804,10 +948,7 @@ const NodesElement = () => {
                         >
                           {node.data.configuration.elements.map(
                             (element, index) => (
-                              <MenuItem
-                                value={index}
-                                key={index}
-                              >
+                              <MenuItem value={index} key={index}>
                                 {element.unicastAddress}
                               </MenuItem>
                             )
@@ -998,7 +1139,8 @@ const NodesElement = () => {
                                 }
                               );
                               handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
                                 "publish",
                                 "model",
                                 {
@@ -1013,10 +1155,7 @@ const NodesElement = () => {
                           >
                             {node.data.configuration.elements.map(
                               (element, index) => (
-                                <MenuItem
-                                  value={index.toString()}
-                                  key={index}
-                                >
+                                <MenuItem value={index.toString()} key={index}>
                                   {element.unicastAddress}
                                 </MenuItem>
                               )
@@ -1327,7 +1466,11 @@ const NodesElement = () => {
                             justifyContent="space-between"
                             spacing={1}
                           >
-                            <Stack direction="row" sx={{ alignItems: "center" }} spacing={1}>
+                            <Stack
+                              direction="row"
+                              sx={{ alignItems: "center" }}
+                              spacing={1}
+                            >
                               <p>Address:</p>
                               <Box sx={{ flex: 1 }}>
                                 <Select
@@ -1399,7 +1542,8 @@ const NodesElement = () => {
                                   }
                                   onChange={(event) => {
                                     handleChange(
-                                      node.data.configuration.elements[0].unicastAddress,
+                                      node.data.configuration.elements[0]
+                                        .unicastAddress,
                                       "publish",
                                       "address",
                                       {
@@ -1570,7 +1714,8 @@ const NodesElement = () => {
                                 }
                               );
                               handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
                                 "subscribe",
                                 "model",
                                 {
@@ -1620,12 +1765,13 @@ const NodesElement = () => {
                                 {
                                   index: Number(event.target.value),
                                   value:
-                                  node.data.composition.elements[
-                                    setupData[
-                                      node.data.configuration.elements[0]
-                                        .unicastAddress as keyof typeof setupData
-                                    ]?.subscribe?.unicastAddress.index as number
-                                  ]?.models[Number(event.target.value)],
+                                    node.data.composition.elements[
+                                      setupData[
+                                        node.data.configuration.elements[0]
+                                          .unicastAddress as keyof typeof setupData
+                                      ]?.subscribe?.unicastAddress
+                                        .index as number
+                                    ]?.models[Number(event.target.value)],
                                 }
                               );
                             }}
@@ -1717,7 +1863,8 @@ const NodesElement = () => {
                             }
                             onChange={(event) => {
                               handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
                                 "subscribe",
                                 "address",
                                 {
@@ -1808,78 +1955,721 @@ const NodesElement = () => {
                   <Button type="submit">Save</Button>
                 </DialogActions>
               </Dialog>
-              <Divider />
-              <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                justifyContent="center"
-                sx={{ padding: "10px" }}
+              <Dialog
+                open={
+                  openSetupDialog[
+                    node.data.configuration.elements[0]
+                      .unicastAddress as keyof typeof openSetupDialog
+                  ]?.identity
+                }
+                onClose={() =>
+                  handleClose(
+                    node.data.configuration.elements[0].unicastAddress,
+                    "identity",
+                    node.data.composition.elements[0].models[0]
+                  )
+                }
+                slotProps={{
+                  paper: {
+                    component: "form",
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                      event.preventDefault();
+
+                      handleChange(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "identity",
+                        "saved",
+                        true
+                      );
+
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "identity",
+                        node.data.composition.elements[0].models[0],
+                        false
+                      );
+                    },
+                  },
+                }}
               >
-                <Button
-                  variant="outlined"
-                  sx={{
-                    width: "30%",
-                    borderRadius: "18px",
-                    fontSize: "1.1rem",
-                    border: { md: "1px solid lightgray", xs: "0px" },
-                    color: "black",
-                  }}
-                  onClick={() =>
-                    handleClickOpen(
-                      node.data.configuration.elements[0].unicastAddress,
-                      "bind",
-                      node.data.composition.elements[0].models[0]
-                    )
-                  }
+                <DialogTitle>Identity</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    <p>
+                      Node Identity is the name of a field which is included in
+                      the Service Data field within advertising packets
+                      broadcast by Bluetooth mesh proxy nodes. Its value is
+                      derived from a combination of the Proxy node’s Unicast
+                      Address and a network identifier, such as the network ID
+                      for one of the subnets it is enabled on. (From
+                      &quot;Bluetooth Mesh Glossary of Terms&quot;)
+                    </p>
+                  </DialogContentText>
+                  <Box sx={{ padding: "10px" }}>
+                    <Stack direction="column" spacing={1}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <p>Unicast Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.identity?.unicastAddress.index
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.identity?.unicastAddress.index
+                            }
+                            label="Unicast Address"
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "identity",
+                                "unicastAddress",
+                                {
+                                  index: Number(event.target.value),
+                                  value:
+                                    node.data.configuration.elements[
+                                      Number(event.target.value)
+                                    ].unicastAddress,
+                                }
+                              );
+                            }}
+                          >
+                            {node.data.configuration.elements.map(
+                              (element, index) => (
+                                <MenuItem value={index.toString()} key={index}>
+                                  {element.unicastAddress}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
+
+                        <p>Network Key:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            name="appKey"
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.identity?.netKeyIndex
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.identity?.netKeyIndex
+                            }
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "identity",
+                                "netKeyIndex",
+                                event.target.value
+                              );
+                            }}
+                          >
+                            {node.data.configuration.netKeys.map(
+                              (netKey, index) => (
+                                <MenuItem value={index} key={index}>
+                                  Key {netKey}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
+                      </Stack>
+                      <Stack direction="column" spacing={2}>
+                        <p>
+                          Advertising state:{" "}
+                          {
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.identity?.state
+                          }{" "}
+                          {setupData[
+                            node.data.configuration.elements[0]
+                              .unicastAddress as keyof typeof setupData
+                          ]?.identity?.state === 0
+                            ? "(Stopped)"
+                            : "(Running)"}
+                        </p>
+                        <Slider
+                          defaultValue={0}
+                          min={0} // 0x00 - Advertising is stopped (mesh profile 4.2.12)
+                          max={1} // 0x01 - Advertising is running (mesh profile 4.2.12)
+                          // 0x02 - Advertising is not supported (mesh profile 4.2.12)
+                          step={1}
+                          valueLabelDisplay="auto"
+                          value={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.identity?.state
+                          }
+                          onChange={(event, value) => {
+                            handleChange(
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
+                              "identity",
+                              "state",
+                              value
+                            );
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+                  </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() =>
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "identity",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save</Button>
+                </DialogActions>
+              </Dialog>
+              <Dialog
+                open={
+                  openSetupDialog[
+                    node.data.configuration.elements[0]
+                      .unicastAddress as keyof typeof openSetupDialog
+                  ]?.beacon
+                }
+                onClose={() =>
+                  handleClose(
+                    node.data.configuration.elements[0].unicastAddress,
+                    "beacon",
+                    node.data.composition.elements[0].models[0]
+                  )
+                }
+                slotProps={{
+                  paper: {
+                    component: "form",
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                      event.preventDefault();
+
+                      handleChange(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "beacon",
+                        "saved",
+                        true
+                      );
+
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "beacon",
+                        node.data.composition.elements[0].models[0],
+                        false
+                      );
+                    },
+                  },
+                }}
+              >
+                <DialogTitle>Beacon</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    <p>
+                      The Secure Network Beacon state determines if a node is
+                      periodically broadcasting Secure Network beacon messages
+                      (From &quot;Mesh Profile&quot;)
+                    </p>
+                  </DialogContentText>
+                  <Box sx={{ padding: "10px" }}>
+                    <Stack direction="column" spacing={1}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <p>Unicast Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.beacon?.unicastAddress.index
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.beacon?.unicastAddress.index
+                            }
+                            label="Unicast Address"
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "beacon",
+                                "unicastAddress",
+                                {
+                                  index: Number(event.target.value),
+                                  value:
+                                    node.data.configuration.elements[
+                                      Number(event.target.value)
+                                    ].unicastAddress,
+                                }
+                              );
+                            }}
+                          >
+                            {node.data.configuration.elements.map(
+                              (element, index) => (
+                                <MenuItem value={index.toString()} key={index}>
+                                  {element.unicastAddress}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
+                      </Stack>
+                      <Stack direction="column" spacing={2}>
+                        <p>
+                          Beacon state:{" "}
+                          {
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.beacon?.state
+                          }{" "}
+                          {setupData[
+                            node.data.configuration.elements[0]
+                              .unicastAddress as keyof typeof setupData
+                          ]?.beacon?.state === 0
+                            ? "(not broadcasting secure network beacon)"
+                            : "(broadcasting secure network beacon)"}
+                        </p>
+                        <Slider
+                          defaultValue={0}
+                          min={0} // 0x00 - The node is not broadcasting a Secure Network beacon (mesh profile 4.2.10)
+                          max={1} // 0x01 - The node is broadcasting a Secure Network beacon (mesh profile 4.2.10)
+                          step={1}
+                          valueLabelDisplay="auto"
+                          value={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.beacon?.state
+                          }
+                          onChange={(event, value) => {
+                            handleChange(
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
+                              "beacon",
+                              "state",
+                              value
+                            );
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+                  </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() =>
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "beacon",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save</Button>
+                </DialogActions>
+              </Dialog>
+              <Dialog
+                open={
+                  openSetupDialog[
+                    node.data.configuration.elements[0]
+                      .unicastAddress as keyof typeof openSetupDialog
+                  ]?.heartbeat_publish
+                }
+                onClose={() =>
+                  handleClose(
+                    node.data.configuration.elements[0].unicastAddress,
+                    "heartbeat_publish",
+                    node.data.composition.elements[0].models[0]
+                  )
+                }
+                slotProps={{
+                  paper: {
+                    component: "form",
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                      event.preventDefault();
+
+                      handleChange(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "heartbeat_publish",
+                        "saved",
+                        true
+                      );
+
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "heartbeat_publish",
+                        node.data.composition.elements[0].models[0],
+                        false
+                      );
+                    },
+                  },
+                }}
+              >
+                <DialogTitle>Heartbeat Publish</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    <p>
+                      Nodes can be configured to send a message known as a
+                      Heartbeat message, periodically. The purpose of the
+                      Heartbeat message is to indicate to other nodes that the
+                      node sending the Heartbeat message is still active and to
+                      allow its distance from the recipient to be determined, in
+                      terms of the number of hops needed to deliver the
+                      Heartbeat message.(From &quot;Bluetooth Mesh Glossary of
+                      Terms&quot;)
+                    </p>
+                  </DialogContentText>
+                  <Box sx={{ padding: "10px" }}>
+                    <Stack direction="column" spacing={1}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <p>Unicast Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_publish?.unicastAddress.index
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_publish?.unicastAddress.index
+                            }
+                            label="Unicast Address"
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_publish",
+                                "unicastAddress",
+                                {
+                                  index: Number(event.target.value),
+                                  value:
+                                    node.data.configuration.elements[
+                                      Number(event.target.value)
+                                    ].unicastAddress,
+                                }
+                              );
+                            }}
+                          >
+                            {node.data.configuration.elements.map(
+                              (element, index) => (
+                                <MenuItem value={index.toString()} key={index}>
+                                  {element.unicastAddress}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
+
+                      </Stack>
+                    </Stack>
+                  </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() =>
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "heartbeat_publish",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save</Button>
+                </DialogActions>
+              </Dialog>
+              <Divider />
+
+              <Tabs value={valueSetupTab} onChange={handleChangeSetupTab}>
+                <Tab label="Model config" />
+                <Tab label="Network Behavior" />
+                <Tab label="Node configuration" />
+              </Tabs>
+              <CustomTabPanel value={valueSetupTab} index={0}>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent="center"
                 >
-                  <Typography variant="body2" fontWeight="bold">
-                    Bind
-                  </Typography>
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    width: "30%",
-                    borderRadius: "18px",
-                    fontSize: "1.1rem",
-                    border: { md: "1px solid lightgray", xs: "0px" },
-                    color: "black",
-                  }}
-                  onClick={() =>
-                    handleClickOpen(
-                      node.data.configuration.elements[0].unicastAddress,
-                      "publish",
-                      node.data.composition.elements[0].models[0]
-                    )
-                  }
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "bind",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Bind
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "publish",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Publish
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "subscribe",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Subscribe
+                    </Typography>
+                  </Button>
+                </Stack>
+              </CustomTabPanel>
+
+              <CustomTabPanel value={valueSetupTab} index={1}>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent="center"
                 >
-                  <Typography variant="body2" fontWeight="bold">
-                    Publish
-                  </Typography>
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    width: "30%",
-                    borderRadius: "18px",
-                    fontSize: "1.1rem",
-                    border: { md: "1px solid lightgray", xs: "0px" },
-                    color: "black",
-                  }}
-                  onClick={() =>
-                    handleClickOpen(
-                      node.data.configuration.elements[0].unicastAddress,
-                      "subscribe",
-                      node.data.composition.elements[0].models[0]
-                    )
-                  }
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "identity",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Identity
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "beacon",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Beacon
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "heartbeat_publish",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Heartbeat Publish
+                    </Typography>
+                  </Button>
+                </Stack>
+              </CustomTabPanel>
+              <CustomTabPanel value={valueSetupTab} index={2}>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent="center"
                 >
-                  <Typography variant="body2" fontWeight="bold">
-                    Subscribe
-                  </Typography>
-                </Button>
-              </Stack>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "relay",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Relay
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "proxy",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Proxy
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "ttl",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      TTL
+                    </Typography>
+                  </Button>
+                </Stack>
+              </CustomTabPanel>
               {(setupData[node.data.configuration.elements[0].unicastAddress]
                 ?.bind?.saved ||
                 setupData[node.data.configuration.elements[0].unicastAddress]
