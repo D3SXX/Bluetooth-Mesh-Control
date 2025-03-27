@@ -24,6 +24,7 @@ import {
   InputLabel,
   Select,
   Slider,
+  Checkbox,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import ExecuteDialog from "./ExecuteDialog";
@@ -94,11 +95,26 @@ interface SetupData {
     heartbeat_publish?: {
       saved: boolean;
       unicastAddress: { index: number; value: string };
+      address: {
+        type: string;
+        value: string;
+      };
       relay: number;
-      retransmitCount: number;
-      retransmitInterval: number;
+      retransmitCount: {
+        value: number;
+        label: string;
+      };
+      periodLog: {
+        value: number;
+        label: string;
+      };
       ttl: number;
-      features: number;
+      features: {
+        relay: boolean;
+        proxy: boolean;
+        friend: boolean;
+        lowPower: boolean;
+      };
       netKeyIndex: number;
     };
     heartbeat_subscribe?: {
@@ -244,11 +260,23 @@ const NodesElement = () => {
             heartbeat_publish: {
               unicastAddress: { index: 0, value: node },
               saved: false,
+              address: { type: "unicast", value: "0x0001" },
               relay: 0,
-              retransmitCount: 0,
-              retransmitInterval: 0,
+              retransmitCount: {
+                value: 0,
+                label: "not sent periodically",
+              },
+              periodLog: {
+                value: 0,
+                label: "not sent periodically",
+              },
               ttl: 0,
-              features: 0,
+              features: {
+                relay: false,
+                proxy: false,
+                friend: false,
+                lowPower: false,
+              },
               netKeyIndex: 0,
             },
           },
@@ -2426,8 +2454,347 @@ const NodesElement = () => {
                             )}
                           </Select>
                         </Box>
-
                       </Stack>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                        }}
+                      >
+                        <p>Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            name="address"
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_publish?.address?.type
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_publish?.address?.type
+                            }
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_publish",
+                                "address",
+                                {
+                                  type: event.target.value,
+                                  value: getAddressValue(
+                                    event.target.value as string
+                                  ),
+                                }
+                              );
+                            }}
+                          >
+                            <MenuItem value="unicast">
+                              Unicast (0x0001–0x7FFF)
+                            </MenuItem>
+                            <MenuItem value="group">
+                              Group (0xC000–0xFFFF)
+                            </MenuItem>
+                            <MenuItem value="virtual">
+                              Virtual (0x8000–0xBFFF)
+                            </MenuItem>
+                          </Select>
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <TextField
+                            required
+                            id="standard-error"
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_publish?.address?.value
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_publish?.address?.value
+                            }
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_publish",
+                                "address",
+                                {
+                                  type: setupData[
+                                    node.data.configuration.elements[0]
+                                      .unicastAddress
+                                  ]?.heartbeat_publish?.address?.type,
+                                  value: event.target.value,
+                                }
+                              );
+                            }}
+                            error={
+                              !verifyAddressValue(
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.heartbeat_publish?.address?.value as string,
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.heartbeat_publish?.address?.type as string
+                              )
+                            }
+                          />
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" sx={{ width: "100%", alignItems: "center" }} spacing={2}>
+                        <Box sx={{ flex: 1 }}>
+                          <p>
+                            Publish Count:{" "}
+                          {
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.heartbeat_publish?.retransmitCount.label
+                          }
+                        </p>
+                          <Slider
+                            marks={[
+                              {
+                                value: 0, // 0x00 - Heartbeat messages are not being sent periodically (mesh profile 4.2.17.2)
+                              },
+                              ...Array.from({ length: 17 }, (_, i) => ({
+                                // 0x01 - 0x11 - Number of Heartbeat messages, 2(n-1), that remain to be sent (mesh profile 4.2.17.2)
+                                value: i + 1,
+                              })),
+                              {
+                                value: 255, // 0xFF - Heartbeat messages are being sent indefinitely (mesh profile 4.2.17.2)
+                              },
+                            ]}
+                            max={255}
+                            min={0}
+                            step={null}
+                            onChange={(event: Event, value: number | number[]) => {
+                              let label;
+                              if (Array.isArray(value)) {
+                                value = value[0];
+                              }
+                              switch (value) {
+                                case 0:
+                                  label = "Not sent";
+                                  break;
+                                case 255:
+                                  label = "Sent indefinitely";
+                                  break;
+                                default:
+                                  label = `${2 ** (value - 1)} time(s)`;
+                              }
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_publish",
+                                "retransmitCount",
+                                {
+                                  value: value,
+                                  label: label,
+                                }
+                              );
+                            }}
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_publish?.retransmitCount.value
+                            }
+                            valueLabelDisplay="auto"
+                          />
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <p>Period Log: {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.periodLog.label}</p>
+                          <Slider
+                            min={0} // 0x00 - Heartbeat messages are not being sent periodically (mesh profile 4.2.17.3)
+                            max={17} // 0x11 - Smallest integer n, where 2(n-1) is greater than or equal to the Heartbeat Publication Count value (mesh profile 4.2.17.3)
+                            valueLabelDisplay="auto"
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_publish?.periodLog.value
+                            }
+                            onChange={(event: Event, value: number | number[]) => {
+                              let label;
+                              if (Array.isArray(value)) {
+                                value = value[0];
+                              }
+                              switch (value) {
+                                case 0:
+                                  label = "Not sent";
+                                  break;
+                                default:
+                                  label = `${2 ** (value - 1)} second(s)`;
+                              }
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_publish",
+                                "periodLog",
+                                {
+                                  value: value,
+                                  label: label,
+                                }
+                              );
+                            }}
+                          />
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" sx={{ width: "100%" }} spacing={2}>
+                        <Box sx={{ flex: 1 }}>
+                          <p>Time to live (TTL): {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.ttl}</p>
+                          <Slider
+                            min={0} // 0x00 - The Heartbeat Publication TTL state (mesh profile 4.2.17.4)
+                            max={127} // 0x7F - The Heartbeat Publication TTL state (mesh profile 4.2.17.4)
+                            valueLabelDisplay="auto"
+                            marks
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_publish?.ttl
+                            }
+                            onChange={(event: Event, value: number | number[]) => {
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "heartbeat_publish",
+                                "ttl",
+                                value
+                              );
+                            }}
+                            
+                          />
+                        </Box>
+                      </Stack>
+                      {/* Mesh Profile 4.2.17.5 */}
+                      <Box sx={{ flex: 1 }}>
+                          <p>Features:</p>
+                          <Stack direction="row" spacing={2}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Checkbox
+                            checked={setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features?.relay}
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "heartbeat_publish",
+                                "features",
+                                {
+                                  ...setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features,
+                                  relay: event.target.checked,
+                                }
+                              );
+                            }}
+                          />
+                          <p>Relay</p>
+                          </Box>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Checkbox
+                            checked={setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features?.proxy}
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "heartbeat_publish",
+                                "features",
+                                {
+                                  ...setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features,
+                                  proxy: event.target.checked,
+                                }
+                              );
+                            }}
+                          />
+                          <p>Proxy</p>
+                          </Box>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Checkbox
+                            checked={setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features?.friend}
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "heartbeat_publish",
+                                "features",
+                                {
+                                  ...setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features,
+                                  friend: event.target.checked,
+                                }
+                              );
+                            }}
+                          />
+                          <p>Friend</p>
+                          </Box>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Checkbox
+                            checked={setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features?.lowPower}
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "heartbeat_publish",
+                                "features",
+                                {
+                                  ...setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features,
+                                  lowPower: event.target.checked,
+                                }
+                              );
+                            }}
+                          />
+                          <p>Low Power</p>
+                          </Box>
+                          </Stack>
+                        </Box>
+                        <p>Network Key:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            name="appKey"
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_publish?.netKeyIndex
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_publish?.netKeyIndex
+                            }
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_publish",
+                                "netKeyIndex",
+                                event.target.value
+                              );
+                            }}
+                          >
+                            {node.data.configuration.netKeys.map(
+                              (netKey, index) => (
+                                <MenuItem value={index} key={index}>
+                                  Key {netKey}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
                     </Stack>
                   </Box>
                 </DialogContent>
