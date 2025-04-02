@@ -119,12 +119,27 @@ interface SetupData {
     };
     heartbeat_subscribe?: {
       saved: boolean;
+      count: {
+        value: number;
+        label: string;
+      };
+      minHops: {
+        value: number;
+        label: string;
+      };
+      maxHops: {
+        value: number;
+        label: string;
+      };
       unicastAddress: { index: number; value: string };
       address: {
         type: string;
         value: string;
       };
-      period: number;
+      periodLog: {
+        value: number;
+        label: string;
+      };
     };
   };
 }
@@ -291,7 +306,22 @@ const NodesElement = () => {
               unicastAddress: { index: 0, value: node },
               saved: false,
               address: { type: "unicast", value: "0x0001" },
-              period: 0,
+              count: {
+                value: 0,
+                label: "Stop counting",
+              },
+              periodLog: {
+                value: 0,
+                label: "Not sent",
+              },
+              minHops: {
+                value: 0,
+                label: "No data",
+              },
+              maxHops: {
+                value: 0,
+                label: "No data",
+              },
             },
           },
         }));
@@ -493,7 +523,7 @@ const NodesElement = () => {
         <Box
           key={node.data.configuration.elements[0].unicastAddress}
           sx={{
-            width: { xs: "100%", md: "500px" },
+            width: { xs: "100%", md: "600px" },
             overflow: "wrap",
             margin: "10px",
             flexShrink: 0,
@@ -2813,13 +2843,406 @@ const NodesElement = () => {
                   <Button type="submit">Save</Button>
                 </DialogActions>
               </Dialog>
-              <Divider />
+              <Dialog
+                open={
+                  openSetupDialog[
+                    node.data.configuration.elements[0]
+                      .unicastAddress as keyof typeof openSetupDialog
+                  ]?.heartbeat_subscribe
+                }
+                onClose={() =>
+                  handleClose(
+                    node.data.configuration.elements[0].unicastAddress,
+                    "heartbeat_subscribe",
+                    node.data.composition.elements[0].models[0]
+                  )
+                }
+                slotProps={{
+                  paper: {
+                    component: "form",
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                      event.preventDefault();
 
-              <Tabs value={valueSetupTab} onChange={handleChangeSetupTab}>
+                      handleChange(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "heartbeat_subscribe",
+                        "saved",
+                        true
+                      );
+
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "heartbeat_subscribe",
+                        node.data.composition.elements[0].models[0],
+                        false
+                      );
+                    },
+                  },
+                }}
+              >
+                <DialogTitle>Heartbeat Subscribe</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    <p>
+                      Nodes can be configured to send a message known as a
+                      Heartbeat message, periodically. The purpose of the
+                      Heartbeat message is to indicate to other nodes that the
+                      node sending the Heartbeat message is still active and to
+                      allow its distance from the recipient to be determined, in
+                      terms of the number of hops needed to deliver the
+                      Heartbeat message. (From &quot;Bluetooth Mesh Glossary of
+                      Terms&quot;)
+                    </p>
+                  </DialogContentText>
+                  <Box sx={{ padding: "10px" }}>
+                    <Stack direction="column" spacing={1}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <p>Unicast Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_subscribe?.unicastAddress.index
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_subscribe?.unicastAddress.index
+                            }
+                            label="Unicast Address"
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_subscribe",
+                                "unicastAddress",
+                                {
+                                  index: Number(event.target.value),
+                                  value:
+                                    node.data.configuration.elements[
+                                      Number(event.target.value)
+                                    ].unicastAddress,
+                                }
+                              );
+                            }}
+                          >
+                            {node.data.configuration.elements.map(
+                              (element, index) => (
+                                <MenuItem value={index.toString()} key={index}>
+                                  {element.unicastAddress}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                        }}
+                      >
+                        <p>Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            name="address"
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_subscribe?.address?.type
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_subscribe?.address?.type
+                            }
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_subscribe",
+                                "address",
+                                {
+                                  type: event.target.value,
+                                  value: getAddressValue(
+                                    event.target.value as string
+                                  ),
+                                }
+                              );
+                            }}
+                          >
+                            <MenuItem value="unicast">
+                              Unicast (0x0001–0x7FFF)
+                            </MenuItem>
+                            <MenuItem value="group">
+                              Group (0xC000–0xFFFF)
+                            </MenuItem>
+                            <MenuItem value="virtual">
+                              Virtual (0x8000–0xBFFF)
+                            </MenuItem>
+                          </Select>
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <TextField
+                            required
+                            id="standard-error"
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_subscribe?.address?.value
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_subscribe?.address?.value
+                            }
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_subscribe",
+                                "address",
+                                {
+                                  type: setupData[
+                                    node.data.configuration.elements[0]
+                                      .unicastAddress
+                                  ]?.heartbeat_subscribe?.address?.type,
+                                  value: event.target.value,
+                                }
+                              );
+                            }}
+                            error={
+                              !verifyAddressValue(
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.heartbeat_subscribe?.address?.value as string,
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.heartbeat_subscribe?.address?.type as string
+                              )
+                            }
+                          />
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" sx={{ width: "100%", alignItems: "center" }} spacing={2}>
+                        <Box sx={{ flex: 1 }}>
+                          <p>
+                            Subscribe Count:{" "}
+                          {
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.heartbeat_subscribe?.count.label
+                          }
+                        </p>
+                          <Slider
+                            max={65535} // 0xFFFF (Actual max is 0xFFFE) - Number of Heartbeat messages received (More than 0xFFFE messages have been received) (mesh profile 4.2.18.3)
+                            min={0} // 0x0000 - Number of Heartbeat messages received (mesh profile 4.2.18.3)
+                            step={1}
+
+                            onChange={(event: Event, value: number | number[]) => {
+                              let label;
+                              if (Array.isArray(value)) {
+                                value = value[0];
+                              }
+                              switch (value) {
+                                case 65535:
+                                  label = "Stop counting";
+                                  break;
+                                default:
+                                  label = `${value} time(s)`;
+                              }
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_subscribe",
+                                "count",
+                                {
+                                  value: value,
+                                  label: label,
+                                }
+                              );
+                            }}
+                            
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_subscribe?.count.value
+                            }
+                            valueLabelDisplay="auto"
+                          />
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <p>Period Log: {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_subscribe?.periodLog.label}</p>
+                          <Slider
+                            min={0} // 0x00 - Heartbeat messages are not being sent periodically (mesh profile 4.2.18.4)
+                            max={17} // 0x11 - Remaining period in 2(n-1) seconds for processing periodical Heartbeat messages (mesh profile 4.2.18.4)
+                            valueLabelDisplay="auto"
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_subscribe?.periodLog.value
+                            }
+                            onChange={(event: Event, value: number | number[]) => {
+                              let label;
+                              if (Array.isArray(value)) {
+                                value = value[0];
+                              }
+                              switch (value) {
+                                case 0:
+                                  label = "Not sent";
+                                  break;
+                                default:
+                                  label = `${2 ** (value - 1)} second(s)`;
+                              }
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "heartbeat_subscribe",
+                                "periodLog",
+                                {
+                                  value: value,
+                                  label: label,
+                                }
+                              );
+                            }}
+                          />
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" sx={{ width: "100%" }} spacing={2}>
+                        <Box sx={{ flex: 1 }}>
+                          <p>Min hops: {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_subscribe?.minHops.label}</p>
+                          <Slider
+                            min={0} // 0x00 - No Heartbeat messages have been received (mesh profile 4.2.18.5)
+                            max={127} // 0x7F - The Heartbeat Subscription Min Hops state (mesh profile 4.2.18.5)
+                            valueLabelDisplay="auto"
+                            marks
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_subscribe?.minHops.value
+                            }
+                            onChange={(event: Event, value: number | number[]) => {
+                              let label;
+                              if (Array.isArray(value)) {
+                                value = value[0];
+                              }
+                              switch (value) {
+                                case 0:
+                                  label = "No data";
+                                default:
+                                  label = `${value} hop(s)`;
+                              }
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "heartbeat_subscribe",
+                                "minHops",
+                                {
+                                  value: value,
+                                  label: label,
+                                }
+                              );
+                            }}
+                            
+                          />
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <p>Max hops: {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_subscribe?.maxHops.label}</p>
+                          <Slider
+                            min={0} // 0x00 - No Heartbeat messages have been received (mesh profile 4.2.18.6)
+                            max={127} // 0x7F - The Heartbeat Subscription Max Hops state (mesh profile 4.2.18.6)
+                            valueLabelDisplay="auto"
+                            marks
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_subscribe?.maxHops.value
+                            }
+                            onChange={(event: Event, value: number | number[]) => {
+                              let label;
+                              if (Array.isArray(value)) {
+                                value = value[0];
+                              }
+                              switch (value) {
+                                case 0:
+                                  label = "No data";
+                                default:
+                                  label = `${value} hop(s)`;
+                              }
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "heartbeat_subscribe",
+                                "maxHops",
+                                {
+                                  value: value,
+                                  label: label,
+                                }
+                              );
+                            }}
+                            
+                          />
+                        </Box>
+                      </Stack>
+                        
+                    </Stack>
+                  </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() =>
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "heartbeat_subscribe",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save</Button>
+                </DialogActions>
+              </Dialog>
+              <Divider />
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs value={valueSetupTab} onChange={handleChangeSetupTab} centered>
                 <Tab label="Model config" />
                 <Tab label="Network Behavior" />
                 <Tab label="Node configuration" />
               </Tabs>
+              </Box>
               <CustomTabPanel value={valueSetupTab} index={0}>
                 <Stack
                   direction="row"
@@ -2961,6 +3384,27 @@ const NodesElement = () => {
                   >
                     <Typography variant="body2" fontWeight="bold">
                       Heartbeat Publish
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                    onClick={() =>
+                      handleClickOpen(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "heartbeat_subscribe",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Heartbeat Subscribe
                     </Typography>
                   </Button>
                 </Stack>
