@@ -25,6 +25,7 @@ import {
   Select,
   Slider,
   Checkbox,
+  Switch,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import ExecuteDialog from "./ExecuteDialog";
@@ -140,6 +141,23 @@ interface SetupData {
         value: number;
         label: string;
       };
+    };
+    relay?: {
+      saved: boolean;
+      unicastAddress: { index: number; value: string };
+      count: number;
+      step: number;
+      relay: boolean;
+    };
+    proxy?: {
+      saved: boolean;
+      unicastAddress: { index: number; value: string };
+      proxy: boolean;
+    };
+    ttl?: {
+      saved: boolean;
+      unicastAddress: { index: number; value: string };
+      ttl: number;
     };
   };
 }
@@ -325,6 +343,49 @@ const NodesElement = () => {
             },
           },
         }));
+        break;
+      case "relay":
+        setSetupData((prev) => ({
+          ...prev,
+          [node]: {
+            ...prev[node],
+            relay: {
+              unicastAddress: { index: 0, value: node },
+              saved: false,
+              count: 0,
+              step: 0,
+              relay: false,
+            },
+          },
+        }));
+        break;
+      case "proxy":
+        setSetupData((prev) => ({
+          ...prev,
+          [node]: {
+            ...prev[node],
+            proxy: {
+              unicastAddress: { index: 0, value: node },
+              saved: false,
+              proxy: false,
+            },
+          },
+        }));
+        break;
+      case "ttl":
+        setSetupData((prev) => ({
+          ...prev,
+          [node]: {
+            ...prev[node],
+            ttl: {
+              unicastAddress: { index: 0, value: node },
+              saved: false,
+              ttl: 0,
+            },
+          },
+        }));
+        break;
+      default:
         break;
     }
   };
@@ -2587,17 +2648,21 @@ const NodesElement = () => {
                           />
                         </Box>
                       </Stack>
-                      <Stack direction="row" sx={{ width: "100%", alignItems: "center" }} spacing={2}>
+                      <Stack
+                        direction="row"
+                        sx={{ width: "100%", alignItems: "center" }}
+                        spacing={2}
+                      >
                         <Box sx={{ flex: 1 }}>
                           <p>
                             Publish Count:{" "}
-                          {
-                            setupData[
-                              node.data.configuration.elements[0]
-                                .unicastAddress as keyof typeof setupData
-                            ]?.heartbeat_publish?.retransmitCount.label
-                          }
-                        </p>
+                            {
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_publish?.retransmitCount.label
+                            }
+                          </p>
                           <Slider
                             marks={[
                               {
@@ -2614,7 +2679,10 @@ const NodesElement = () => {
                             max={255}
                             min={0}
                             step={null}
-                            onChange={(event: Event, value: number | number[]) => {
+                            onChange={(
+                              event: Event,
+                              value: number | number[]
+                            ) => {
                               let label;
                               if (Array.isArray(value)) {
                                 value = value[0];
@@ -2650,7 +2718,15 @@ const NodesElement = () => {
                           />
                         </Box>
                         <Box sx={{ flex: 1 }}>
-                          <p>Period Log: {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.periodLog.label}</p>
+                          <p>
+                            Period Log:{" "}
+                            {
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_publish?.periodLog.label
+                            }
+                          </p>
                           <Slider
                             min={0} // 0x00 - Heartbeat messages are not being sent periodically (mesh profile 4.2.17.3)
                             max={17} // 0x11 - Smallest integer n, where 2(n-1) is greater than or equal to the Heartbeat Publication Count value (mesh profile 4.2.17.3)
@@ -2661,7 +2737,10 @@ const NodesElement = () => {
                                   .unicastAddress as keyof typeof setupData
                               ]?.heartbeat_publish?.periodLog.value
                             }
-                            onChange={(event: Event, value: number | number[]) => {
+                            onChange={(
+                              event: Event,
+                              value: number | number[]
+                            ) => {
                               let label;
                               if (Array.isArray(value)) {
                                 value = value[0];
@@ -2689,7 +2768,15 @@ const NodesElement = () => {
                       </Stack>
                       <Stack direction="row" sx={{ width: "100%" }} spacing={2}>
                         <Box sx={{ flex: 1 }}>
-                          <p>Time to live (TTL): {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.ttl}</p>
+                          <p>
+                            Time to live (TTL):{" "}
+                            {
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_publish?.ttl
+                            }
+                          </p>
                           <Slider
                             min={0} // 0x00 - The Heartbeat Publication TTL state (mesh profile 4.2.17.4)
                             max={127} // 0x7F - The Heartbeat Publication TTL state (mesh profile 4.2.17.4)
@@ -2701,130 +2788,193 @@ const NodesElement = () => {
                                   .unicastAddress as keyof typeof setupData
                               ]?.heartbeat_publish?.ttl
                             }
-                            onChange={(event: Event, value: number | number[]) => {
+                            onChange={(
+                              event: Event,
+                              value: number | number[]
+                            ) => {
                               handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
                                 "heartbeat_publish",
                                 "ttl",
                                 value
                               );
                             }}
-                            
                           />
                         </Box>
                       </Stack>
                       {/* Mesh Profile 4.2.17.5 */}
                       <Box sx={{ flex: 1 }}>
-                          <p>Features:</p>
-                          <Stack direction="row" spacing={2}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Checkbox
-                            checked={setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features?.relay}
-                            onChange={(event) => {
-                              handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
-                                "heartbeat_publish",
-                                "features",
-                                {
-                                  ...setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features,
-                                  relay: event.target.checked,
-                                }
-                              );
-                            }}
-                          />
-                          <p>Relay</p>
-                          </Box>
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Checkbox
-                            checked={setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features?.proxy}
-                            onChange={(event) => {
-                              handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
-                                "heartbeat_publish",
-                                "features",
-                                {
-                                  ...setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features,
-                                  proxy: event.target.checked,
-                                }
-                              );
-                            }}
-                          />
-                          <p>Proxy</p>
-                          </Box>
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Checkbox
-                            checked={setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features?.friend}
-                            onChange={(event) => {
-                              handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
-                                "heartbeat_publish",
-                                "features",
-                                {
-                                  ...setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features,
-                                  friend: event.target.checked,
-                                }
-                              );
-                            }}
-                          />
-                          <p>Friend</p>
-                          </Box>
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Checkbox
-                            checked={setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features?.lowPower}
-                            onChange={(event) => {
-                              handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
-                                "heartbeat_publish",
-                                "features",
-                                {
-                                  ...setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_publish?.features,
-                                  lowPower: event.target.checked,
-                                }
-                              );
-                            }}
-                          />
-                          <p>Low Power</p>
-                          </Box>
-                          </Stack>
-                        </Box>
-                        <p>Network Key:</p>
-                        <Box sx={{ flex: 1 }}>
-                          <Select
-                            required
-                            name="appKey"
-                            variant="standard"
-                            sx={{ width: "100%" }}
-                            defaultValue={
-                              setupData[
-                                node.data.configuration.elements[0]
-                                  .unicastAddress as keyof typeof setupData
-                              ]?.heartbeat_publish?.netKeyIndex
-                            }
-                            value={
-                              setupData[
-                                node.data.configuration.elements[0]
-                                  .unicastAddress as keyof typeof setupData
-                              ]?.heartbeat_publish?.netKeyIndex
-                            }
-                            onChange={(event) => {
-                              handleChange(
-                                node.data.configuration.elements[0]
-                                  .unicastAddress,
-                                "heartbeat_publish",
-                                "netKeyIndex",
-                                event.target.value
-                              );
+                        <p>Features:</p>
+                        <Stack direction="row" spacing={2}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
                             }}
                           >
-                            {node.data.configuration.netKeys.map(
-                              (netKey, index) => (
-                                <MenuItem value={index} key={index}>
-                                  Key {netKey}
-                                </MenuItem>
-                              )
-                            )}
-                          </Select>
-                        </Box>
+                            <Checkbox
+                              checked={
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.heartbeat_publish?.features?.relay
+                              }
+                              onChange={(event) => {
+                                handleChange(
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress,
+                                  "heartbeat_publish",
+                                  "features",
+                                  {
+                                    ...setupData[
+                                      node.data.configuration.elements[0]
+                                        .unicastAddress
+                                    ]?.heartbeat_publish?.features,
+                                    relay: event.target.checked,
+                                  }
+                                );
+                              }}
+                            />
+                            <p>Relay</p>
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Checkbox
+                              checked={
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.heartbeat_publish?.features?.proxy
+                              }
+                              onChange={(event) => {
+                                handleChange(
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress,
+                                  "heartbeat_publish",
+                                  "features",
+                                  {
+                                    ...setupData[
+                                      node.data.configuration.elements[0]
+                                        .unicastAddress
+                                    ]?.heartbeat_publish?.features,
+                                    proxy: event.target.checked,
+                                  }
+                                );
+                              }}
+                            />
+                            <p>Proxy</p>
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Checkbox
+                              checked={
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.heartbeat_publish?.features?.friend
+                              }
+                              onChange={(event) => {
+                                handleChange(
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress,
+                                  "heartbeat_publish",
+                                  "features",
+                                  {
+                                    ...setupData[
+                                      node.data.configuration.elements[0]
+                                        .unicastAddress
+                                    ]?.heartbeat_publish?.features,
+                                    friend: event.target.checked,
+                                  }
+                                );
+                              }}
+                            />
+                            <p>Friend</p>
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Checkbox
+                              checked={
+                                setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress
+                                ]?.heartbeat_publish?.features?.lowPower
+                              }
+                              onChange={(event) => {
+                                handleChange(
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress,
+                                  "heartbeat_publish",
+                                  "features",
+                                  {
+                                    ...setupData[
+                                      node.data.configuration.elements[0]
+                                        .unicastAddress
+                                    ]?.heartbeat_publish?.features,
+                                    lowPower: event.target.checked,
+                                  }
+                                );
+                              }}
+                            />
+                            <p>Low Power</p>
+                          </Box>
+                        </Stack>
+                      </Box>
+                      <p>Network Key:</p>
+                      <Box sx={{ flex: 1 }}>
+                        <Select
+                          required
+                          name="appKey"
+                          variant="standard"
+                          sx={{ width: "100%" }}
+                          defaultValue={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.heartbeat_publish?.netKeyIndex
+                          }
+                          value={
+                            setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.heartbeat_publish?.netKeyIndex
+                          }
+                          onChange={(event) => {
+                            handleChange(
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
+                              "heartbeat_publish",
+                              "netKeyIndex",
+                              event.target.value
+                            );
+                          }}
+                        >
+                          {node.data.configuration.netKeys.map(
+                            (netKey, index) => (
+                              <MenuItem value={index} key={index}>
+                                Key {netKey}
+                              </MenuItem>
+                            )
+                          )}
+                        </Select>
+                      </Box>
                     </Stack>
                   </Box>
                 </DialogContent>
@@ -3043,7 +3193,8 @@ const NodesElement = () => {
                                 setupData[
                                   node.data.configuration.elements[0]
                                     .unicastAddress
-                                ]?.heartbeat_subscribe?.address?.value as string,
+                                ]?.heartbeat_subscribe?.address
+                                  ?.value as string,
                                 setupData[
                                   node.data.configuration.elements[0]
                                     .unicastAddress
@@ -3053,23 +3204,29 @@ const NodesElement = () => {
                           />
                         </Box>
                       </Stack>
-                      <Stack direction="row" sx={{ width: "100%", alignItems: "center" }} spacing={2}>
+                      <Stack
+                        direction="row"
+                        sx={{ width: "100%", alignItems: "center" }}
+                        spacing={2}
+                      >
                         <Box sx={{ flex: 1 }}>
                           <p>
                             Subscribe Count:{" "}
-                          {
-                            setupData[
-                              node.data.configuration.elements[0]
-                                .unicastAddress as keyof typeof setupData
-                            ]?.heartbeat_subscribe?.count.label
-                          }
-                        </p>
+                            {
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.heartbeat_subscribe?.count.label
+                            }
+                          </p>
                           <Slider
                             max={65535} // 0xFFFF (Actual max is 0xFFFE) - Number of Heartbeat messages received (More than 0xFFFE messages have been received) (mesh profile 4.2.18.3)
                             min={0} // 0x0000 - Number of Heartbeat messages received (mesh profile 4.2.18.3)
                             step={1}
-
-                            onChange={(event: Event, value: number | number[]) => {
+                            onChange={(
+                              event: Event,
+                              value: number | number[]
+                            ) => {
                               let label;
                               if (Array.isArray(value)) {
                                 value = value[0];
@@ -3092,7 +3249,6 @@ const NodesElement = () => {
                                 }
                               );
                             }}
-                            
                             value={
                               setupData[
                                 node.data.configuration.elements[0]
@@ -3103,7 +3259,15 @@ const NodesElement = () => {
                           />
                         </Box>
                         <Box sx={{ flex: 1 }}>
-                          <p>Period Log: {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_subscribe?.periodLog.label}</p>
+                          <p>
+                            Period Log:{" "}
+                            {
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_subscribe?.periodLog.label
+                            }
+                          </p>
                           <Slider
                             min={0} // 0x00 - Heartbeat messages are not being sent periodically (mesh profile 4.2.18.4)
                             max={17} // 0x11 - Remaining period in 2(n-1) seconds for processing periodical Heartbeat messages (mesh profile 4.2.18.4)
@@ -3114,7 +3278,10 @@ const NodesElement = () => {
                                   .unicastAddress as keyof typeof setupData
                               ]?.heartbeat_subscribe?.periodLog.value
                             }
-                            onChange={(event: Event, value: number | number[]) => {
+                            onChange={(
+                              event: Event,
+                              value: number | number[]
+                            ) => {
                               let label;
                               if (Array.isArray(value)) {
                                 value = value[0];
@@ -3142,7 +3309,15 @@ const NodesElement = () => {
                       </Stack>
                       <Stack direction="row" sx={{ width: "100%" }} spacing={2}>
                         <Box sx={{ flex: 1 }}>
-                          <p>Min hops: {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_subscribe?.minHops.label}</p>
+                          <p>
+                            Min hops:{" "}
+                            {
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_subscribe?.minHops.label
+                            }
+                          </p>
                           <Slider
                             min={0} // 0x00 - No Heartbeat messages have been received (mesh profile 4.2.18.5)
                             max={127} // 0x7F - The Heartbeat Subscription Min Hops state (mesh profile 4.2.18.5)
@@ -3154,7 +3329,10 @@ const NodesElement = () => {
                                   .unicastAddress as keyof typeof setupData
                               ]?.heartbeat_subscribe?.minHops.value
                             }
-                            onChange={(event: Event, value: number | number[]) => {
+                            onChange={(
+                              event: Event,
+                              value: number | number[]
+                            ) => {
                               let label;
                               if (Array.isArray(value)) {
                                 value = value[0];
@@ -3162,11 +3340,13 @@ const NodesElement = () => {
                               switch (value) {
                                 case 0:
                                   label = "No data";
+                                  break;
                                 default:
                                   label = `${value} hop(s)`;
                               }
                               handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
                                 "heartbeat_subscribe",
                                 "minHops",
                                 {
@@ -3175,11 +3355,18 @@ const NodesElement = () => {
                                 }
                               );
                             }}
-                            
                           />
                         </Box>
                         <Box sx={{ flex: 1 }}>
-                          <p>Max hops: {setupData[node.data.configuration.elements[0].unicastAddress]?.heartbeat_subscribe?.maxHops.label}</p>
+                          <p>
+                            Max hops:{" "}
+                            {
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress
+                              ]?.heartbeat_subscribe?.maxHops.label
+                            }
+                          </p>
                           <Slider
                             min={0} // 0x00 - No Heartbeat messages have been received (mesh profile 4.2.18.6)
                             max={127} // 0x7F - The Heartbeat Subscription Max Hops state (mesh profile 4.2.18.6)
@@ -3191,7 +3378,10 @@ const NodesElement = () => {
                                   .unicastAddress as keyof typeof setupData
                               ]?.heartbeat_subscribe?.maxHops.value
                             }
-                            onChange={(event: Event, value: number | number[]) => {
+                            onChange={(
+                              event: Event,
+                              value: number | number[]
+                            ) => {
                               let label;
                               if (Array.isArray(value)) {
                                 value = value[0];
@@ -3199,11 +3389,13 @@ const NodesElement = () => {
                               switch (value) {
                                 case 0:
                                   label = "No data";
+                                  break;
                                 default:
                                   label = `${value} hop(s)`;
                               }
                               handleChange(
-                                node.data.configuration.elements[0].unicastAddress,
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
                                 "heartbeat_subscribe",
                                 "maxHops",
                                 {
@@ -3212,11 +3404,9 @@ const NodesElement = () => {
                                 }
                               );
                             }}
-                            
                           />
                         </Box>
                       </Stack>
-                        
                     </Stack>
                   </Box>
                 </DialogContent>
@@ -3235,13 +3425,600 @@ const NodesElement = () => {
                   <Button type="submit">Save</Button>
                 </DialogActions>
               </Dialog>
+              <Dialog
+                open={
+                  openSetupDialog[
+                    node.data.configuration.elements[0]
+                      .unicastAddress as keyof typeof openSetupDialog
+                  ]?.relay
+                }
+                onClose={() =>
+                  handleClose(
+                    node.data.configuration.elements[0].unicastAddress,
+                    "relay",
+                    node.data.composition.elements[0].models[0]
+                  )
+                }
+                slotProps={{
+                  paper: {
+                    component: "form",
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                      event.preventDefault();
+
+                      handleChange(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "relay",
+                        "saved",
+                        true
+                      );
+
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "relay",
+                        node.data.composition.elements[0].models[0],
+                        false
+                      );
+                    },
+                  },
+                }}
+              >
+                <DialogTitle>Relay</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    <p>
+                      The Relay Retransmit state is a composite state that
+                      controls parameters of retransmission of the Network PDU
+                      relayed by the node. The state includes a Relay Retransmit
+                      Count and a Relay Retransmit Interval Steps states. There
+                      is a single instance of this state for the node. (From
+                      &quot;Mesh Profile 1.0.1&quot;)
+                    </p>
+                  </DialogContentText>
+                  <Box sx={{ padding: "10px" }}>
+                    <Stack direction="column" spacing={1}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <p>Unicast Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.relay?.unicastAddress.index
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.relay?.unicastAddress.index
+                            }
+                            label="Unicast Address"
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "relay",
+                                "unicastAddress",
+                                {
+                                  index: Number(event.target.value),
+                                  value:
+                                    node.data.configuration.elements[
+                                      Number(event.target.value)
+                                    ].unicastAddress,
+                                }
+                              );
+                            }}
+                          >
+                            {node.data.configuration.elements.map(
+                              (element, index) => (
+                                <MenuItem value={index.toString()} key={index}>
+                                  {element.unicastAddress}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <Button
+                          variant="text"
+                          sx={{
+                            color: "black",
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                          onClick={() => {
+                            handleChange(
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
+                              "relay",
+                              "relay",
+                              !setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.relay?.relay
+                            );
+                          }}
+                        >
+                          <p>
+                            Enable Relay:{" "}
+                            {setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.relay?.relay
+                              ? "Enabled"
+                              : "Disabled"}
+                          </p>
+                          <Switch
+                            checked={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.relay?.relay
+                            }
+                          />
+                        </Button>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        {setupData[
+                          node.data.configuration.elements[0]
+                            .unicastAddress as keyof typeof setupData
+                        ]?.relay?.relay && (
+                          <>
+                            <Box sx={{ flex: 1 }}>
+                              <p>
+                                Count:{" "}
+                                {(setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress as keyof typeof setupData
+                                ]?.relay?.count || 0) + 1}{" "}
+                                (re)transmission(s)
+                              </p>
+                              <Slider
+                                min={0} // 3 bit value (0x00) (mesh profile 4.2.20.1)
+                                max={7} // 3 bit value (0x07) (mesh profile 4.2.20.1)
+                                valueLabelFormat={(value) => {
+                                  return `${value + 1} (re)transmission(s)`; // 1 hop steps (mesh profile 4.2.20.1)
+                                }}
+                                onChange={(event, value) => {
+                                  handleChange(
+                                    node.data.configuration.elements[0]
+                                      .unicastAddress,
+                                    "relay",
+                                    "count",
+                                    value
+                                  );
+                                }}
+                                valueLabelDisplay="auto"
+                              />
+                            </Box>
+
+                            <Box sx={{ flex: 1 }}>
+                              <p>
+                                Interval Steps:{" "}
+                                {((setupData[
+                                  node.data.configuration.elements[0]
+                                    .unicastAddress as keyof typeof setupData
+                                ]?.relay?.step || 0) +
+                                  1) *
+                                  10}{" "}
+                                ms
+                              </p>
+                              <Slider
+                                min={0} // 5 bit value (0x00) (mesh profile 4.2.20.2)
+                                max={31} // 5 bit value (0x1F) (mesh profile 4.2.20.2)
+                                valueLabelFormat={(value) => {
+                                  return `${(value + 1) * 10} ms`; // 10ms steps, retransmission interval = (Relay Retransmit Interval Steps + 1) * 10 (mesh profile 4.2.20.2)
+                                }}
+                                valueLabelDisplay="auto"
+                                onChange={(event, value) => {
+                                  handleChange(
+                                    node.data.configuration.elements[0]
+                                      .unicastAddress,
+                                    "relay",
+                                    "step",
+                                    value
+                                  );
+                                }}
+                              />
+                            </Box>
+                          </>
+                        )}
+                      </Stack>
+                    </Stack>
+                  </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() =>
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "relay",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save</Button>
+                </DialogActions>
+              </Dialog>
+              <Dialog
+                open={
+                  openSetupDialog[
+                    node.data.configuration.elements[0]
+                      .unicastAddress as keyof typeof openSetupDialog
+                  ]?.proxy
+                }
+                onClose={() =>
+                  handleClose(
+                    node.data.configuration.elements[0].unicastAddress,
+                    "proxy",
+                    node.data.composition.elements[0].models[0]
+                  )
+                }
+                slotProps={{
+                  paper: {
+                    component: "form",
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                      event.preventDefault();
+
+                      handleChange(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "proxy",
+                        "saved",
+                        true
+                      );
+
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "proxy",
+                        node.data.composition.elements[0].models[0],
+                        false
+                      );
+                    },
+                  },
+                }}
+              >
+                <DialogTitle>Proxy</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    <p>
+                      The GATT Proxy state indicates if the Proxy feature (see
+                      Section 3.4.6.2) is supported. If the feature is
+                      supported, the state indicates and controls the Proxy
+                      feature. (From &quot;Mesh Profile 1.0.1&quot;)
+                    </p>
+                  </DialogContentText>
+                  <Box sx={{ padding: "10px" }}>
+                    <Stack direction="column" spacing={1}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <p>Unicast Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.proxy?.unicastAddress.index
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.proxy?.unicastAddress.index
+                            }
+                            label="Unicast Address"
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "proxy",
+                                "unicastAddress",
+                                {
+                                  index: Number(event.target.value),
+                                  value:
+                                    node.data.configuration.elements[
+                                      Number(event.target.value)
+                                    ].unicastAddress,
+                                }
+                              );
+                            }}
+                          >
+                            {node.data.configuration.elements.map(
+                              (element, index) => (
+                                <MenuItem value={index.toString()} key={index}>
+                                  {element.unicastAddress}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <Button
+                          variant="text"
+                          sx={{
+                            color: "black",
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                          onClick={() => {
+                            handleChange(
+                              node.data.configuration.elements[0]
+                                .unicastAddress,
+                              "proxy",
+                              "proxy",
+                              !setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.proxy?.proxy
+                            );
+                          }}
+                        >
+                          <p>
+                            Enable Proxy:{" "}
+                            {setupData[
+                              node.data.configuration.elements[0]
+                                .unicastAddress as keyof typeof setupData
+                            ]?.proxy?.proxy
+                              ? "Enabled"
+                              : "Disabled"}
+                          </p>
+                          <Switch
+                            checked={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.proxy?.proxy
+                            }
+                          />
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() =>
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "proxy",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save</Button>
+                </DialogActions>
+              </Dialog>
+              <Dialog
+                open={
+                  openSetupDialog[
+                    node.data.configuration.elements[0]
+                      .unicastAddress as keyof typeof openSetupDialog
+                  ]?.ttl
+                }
+                onClose={() =>
+                  handleClose(
+                    node.data.configuration.elements[0].unicastAddress,
+                    "ttl",
+                    node.data.composition.elements[0].models[0]
+                  )
+                }
+                slotProps={{
+                  paper: {
+                    component: "form",
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                      event.preventDefault();
+
+                      handleChange(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "ttl",
+                        "saved",
+                        true
+                      );
+
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "ttl",
+                        node.data.composition.elements[0].models[0],
+                        false
+                      );
+                    },
+                  },
+                }}
+              >
+                <DialogTitle>TTL</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    <p>
+                      The Default TTL state determines the TTL value used when
+                      sending messages. The Default TTL is applied by the access
+                      layer unless the application specifies a TTL. (From
+                      &quot;Mesh Profile 1.0.1&quot;)
+                    </p>
+                  </DialogContentText>
+                  <Box sx={{ padding: "10px" }}>
+                    <Stack direction="column" spacing={1}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <p>Unicast Address:</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Select
+                            required
+                            variant="standard"
+                            sx={{ width: "100%" }}
+                            defaultValue={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.ttl?.unicastAddress.index
+                            }
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.ttl?.unicastAddress.index
+                            }
+                            label="Unicast Address"
+                            onChange={(event) => {
+                              handleChange(
+                                node.data.configuration.elements[0]
+                                  .unicastAddress,
+                                "ttl",
+                                "unicastAddress",
+                                {
+                                  index: Number(event.target.value),
+                                  value:
+                                    node.data.configuration.elements[
+                                      Number(event.target.value)
+                                    ].unicastAddress,
+                                }
+                              );
+                            }}
+                          >
+                            {node.data.configuration.elements.map(
+                              (element, index) => (
+                                <MenuItem value={index.toString()} key={index}>
+                                  {element.unicastAddress}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </Box>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        <p>TTL: {setupData[node.data.configuration.elements[0].unicastAddress]?.ttl?.ttl || 0}</p>
+                        <Box sx={{ flex: 1 }}>
+                          <Slider
+                            min={0} // 0x00 (mesh profile 4.2.7)
+                            max={127} // 0x7F (mesh profile 4.2.7)
+                            step={null}
+                            marks={[
+                              { value: 0 },
+                              ...Array.from({ length: 127 }, (_, i) => ({
+                                value: i === 0 ? 2 : i + 1,
+                              })),
+                            ]}
+                            valueLabelFormat={(value) => value.toString()}
+                            value={
+                              setupData[
+                                node.data.configuration.elements[0]
+                                  .unicastAddress as keyof typeof setupData
+                              ]?.ttl?.ttl
+                            }
+                            onChange={(event, value) => {
+                              handleChange(
+                                node.data.configuration.elements[0].unicastAddress,
+                                "ttl",
+                                "ttl",
+                                value
+                              );
+                            }}
+                          />
+                        </Box>
+                      </Stack>
+                    </Stack>
+                  </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() =>
+                      handleClose(
+                        node.data.configuration.elements[0].unicastAddress,
+                        "ttl",
+                        node.data.composition.elements[0].models[0]
+                      )
+                    }
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save</Button>
+                </DialogActions>
+              </Dialog>
               <Divider />
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <Tabs value={valueSetupTab} onChange={handleChangeSetupTab} centered>
-                <Tab label="Model config" />
-                <Tab label="Network Behavior" />
-                <Tab label="Node configuration" />
-              </Tabs>
+                <Tabs
+                  value={valueSetupTab}
+                  onChange={handleChangeSetupTab}
+                  centered
+                >
+                  <Tab label="Model config" />
+                  <Tab label="Network Behavior" />
+                  <Tab label="Node configuration" />
+                </Tabs>
               </Box>
               <CustomTabPanel value={valueSetupTab} index={0}>
                 <Stack
