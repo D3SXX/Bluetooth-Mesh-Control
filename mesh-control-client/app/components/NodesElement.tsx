@@ -721,8 +721,12 @@ const NodesElement = () => {
                   LPN: node.data.composition.features.lpn,
                 }).map(([key, value]) => (
                   <React.Fragment key={key}>
-                    <ListItemButton component="a" sx={{}}>
-                      <Stack direction="column" spacing={0} alignItems="center">
+                    <ListItemButton component="a">
+                      <Stack direction="column" spacing={0} alignItems="center" sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}>
                         <Typography variant="body2" fontWeight="bold">
                           {key}
                         </Typography>
@@ -4263,7 +4267,22 @@ const NodesElement = () => {
                 setupData[node.data.configuration.elements[0].unicastAddress]
                   ?.publish?.saved ||
                 setupData[node.data.configuration.elements[0].unicastAddress]
-                  ?.subscribe?.saved) && (
+                  ?.subscribe?.saved ||
+                setupData[node.data.configuration.elements[0].unicastAddress]
+                  ?.identity?.saved ||
+                setupData[node.data.configuration.elements[0].unicastAddress]
+                  ?.beacon?.saved ||
+                setupData[node.data.configuration.elements[0].unicastAddress]
+                  ?.heartbeat_publish?.saved ||
+                setupData[node.data.configuration.elements[0].unicastAddress]
+                  ?.heartbeat_subscribe?.saved ||
+                setupData[node.data.configuration.elements[0].unicastAddress]
+                  ?.relay?.saved ||
+                setupData[node.data.configuration.elements[0].unicastAddress]
+                  ?.proxy?.saved ||
+                setupData[node.data.configuration.elements[0].unicastAddress]
+                  ?.ttl?.saved
+                ) && (
                 <ExecuteDialog
                   sx={{
                     width: "100%",
@@ -4360,6 +4379,137 @@ const NodesElement = () => {
                           ]?.subscribe?.appKeyIndex
                         }`
                       : "Subscribe: Nothing to change.",
+                    setupData[
+                      node.data.configuration.elements[0].unicastAddress
+                    ]?.identity?.saved
+                      ? `Identity: Add identity to unicast address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.identity?.unicastAddress.value
+                        }, state: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.identity?.state
+                        }`
+                      : "Identity: Nothing to change.",
+                    setupData[
+                      node.data.configuration.elements[0].unicastAddress
+                    ]?.beacon?.saved
+                      ? `Beacon: Add beacon to unicast address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.beacon?.unicastAddress.value
+                        }, state: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.beacon?.state
+                        }`
+                      : "Beacon: Nothing to change.",
+                    setupData[
+                      node.data.configuration.elements[0].unicastAddress
+                    ]?.heartbeat_publish?.saved
+                      ? `Heartbeat Publish: Add heartbeat publish to unicast address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_publish?.unicastAddress.value
+                        }, address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_publish?.address?.value
+                        }, count: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_publish?.retransmitCount.label
+                        }, period: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_publish?.periodLog.label
+                        }, ttl: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_publish?.ttl
+                        }, network key index: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_publish?.netKeyIndex
+                        }`
+                      : "Heartbeat Publish: Nothing to change.",
+                    setupData[
+                      node.data.configuration.elements[0].unicastAddress
+                    ]?.heartbeat_subscribe?.saved
+                      ? `Heartbeat Subscribe: Add heartbeat subscribe to unicast address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_subscribe?.unicastAddress.value
+                        }, address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_subscribe?.address?.value
+                        }, period: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_subscribe?.periodLog.label
+                        }, count: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_subscribe?.count.label
+                        }, max hops: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_subscribe?.maxHops.label
+                        }, min hops: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.heartbeat_subscribe?.minHops.label
+                        }`
+                      : "Heartbeat Subscribe: Nothing to change.",
+                    setupData[
+                      node.data.configuration.elements[0].unicastAddress
+                    ]?.relay?.saved
+                      ? `Relay: Add relay to unicast address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.relay?.unicastAddress.value
+                        }, relay enabled: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.relay?.relay
+                        }, count: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.relay?.count
+                        }, interval steps: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.relay?.step
+                        }`
+                      : "Relay: Nothing to change.",
+                    setupData[
+                      node.data.configuration.elements[0].unicastAddress
+                    ]?.proxy?.saved
+                      ? `Proxy: Add proxy to unicast address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.proxy?.unicastAddress.value
+                        }, proxy enabled: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.proxy?.proxy
+                        }`
+                      : "Proxy: Nothing to change.",
+                    setupData[
+                      node.data.configuration.elements[0].unicastAddress
+                    ]?.ttl?.saved
+                      ? `TTL: Add ttl to unicast address: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.ttl?.unicastAddress.value
+                        }, ttl: ${
+                          setupData[
+                            node.data.configuration.elements[0].unicastAddress
+                          ]?.ttl?.ttl
+                        }`
+                      : "TTL: Nothing to change.",
                   ]}
                   key="applyChanges"
                   fetcherData={{

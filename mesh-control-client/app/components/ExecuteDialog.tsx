@@ -177,7 +177,15 @@ const ExecuteDialog = ({
             }}
           >
             {activeStep === 0 ? (
-              text.map((t, index) => <p key={index}>{t}</p>)
+              <List disablePadding sx={{ height: "100%", overflow: "auto" }}>
+                {text.map((t, index) => (
+                  <ListItem key={index} disablePadding>
+                    
+                      <ListItemText>{t}</ListItemText>
+                    
+                  </ListItem>
+                ))}
+              </List>
             ) : (
               <Box
                 sx={{ height: "100%", overflow: "auto" }}
