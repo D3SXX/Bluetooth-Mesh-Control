@@ -1,5 +1,5 @@
-export const fetcherGET = async (url: string, port: number = 10000) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:${port}/${url}`;
+export const fetcherGET = async (url: string, port: number = 3000) => {
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:${port}/api/meshctl`;
   const res = await fetch(apiUrl, {
     method: "GET",
   });
@@ -8,8 +8,8 @@ export const fetcherGET = async (url: string, port: number = 10000) => {
   return response;
 };
 
-export const fetcherPOST = (requestData: object) => async (url: string, port: number = 10000) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:${port}/${url}`;
+export const fetcherPOST = (requestData: object) => async (url: string, port: number = 3000) => {
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:${port}/api${url}`;
   const res = await fetch(apiUrl, {
     method: "POST",
     body: JSON.stringify(requestData),
@@ -22,7 +22,7 @@ export const fetcherPOST = (requestData: object) => async (url: string, port: nu
 };
 
 export const fetcherDELETE = async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:3000/${url}`;
   const res = await fetch(apiUrl, {
     method: "DELETE",
   });
@@ -31,7 +31,7 @@ export const fetcherDELETE = async (url: string) => {
 };
 
 export const fetcherPUT = async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:10000/${url}`;
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:3000/api${url}`;
   const res = await fetch(apiUrl, {
     method: "PUT",
   });

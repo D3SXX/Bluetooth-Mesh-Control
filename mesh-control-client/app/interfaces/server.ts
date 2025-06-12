@@ -165,6 +165,13 @@ interface Server {
     VERSION: string;
 }
 
+export interface NodeConfig {
+    STATUS: boolean;
+    nodes: Node[];
+    appKeys: AppKey[];
+    netKeys: NetKey[];
+}
+
 export interface ServerResponse {
     config: Config;
     controller: Controller;
