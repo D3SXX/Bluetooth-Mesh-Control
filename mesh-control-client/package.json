@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "get-ip": "node get-ip.ts",
     "dev": "next dev --turbopack",
     "quick-dev": "next dev",
     "build": "next build",
@@ -13,33 +12,28 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@eslint/config-array": "^0.18.0",
-    "@eslint/object-schema": "^2.1.4",
-    "@fontsource/roboto": "^5.2.5",
-    "@mui/icons-material": "^6.4.7",
-    "@mui/material": "^6.4.7",
-    "axios": "^1.6.8",
-    "ip": "^2.0.1",
+    "@eslint/config-array": "^0.20.1",
+    "@eslint/object-schema": "^2.1.6",
+    "@fontsource/roboto": "^5.2.6",
+    "@mui/icons-material": "^7.1.1",
+    "@mui/material": "^7.1.1",
+    "axios": "^1.9.0",
     "next": "^15.3.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-tooltip": "^5.26.3",
-    "swr": "^2.2.5",
+    "react-tooltip": "^5.29.0",
+    "swr": "^2.3.3",
     "yaml": "^2.8.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "19.0.10",
-    "@types/react-dom": "19.0.4",
-    "autoprefixer": "^10.0.1",
-    "eslint": "^8",
-    "eslint-config-next": "15.2.1",
+    "@tailwindcss/postcss": "^4.1.10",
+    "@types/node": "^24.0.1",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "eslint": "^9.28.0",
+    "eslint-config-next": "^15.3.3",
     "postcss": "^8",
-    "tailwindcss": "^3.3.0",
+    "tailwindcss": "^4.1.10",
     "typescript": "^5"
-  },
-  "overrides": {
-    "@types/react": "19.0.10",
-    "@types/react-dom": "19.0.4"
   }
 }

@@ -504,7 +504,7 @@ const NodesElement = () => {
                         setInputPublishAddressValue(prevState => ({...prevState, [nodeIndex] : e.target.value}))
                       }
                       placeholder={suggestAddressInput[nodeIndex]}
-                      className="input flex-grow"
+                      className="input grow"
                     />
                   )}
                 </div>

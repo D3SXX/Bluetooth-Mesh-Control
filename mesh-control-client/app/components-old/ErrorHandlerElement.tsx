@@ -94,10 +94,10 @@ const ErrorHandlerElement = () => {
                     </li>
                   </ul>
                 <div id="ErrorModal-1" className="space-y-2">
-                <textarea ref={textareaRef1} rows={10} className="textarea textarea-bordered w-full h-full flex-grow resize-y">{data["EXTRA_DATA"]["prov_db.json"]}</textarea>
+                <textarea ref={textareaRef1} rows={10} className="textarea textarea-bordered w-full h-full grow resize-y">{data["EXTRA_DATA"]["prov_db.json"]}</textarea>
                 </div>
                 <div id="ErrorModal-2" className="hidden space-y-2">
-                <textarea ref={textareaRef2} rows={10} className="textarea textarea-bordered w-full h-full flex-grow resize-y">{data["EXTRA_DATA"]["local_node.json"]}</textarea>
+                <textarea ref={textareaRef2} rows={10} className="textarea textarea-bordered w-full h-full grow resize-y">{data["EXTRA_DATA"]["local_node.json"]}</textarea>
                 </div>
                 </div>}
                 

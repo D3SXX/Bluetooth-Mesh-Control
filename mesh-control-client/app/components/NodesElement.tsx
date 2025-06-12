@@ -27,7 +27,7 @@ import {
   Checkbox,
   Switch,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import ExecuteDialog from "./ExecuteDialog";
 import { wrap } from "module";
 

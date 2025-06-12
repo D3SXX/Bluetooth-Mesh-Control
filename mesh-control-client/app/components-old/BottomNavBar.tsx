@@ -24,7 +24,7 @@ const BottomNavBar = () => {
         <div
           key={`bottom-navbar-${index}`}
           className={` ${
-            item.link === pathname ? "active rounded-sm" : "rounded-sm"
+            item.link === pathname ? "active rounded-xs" : "rounded-xs"
           }`}
         >
           <Link href={item.link} className="w-full">

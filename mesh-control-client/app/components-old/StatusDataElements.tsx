@@ -14,7 +14,7 @@ const StatusDataElements = () => {
 
   return (
     <div>
-    <div className={'stats stats-vertical md:stats-horizontal md:shadow md:m-2 rounded-none md:rounded-xl block md:inline-grid'}>
+    <div className={'stats stats-vertical md:stats-horizontal md:shadow-sm md:m-2 rounded-none md:rounded-xl block md:inline-grid'}>
         {(titles.map((title, index) => (
         <div className="stat" key={`renderedElement-${index}`}>
           <div className="stat-title font-bold text-base-content">{title}</div>

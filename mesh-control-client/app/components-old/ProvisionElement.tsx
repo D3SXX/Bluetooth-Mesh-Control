@@ -159,7 +159,7 @@ const ProvisionElement = () => {
                         ) as HTMLFormElement
                       ).showModal()
                     }
-                    className="btn h-fit btn-ghost stats shadow mb-1 mt-1 border-base-200 border w-full"
+                    className="btn h-fit btn-ghost stats shadow-sm mb-1 mt-1 border-base-200 border w-full"
                   >
                     <div className="join join-horizontal flex items-center flex-wrap justify-center text-center">
                       <div className="stat join-item w-full sm:w-auto">

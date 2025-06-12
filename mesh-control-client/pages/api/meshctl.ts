@@ -46,9 +46,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     let query = req.query['query'];
     if (query === 'STATUS') {
-      return res.status(200).json({ "MESSAGE":"meshctl control backend api" });
+      //return res.status(200).json({ "MESSAGE":"meshctl control backend api" });
     }
-    return res.status(200).json({ "MESSAGE":"meshctl control backend api" });
+    //return res.status(200).json({ "MESSAGE":"meshctl control backend api" });
   }
 
   if (req.method === 'POST') {
