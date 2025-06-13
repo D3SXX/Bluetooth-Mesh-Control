@@ -50,7 +50,7 @@ const DynamicIcon = ({iconOn, iconOff, enableBlink, apiUrl, query, interval}: {i
       );
 
     const changeState = async () => {
-        const response = await fetcherPOST({[query.toLowerCase()]: !data[query]})(`${apiUrl}`);
+        const response = await fetcherPOST({[query.toLowerCase()]: !data[query]})(`/${apiUrl}`);
         setIconState(response[query]);
     }
 

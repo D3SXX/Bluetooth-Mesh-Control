@@ -4,7 +4,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {getNodes, loadConfig} from "./utils/readProvdb"
 import {init} from "./utils/initData"
 import { NodeConfig } from "../../app/interfaces/server"
-import { Global } from "@emotion/react";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,31 +15,27 @@ export default async function handler(request: NextApiRequest, response: NextApi
         global.DATA = await init()
       }
       
-    if ((global["DATA"] as any)["SERVER"]["ERROR"]["STATUS"] === false){
-        update_config()
-    }
-
 
   if (request.method === 'GET') {
-    let query = request.query['query'];
+    let query;
+    if (request){
+      query = request.query['query'];
+    }
     
     if (query){
-    
+    console.log({ [query]: global.DATA.CONFIG[query] })
     return response.status(200).json({ [query]: global.DATA.CONFIG[query] });
     }
-    return response.status(200).json({ "MESSAGE":"config control backend api" });
-  }
-
-  if (request.method === 'POST') {
-    const { STATUS } = request.body;
-
-  }
+    else{
+      return response.status(200).json({ "keys":global.DATA.KEYS });
+    }
 }
 
-function update_config(){
-  const obj: NodeConfig = getNodes()
-  global["DATA"]["CONFIG"]["NODES"] = obj.nodes
-  global["DATA"]["CONFIG"]["APPKEYS"] = obj.appKeys
-  global["DATA"]["CONFIG"]["NETKEYS"] = obj.netKeys
+  if (request.method === 'POST') {
+    console.log(request.body)
+    const { STATUS } = request.body;
+    console.log(STATUS)
 
+
+  }
 }

@@ -1,5 +1,5 @@
 export const fetcherGET = async (url: string, port: number = 3000) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:${port}/api/meshctl`;
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:${port}/api${url}`;
   const res = await fetch(apiUrl, {
     method: "GET",
   });

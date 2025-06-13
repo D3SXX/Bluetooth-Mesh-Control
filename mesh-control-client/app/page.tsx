@@ -28,7 +28,7 @@ import { ServerResponse } from "./interfaces/server";
 export default function Home() {
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
-  const { data, isLoading, error } = useSWR<ServerResponse>("/", fetcherGET, {
+  const { data, isLoading, error } = useSWR<ServerResponse>("/meshctl", fetcherGET, {
     refreshInterval: 3000,
   });
 
@@ -62,7 +62,7 @@ export default function Home() {
         <Box sx={{ display: "flex", mt: 2, borderRadius: "10px" }}>
           <Stack direction="row" spacing={1.5}>
             <Button size="small" variant="outlined" color="secondary">
-              Available Nodes: {data?.config.NODES.nodes.length}
+              Available Nodes: {data?.config.NODES.length}
             </Button>
             <Button size="small" variant="outlined" color="secondary">
               Available Application Keys: {data?.keys.APPKEYS.length}
@@ -95,7 +95,7 @@ export default function Home() {
               onClick={() => handleOpen("bluetooth-adapter")}
             >
               Bluetooth adapter:{" "}
-              {data?.controller.DEFAULT_DATA["Default-adapter"]}
+              {data?.controller.LIST[data?.controller.DEFAULT_INDEX].Address}
             </Button>
             <Button
               variant="outlined"
@@ -118,16 +118,16 @@ export default function Home() {
         <DialogTitle>Bluetooth adapter</DialogTitle>
         <DialogContent>
           <Select
-            value={data?.controller.DEFAULT_DATA["Default-adapter"]}
+            value={data?.controller.DEFAULT_INDEX}
             sx={{ width: "100%" }}
           >
             {Object.entries(data?.controller.LIST || {}).map(([key, value]) => (
               <MenuItem key={key} value={key}>
                 {" "}
-                {key === data?.controller.DEFAULT_DATA["Default-adapter"] ? (
-                  <b>Default Adapter: {key}</b>
+                {key == data?.controller.DEFAULT_INDEX ? (
+                  <b>Default Adapter: {value.Address} ({value.Name})</b>
                 ) : (
-                  key
+                  `${value.Address} (${value.Name})`
                 )}
               </MenuItem>
             ))}
@@ -138,8 +138,8 @@ export default function Home() {
             spacing={1.5}
           >
             <List>
-              Bluetooth Adapter Device Information
-              {Object.entries(data?.controller.DEFAULT_DATA || {}).map(
+               Device Information
+              {Object.entries(data?.controller.LIST[data?.controller.DEFAULT_INDEX] || {}).map(
                 ([key, value]) =>
                   key == "UUID" ? (
                     <ListItemButton key={key}>
@@ -157,15 +157,15 @@ export default function Home() {
               )}
             </List>
             <List>
-              Bluetooth Adapter UUID Information
-              {Object.entries(data?.controller.DEFAULT_DATA["UUID"] || {}).map(
+              UUID Information
+              {Object.entries(data?.controller.LIST[data?.controller.DEFAULT_INDEX].UUID || {}).map(
                 ([key, value]) => (
                   <ListItemButton
                     key={key}
                     sx={{ width: "auto", whiteSpace: "nowrap" }}
                   >
                     <ListItemText>
-                      {key}: {value.toString()}
+                      {value.toString()}
                     </ListItemText>
                   </ListItemButton>
                 )

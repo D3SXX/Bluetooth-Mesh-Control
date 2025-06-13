@@ -538,7 +538,7 @@ const NodesElement = () => {
 
   const nodesList =
     data && data.NODES
-      ? data.NODES.nodes.map((node) => ({
+      ? data.NODES.map((node) => ({
           data: node,
           icon: <LightbulbIcon />,
         }))

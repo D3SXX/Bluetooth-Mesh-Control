@@ -2,57 +2,77 @@ import { spawn } from "child_process";
 import { NextApiRequest, NextApiResponse } from "next";
 
 
-if (typeof global.meshctlProcess === 'undefined') {
-  global.meshctlProcess = null;
-  global.meshctlProcessPID = null;
-  
-}
+function startMeshctl(){
 
-const startMeshctl = () => {
-  
+  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS = spawn('meshctl');
+  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS_PID = global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.pid || null;
 
-  global.meshctlProcess = spawn('meshctl');
-  global.meshctlProcessPID = global.meshctlProcessPID || null;
+  console.log(`Mestctl process started with PID: ${global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS_PID}`);
 
-  console.log(`Mestctl process started with PID: ${global.meshctlProcessPID}`);
-
-  if (global.meshctlProcess.stdout !== null) {
-    global.meshctlProcess.stdout.on('data', (data) => {
+  if (global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdout !== null) {
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdout.on('data', (data) => {
       console.log(`${data}`);
     });
   }
-  if (global.meshctlProcess.stderr !== null) {
-    global.meshctlProcess.stderr.on('data', (data) => {
+  if (global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stderr !== null) {
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stderr.on('data', (data) => {
       console.error(`${data}`);
     });
   }
 
-  global.meshctlProcess.on('exit', (code) => {
+  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.on('exit', (code) => {
     console.log(`Meshctl process exited with code: ${code}`);
-    global.meshctlProcess = null;
-    global.meshctlProcessPID = null;
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS = null;
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS_PID = null;
   });
 };
 
+function stopMeshctl(){
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.kill("SIGINT")
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS_PID = null;
+}
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method === 'GET') {
-    let query = req.query['query'];
-    if (query === 'STATUS') {
-      //return res.status(200).json({ "MESSAGE":"meshctl control backend api" });
+export default function handler(request: NextApiRequest, response: NextApiResponse) {
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (request.method === 'GET') {
+    
+    let query;
+    if (request){
+      query = request.query['query'];
     }
-    //return res.status(200).json({ "MESSAGE":"meshctl control backend api" });
+    if (query){
+      if (query === "STATUS"){
+        return response.status(200).json({ [query]: global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS });
+      }
+
+    return response.status(200).json({ [query]: global.DATA.CONFIG[query] });
+    }
+    else{
+      return response.status(200).json({ "server":global.DATA.SERVER, "controller": global.DATA.CONTROLLER, "provision": global.DATA.PROVISION, "config": global.DATA.CONFIG,"keys": global.DATA.KEYS, "terminal_sessions": global.DATA.TERMINAL_SESSIONS });
+    }
+    
   }
+  else if (request.method === 'POST') {
+    const { status } = request.body;
 
-  if (req.method === 'POST') {
-    const { STATUS } = req.body;
-
+    if (status != undefined){
+      console.log(`Trying to ${status ? "start meshctl" : "stop meshctl"}`)
+      if (status === true){
+        startMeshctl()
+        global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS = true
+      }
+      else{
+        stopMeshctl()
+        global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS = false
+      }
+      return response.status(200).json({ status: global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS });
+    }
+    return response.status(200).end();
+  }
+    else if (request.method === 'OPTIONS') {
+      return response.status(200).end();
   }
 }

@@ -7,7 +7,6 @@ export async function init()  {
 
     console.log("Initializing data for the first time..")
 
-    console.log(global["DATA"])
     const {companyIdentifiersData, mmdlModelUuidsData, meshModelUuidsData} = await getSigData()
     
     return {
@@ -26,7 +25,7 @@ export async function init()  {
 
     CONTROLLER: {
     "DEFAULT": "",
-    "DEFAULT_DATA":{"UUID":{}},
+    "DEFAULT_INDEX":0,
     "POWER":undefined,
     "LIST":{},
     "PROCESS":{"STATUS":false}
@@ -51,6 +50,7 @@ export async function init()  {
 },
 
     TERMINAL_SESSIONS : {
+    "MESHCTL":{"STATUS":false, "OUTPUT":[], "PROCESS":null, "PROCESS_PID":""},
     "CONFIG":{"STATUS":false, "OUTPUT":[]},
     "CONTROLLER":{"STATUS":false, "OUTPUT":[]},
     "PROVISION":{"STATUS":false, "OUTPUT":[]},
