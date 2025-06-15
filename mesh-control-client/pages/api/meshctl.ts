@@ -1,36 +1,5 @@
-import { spawn } from "child_process";
 import { NextApiRequest, NextApiResponse } from "next";
-
-
-function startMeshctl(){
-
-  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS = spawn('meshctl');
-  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS_PID = global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.pid || null;
-
-  console.log(`Mestctl process started with PID: ${global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS_PID}`);
-
-  if (global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdout !== null) {
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdout.on('data', (data) => {
-      console.log(`${data}`);
-    });
-  }
-  if (global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stderr !== null) {
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stderr.on('data', (data) => {
-      console.error(`${data}`);
-    });
-  }
-
-  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.on('exit', (code) => {
-    console.log(`Meshctl process exited with code: ${code}`);
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS = null;
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS_PID = null;
-  });
-};
-
-function stopMeshctl(){
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.kill("SIGINT")
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS_PID = null;
-}
+import { startProcess, stopProcess } from "./utils/process";
 
 export default function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -61,12 +30,10 @@ export default function handler(request: NextApiRequest, response: NextApiRespon
     if (status != undefined){
       console.log(`Trying to ${status ? "start meshctl" : "stop meshctl"}`)
       if (status === true){
-        startMeshctl()
-        global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS = true
+            startProcess("MESHCTL")
       }
       else{
-        stopMeshctl()
-        global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS = false
+        stopProcess("MESHCTL")
       }
       return response.status(200).json({ status: global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS });
     }
@@ -76,3 +43,4 @@ export default function handler(request: NextApiRequest, response: NextApiRespon
       return response.status(200).end();
   }
 }
+

@@ -5,6 +5,7 @@ import {getNodes, loadConfig} from "./utils/readProvdb"
 import {init} from "./utils/initData"
 import { NodeConfig } from "../../app/interfaces/server"
 import { Global } from "@emotion/react";
+import { runCommmand } from "./utils/runCommand";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -38,9 +39,39 @@ export default async function handler(request: NextApiRequest, response: NextApi
 }
 
 function update_config(){
-  const obj: NodeConfig = getNodes()
-  global["DATA"]["CONFIG"]["NODES"] = obj.nodes
-  global["DATA"]["CONFIG"]["APPKEYS"] = obj.appKeys
-  global["DATA"]["CONFIG"]["NETKEYS"] = obj.netKeys
 
+  // Get data from provdb
+
+  const obj: NodeConfig | undefined = getNodes()
+  if (obj){
+    global.DATA.CONFIG.NODES = obj.nodes
+    global.DATA.KEYS.APPKEYS = obj.appKeys
+    global.DATA.KEYS.NETKEYS = obj.netKeys
+  }
+
+  // Get version from meshctl
+
+  const versionData = runCommmand(["version"])
+  const versionArr = versionData.split("\n")
+
+  global.DATA.SERVER.MESHCTL = versionArr[1].split(" ")[1]
+  
+  // Get security level from the main meshctl terminal session
+
+  if (global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS === true){
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT = []
+    
+    const securityLevel = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT
+    global.DATA.CONFIG.SECURITY_LEVEL = securityLevel[0]
+  }
+
+  if (global.DATA.TERMINAL_SESSIONS.CONFIG.STATUS === true){
+    const config = global.DATA.TERMINAL_SESSIONS.CONFIG.OUTPUT
+    global.DATA.CONFIG.CONFIG = config
+  }
+
+  if (global.DATA.TERMINAL_SESSIONS.CONFIG.STATUS === true){
+    const config = runCommmand(["config"])
+    global.DATA.CONFIG.CONFIG = config
+  }
 }
