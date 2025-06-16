@@ -18,7 +18,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       }
       
     if ((global["DATA"] as any)["SERVER"]["ERROR"]["STATUS"] === false){
-        update_config()
+        await update_config()
     }
 
 
@@ -38,7 +38,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
   }
 }
 
-function update_config(){
+async function update_config(){
 
   // Get data from provdb
 
@@ -58,20 +58,22 @@ function update_config(){
   
   // Get security level from the main meshctl terminal session
 
-  if (global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS === true){
+  if (global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS === true && global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK === false){
     global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT = []
-    
-    const securityLevel = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT
-    global.DATA.CONFIG.SECURITY_LEVEL = securityLevel[0]
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("security\n")
+    while(true){
+      if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Provision Security Level")).length >= 1){
+        break;
+      }
+      await delay(1000)
+    }
+
+    const securityLevelData = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.length - 2].split(" ")
+    global.DATA.CONFIG.SECURITY_LEVEL = Number(securityLevelData[5])
   }
 
-  if (global.DATA.TERMINAL_SESSIONS.CONFIG.STATUS === true){
-    const config = global.DATA.TERMINAL_SESSIONS.CONFIG.OUTPUT
-    global.DATA.CONFIG.CONFIG = config
-  }
+}
 
-  if (global.DATA.TERMINAL_SESSIONS.CONFIG.STATUS === true){
-    const config = runCommmand(["config"])
-    global.DATA.CONFIG.CONFIG = config
-  }
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

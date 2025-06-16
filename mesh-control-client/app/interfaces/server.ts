@@ -7,8 +7,8 @@ interface AppKey {
 interface NodeElement {
     elementIndex: number;
     location: string;
-    model_names: string[];
     models: string[];
+    modelsName: string[];
 }
 
 interface NodeConfigurationElement {

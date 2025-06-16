@@ -10,11 +10,17 @@ export function startProcess(type: string){
     global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT = []
 
     process.stdout.on("data", (data) => {
-        global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT.push(data)
+        data = data.toString().split("\n")
+        console.log("===============================================")
+            data.forEach(element => {
+                console.log(element)
+            global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT.push(element)
+        });
+        
     })
 
     process.stderr.on("data", (data) => {
-        global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT.push(data)
+        global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT.push(data.toString())
     })
 
     process.on("close", () => {

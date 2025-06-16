@@ -30,7 +30,8 @@ const defaultNode =  {
                 {
                     "elementIndex": "unknown",
                     "location": "unknown",
-                    "models": ["unknown"]
+                    "models": ["unknown"],
+                    "modelsName":[]
                 }
             ]
         },
@@ -71,24 +72,38 @@ export function getNodes(){
 
 function addCompany(data: NodeConfig){
     for (let i = 0; i < data.nodes.length; i++){
-        const cid = data.nodes[i].composition.cid
-        if ((global["DATA"] as any)["COMPANY_IDENTIFIERS"][cid]){
-            data.nodes[i].composition.cid = (global["DATA"] as any)["COMPANY_IDENTIFIERS"][cid]
+        for (let k = 0; k < global.DATA.COMPANY_IDENTIFIERS.length; k++){
+            if (parseInt(Number(data.nodes[i].composition.cid), 16) == global.DATA.COMPANY_IDENTIFIERS[k].value){
+                data.nodes[i].composition.cidName =  global.DATA.COMPANY_IDENTIFIERS[k].name
+                return data
+            }
         }
     }
     return data
 }
 
 function addModelName(data: NodeConfig){
+
     for (let i = 0; i < data.nodes.length; i++){
-        const pid = data.nodes[i].composition.pid
-        if ((global["DATA"] as any)["MMDL_MODEL_UUIDS"][pid]){
-            data.nodes[i].composition.pid = (global["DATA"] as any)["MMDL_MODEL_UUIDS"][pid]
-        }
-        if ((global["DATA"] as any)["MESH_MODEL_UUIDS"][pid]){
-            data.nodes[i].composition.pid = (global["DATA"] as any)["MESH_MODEL_UUIDS"][pid]
-        }
-    }
+        for (let k = 0; k < data.nodes[i].composition.elements.length; k++){
+            const models = data.nodes[i].composition.elements[k].models
+            if (!data.nodes[i].composition.elements[k].modelsName){
+                data.nodes[i].composition.elements[k].modelsName = []
+            }
+            for (let j = 0; j < models.length; j++){
+                if (global.DATA.MESH_MODEL_UUIDS[Number(models[j])] != undefined){
+                    data.nodes[i].composition.elements[k].modelsName.push(global.DATA.MESH_MODEL_UUIDS[Number(models[j])].name)
+                    continue
+                }
+                for (let mmdlIndex = 0; mmdlIndex < global.DATA.MMDL_MODEL_UUIDS.length; mmdlIndex++){
+                    if (parseInt(models[j],16) == global.DATA.MMDL_MODEL_UUIDS[mmdlIndex].uuid){
+                        data.nodes[i].composition.elements[k].modelsName.push(global.DATA.MMDL_MODEL_UUIDS[mmdlIndex].name)
+                        break
+                    }
+                }
+     }
+}
+}
     return data
 }
 
@@ -97,10 +112,10 @@ export async function getSigData(){
     console.log("Getting SIG data..")
     const links = ["https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/company_identifiers/company_identifiers.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mmdl_model_uuids.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mesh_model_uuids.yaml"]
     const companyIdentifiers = await fetch(links[0])
-    const companyIdentifiersData = yaml.parse(await companyIdentifiers.text())
+    const companyIdentifiersData = yaml.parse(await companyIdentifiers.text()).company_identifiers
     const mmdlModelUuids = await fetch(links[1])
-    const mmdlModelUuidsData = yaml.parse(await mmdlModelUuids.text())
+    const mmdlModelUuidsData = yaml.parse(await mmdlModelUuids.text()).mesh_model_uuids
     const meshModelUuids = await fetch(links[2])
-    const meshModelUuidsData = yaml.parse(await meshModelUuids.text())
+    const meshModelUuidsData = yaml.parse(await meshModelUuids.text()).mesh_model_uuids
     return {companyIdentifiersData, mmdlModelUuidsData, meshModelUuidsData}
 }

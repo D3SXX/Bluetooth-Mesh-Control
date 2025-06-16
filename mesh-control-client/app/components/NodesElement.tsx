@@ -805,7 +805,7 @@ const NodesElement = () => {
                               variant="body2"
                               component="div"
                             >
-                              {model} ({element.model_names[index]})
+                              {model} ({element.modelsName[index]})
                             </Typography>
                           ))}
                         </Grid>

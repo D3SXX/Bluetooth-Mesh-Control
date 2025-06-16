@@ -58,6 +58,7 @@ interface TerminalSessionData {
     OUTPUT: any[];
     PROCESS?: ChildProcess | null;
     PROCESS_PID?: number | null;
+    LOCK: boolean;
 }
 
 interface TerminalSessionsData {

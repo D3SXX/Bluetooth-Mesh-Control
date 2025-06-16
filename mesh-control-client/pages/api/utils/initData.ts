@@ -50,7 +50,7 @@ export async function init()  {
 },
 
     TERMINAL_SESSIONS : {
-    "MESHCTL":{"STATUS":false, "OUTPUT":[], "PROCESS":null, "PROCESS_PID":""},
+    "MESHCTL":{"STATUS":false, "OUTPUT":[], "PROCESS":null, "PROCESS_PID":"", "LOCK": false},
     "CONFIG":{"STATUS":false, "OUTPUT":[]},
     "CONTROLLER":{"STATUS":false, "OUTPUT":[]},
     "PROVISION":{"STATUS":false, "OUTPUT":[]},

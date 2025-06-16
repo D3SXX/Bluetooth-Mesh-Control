@@ -95,7 +95,7 @@ export default function Home() {
               onClick={() => handleOpen("bluetooth-adapter")}
             >
               Bluetooth adapter:{" "}
-              {data?.controller.LIST[data?.controller.DEFAULT_INDEX].Address}
+              {data.controller.LIST[data?.controller.DEFAULT_INDEX].Address}
             </Button>
             <Button
               variant="outlined"
@@ -184,21 +184,21 @@ export default function Home() {
           <Box sx={{ m: 2,mt:4, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <Slider
             defaultValue={data?.config.SECURITY_LEVEL}
-            min={1}
-            max={3}
+            min={0}
+            max={2}
             step={1}
             marks={[
-              { value: 1, label: "Low" },
-              { value: 2, label: "Medium" },
-              { value: 3, label: "High" },
+              { value: 0, label: "Low" },
+              { value: 1, label: "Medium" },
+              { value: 2, label: "High" },
             ]}
             getAriaValueText={(value) => {
               switch (value) {
-                case 1:
+                case 0:
                   return "Low";
-                case 2:
+                case 1:
                   return "Medium";
-                case 3:
+                case 2:
                   return "High";
                 default:
                   return "";
@@ -208,9 +208,9 @@ export default function Home() {
           />
           <Typography>
             Current security level: {data?.config.SECURITY_LEVEL} (
-            {data?.config.SECURITY_LEVEL === 1
+            {data?.config.SECURITY_LEVEL === 0
               ? "Low"
-              : data?.config.SECURITY_LEVEL === 2
+              : data?.config.SECURITY_LEVEL === 1
               ? "Medium"
               : "High"}
             )
