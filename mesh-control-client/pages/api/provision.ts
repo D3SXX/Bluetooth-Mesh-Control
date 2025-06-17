@@ -42,7 +42,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     const { discovery, failback_scan_status, provision_node } = request.body;
     if (discovery != undefined){
       // Commented for debug purposes
-      //global.DATA.PROVISION.UNPROVISIONED_NODES = []
+      global.DATA.PROVISION.UNPROVISIONED_NODES = {}
       global.DATA.PROVISION.SCAN_ACTIVE = discovery
       if (discovery){
         global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("discover-unprovisioned on\n")
@@ -56,7 +56,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     }
     if (provision_node != undefined){
       console.log(`Trying to provision node ${provision_node}`);
-      
+      provision(provision_node)
       
       
       return response.status(201).json({
@@ -70,23 +70,44 @@ export default async function handler(request: NextApiRequest, response: NextApi
 }
 
 function stop_provision(error = false){
+    console.log("Stopping provision process, error = " + error)
     global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = false
   global.DATA.PROVISION.PROCESS.STATUS = false
   global.DATA.PROVISION.PROCESS.ERROR = error
+  global.DATA.PROVISION.PROCESS.PROGRESS = 100
 
 }
 
 async function update_provision(){
 
-    let i = 0 
-    while (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Provision Security Level")).length >= 1){
-      await delay(100)
-      if (i > 50){
+    let i = 0
+    const maxAttemps = 100
+    global.DATA.PROVISION.PROCESS.PROGRESS = 0
+    while (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Composition data for node")).length < 1){
+      if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Services resolved no")).length >= 1){
+        console.log("Got 'services resolved no' for provisioning..")
+        global.DATA.PROVISION.PROCESS.LOGS.push("Got 'services resolved no' for provisioning!")
+        stop_provision(true)
+        return  
+      }
+      global.DATA.PROVISION.PROCESS.LOGS = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT
+      await delay(500)
+      i++;
+      global.DATA.PROVISION.PROCESS.PROGRESS = i
+      if (i > maxAttemps){
+        console.log("Got time limit for provisioning..")
+        global.DATA.PROVISION.PROCESS.LOGS.push("Got time limit for provisioning!")
         stop_provision(true)
         return
       }
     
   }
+  console.log("Provisioned node!")
+  await delay(500)
+  global.DATA.PROVISION.PROCESS.LOGS = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT
+  global.DATA.PROVISION.PROCESS.LOGS.push("Succesfully provisioned node!")
+  global.DATA.PROVISION.PROCESS.LOGS = global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("disconnect\n")
+  stop_provision()
 }
 
 function delay(ms) {
@@ -120,9 +141,23 @@ function provision(node: string){
 
 function scan_unprovisioned(){
   if (global.DATA.PROVISION.SCAN_ACTIVE){
-    let UUID, OOB, address;
+    let UUID, OOB;
     let name = "";
+    let address = ""
     for (let i = 0; i < global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.length; i++){
+      if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i].includes("OOB")){
+        console.log("Found node! (without name and address)")
+        let data = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i-1].split(" ")
+        UUID = UUID = data[data.length-1]
+        data = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i].split(" ")
+        OOB = data[data.length-1]
+        global.DATA.PROVISION.UNPROVISIONED_NODES[UUID] = {
+                "name": UUID,
+                "OOB": OOB,
+                "address": address
+    }      
+      }
+      
       if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i].includes("NEW")){
         console.log("Found node!")
         let data = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i-2].split(" ")

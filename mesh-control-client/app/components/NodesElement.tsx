@@ -538,7 +538,7 @@ const NodesElement = () => {
 
   const nodesList =
     data && data.NODES
-      ? data.NODES.map((node) => ({
+      ? data.NODES.nodes.map((node) => ({
           data: node,
           icon: <LightbulbIcon />,
         }))
@@ -4513,7 +4513,7 @@ const NodesElement = () => {
                   ]}
                   key="applyChanges"
                   fetcherData={{
-                    executeUrl: `config`,
+                    executeUrl: `/config`,
                     getDataUrl: "/config?query=PROCESS",
                     type: "POST",
                     data: {
@@ -4547,7 +4547,7 @@ const NodesElement = () => {
               text={["Are you sure you want to remove this node?"]}
               key="removeNode"
               fetcherData={{
-                executeUrl: `config?address=${node.data.configuration.elements[0].unicastAddress}`,
+                executeUrl: `/config?address=${node.data.configuration.elements[0].unicastAddress}`,
                 getDataUrl: "/config?query=PROCESS",
                 type: "DELETE",
                 data: {},

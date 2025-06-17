@@ -75,7 +75,7 @@ function addCompany(data: NodeConfig){
         for (let k = 0; k < global.DATA.COMPANY_IDENTIFIERS.length; k++){
             if (parseInt(Number(data.nodes[i].composition.cid), 16) == global.DATA.COMPANY_IDENTIFIERS[k].value){
                 data.nodes[i].composition.cidName =  global.DATA.COMPANY_IDENTIFIERS[k].name
-                return data
+                break
             }
         }
     }

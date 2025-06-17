@@ -73,6 +73,11 @@ function updateData(){
                 global.DATA.CONTROLLER.DEFAULT = obj[1]
                 global.DATA.CONTROLLER.DEFAULT_INDEX = i-1
                 global.DATA.CONTROLLER.POWER = controllerObj["Powered"] === "yes" ? true : false
+                const tmp = global.DATA.PROVISION.SCAN_ACTIVE
+                global.DATA.PROVISION.SCAN_ACTIVE = controllerObj["Discovering"] === "yes" ? true : false
+                if (tmp != global.DATA.PROVISION.SCAN_ACTIVE){
+                    global.DATA.PROVISION.UNPROVISIONED_NODES = {}
+                }
             }
             else{
                 controllerObj["Default"] = false

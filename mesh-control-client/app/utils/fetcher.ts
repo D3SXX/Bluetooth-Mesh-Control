@@ -22,7 +22,7 @@ export const fetcherPOST = (requestData: object) => async (url: string, port: nu
 };
 
 export const fetcherDELETE = async (url: string) => {
-  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:3000/${url}`;
+  const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:3000/api${url}`;
   const res = await fetch(apiUrl, {
     method: "DELETE",
   });

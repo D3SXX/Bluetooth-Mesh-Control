@@ -175,7 +175,7 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
         },
     ]
 
-    const nodesList = data && data.NODES ? data.NODES.map((node) => ({
+    const nodesList = data && data.NODES ? data.NODES.nodes.map((node) => ({
         name: `Node ${node.configuration.elements[0].unicastAddress}`,
         icon: <LightbulbIcon />
     })) : []

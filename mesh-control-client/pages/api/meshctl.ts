@@ -22,8 +22,8 @@ export default function handler(request: NextApiRequest, response: NextApiRespon
     else{
       return response.status(200).json({ "server":global.DATA.SERVER, "controller": global.DATA.CONTROLLER, "provision": global.DATA.PROVISION, "config": global.DATA.CONFIG,"keys": global.DATA.KEYS, "terminal_sessions": global.DATA.TERMINAL_SESSIONS,
             "COMPANY_IDENTIFIERS": global.DATA.COMPANY_IDENTIFIERS,
-    "MMDL_MODEL_UUIDS": global.DATA.MMDL_MODEL_UUIDS,
-    "MESH_MODEL_UUIDS": global.DATA.MESH_MODEL_UUIDS,
+      "MMDL_MODEL_UUIDS": global.DATA.MMDL_MODEL_UUIDS,
+      "MESH_MODEL_UUIDS": global.DATA.MESH_MODEL_UUIDS,
        });
     }
     

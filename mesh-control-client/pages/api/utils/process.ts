@@ -1,5 +1,7 @@
 import {spawn} from "child_process"
 
+const re = /\x1b\[[0-9;]*m/g;
+
 export function startProcess(type: string){
 
     if (global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].STATUS === true){
@@ -11,10 +13,10 @@ export function startProcess(type: string){
 
     process.stdout.on("data", (data) => {
         data = data.toString().split("\n")
-        console.log("===============================================")
-            data.forEach(element => {
-                console.log(element)
-            global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT.push(element)
+        
+        data.forEach(element => {
+                console.log(element.replace(re, ""))
+            global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT.push(element.replace(re, ""))
         });
         
     })
