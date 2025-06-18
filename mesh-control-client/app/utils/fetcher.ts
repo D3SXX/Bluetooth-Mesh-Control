@@ -3,7 +3,7 @@ export const fetcherGET = async (url: string, port: number = 3000) => {
   const res = await fetch(apiUrl, {
     method: "GET",
   });
- 
+  
   const response = await res.json();
   return response;
 };

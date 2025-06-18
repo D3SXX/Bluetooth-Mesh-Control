@@ -1,6 +1,4 @@
 import { getSigData } from "./readProvdb"
-import fs from "fs"
-import path from "path"
 
 export async function init()  {
     

@@ -12,10 +12,6 @@ export default async function handler(request: NextApiRequest, response: NextApi
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Initialize data if not initialized
-      if (global["DATA"] === undefined){
-        global.DATA = await init()
-      }
       scan_unprovisioned()
   if (request.method === 'GET') {
     let query = request.query['query'];
