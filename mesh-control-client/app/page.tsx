@@ -62,7 +62,7 @@ export default function Home() {
         <Box sx={{ display: "flex", mt: 2, borderRadius: "10px" }}>
           <Stack direction="row" spacing={1.5}>
             <Button size="small" variant="outlined" color="secondary">
-              Available Nodes: {data?.config.NODES.length}
+              Available Nodes: {Object.keys(data?.config.NODES).length}
             </Button>
             <Button size="small" variant="outlined" color="secondary">
               Available Application Keys: {data?.keys.APPKEYS.length}
@@ -95,7 +95,7 @@ export default function Home() {
               onClick={() => handleOpen("bluetooth-adapter")}
             >
               Bluetooth adapter:{" "}
-              {data.controller.LIST[data?.controller.DEFAULT_INDEX].Address}
+              {data.controller.DEFAULT && data.controller.DEFAULT || "not found"}
             </Button>
             <Button
               variant="outlined"
@@ -116,7 +116,7 @@ export default function Home() {
         fullWidth
       >
         <DialogTitle>Bluetooth adapter</DialogTitle>
-        <DialogContent>
+        {data?.controller.LIST.length >= 1 && <DialogContent>
           <Select
             value={data?.controller.DEFAULT_INDEX}
             sx={{ width: "100%" }}
@@ -172,7 +172,7 @@ export default function Home() {
               )}
             </List>
           </Stack>
-        </DialogContent>
+        </DialogContent>}
       </Dialog>
       <Dialog
         open={open["security-level"]}

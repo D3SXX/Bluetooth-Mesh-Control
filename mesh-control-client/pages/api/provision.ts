@@ -5,7 +5,7 @@ import {getNodes, loadConfig} from "./utils/readProvdb"
 import {init} from "./utils/initData"
 import { NodeConfig } from "../../app/interfaces/server"
 import { Global } from "@emotion/react";
-
+import {delay} from "./utils/common"
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -104,10 +104,6 @@ async function update_provision(){
   global.DATA.PROVISION.PROCESS.LOGS.push("Succesfully provisioned node!")
   global.DATA.PROVISION.PROCESS.LOGS = global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("disconnect\n")
   stop_provision()
-}
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function provision(node: string){

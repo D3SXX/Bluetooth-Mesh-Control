@@ -24,7 +24,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     const { STATUS } = request.body;
     console.log(STATUS)
 
-
+    return response.status(200).json({ "MESSAGE":"provision control backend api" });
   }
 }
 

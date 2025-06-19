@@ -1,5 +1,6 @@
 import { runCommmand } from "./runCommand";
 import {getNodes} from "./readProvdb"
+import {delay} from "./common"
 
 export function updateController(){
     let controllers = [];
@@ -67,7 +68,10 @@ export async function updateConfig() {
       appKeys: obj.appKeys,
       netKeys: obj.netKeys,
     };
-  }
+    global.DATA.KEYS.APPKEYS = obj.appKeys
+    global.DATA.KEYS.NETKEYS = obj.netKeys
+}
+
 
   // Get version from meshctl
 
@@ -76,33 +80,4 @@ export async function updateConfig() {
 
   global.DATA.SERVER.MESHCTL = versionArr[1].split(" ")[1];
 
-  // Get security level from the main meshctl terminal session
-
-  if (
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS === true &&
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK === false
-  ) {
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT = [];
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("security\n");
-    while (true) {
-      if (
-        global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter((str) =>
-          str.includes("Provision Security Level")
-        ).length >= 1
-      ) {
-        break;
-      }
-      await delay(1000);
-    }
-
-    const securityLevelData =
-      global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[
-        global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.length - 2
-      ].split(" ");
-    global.DATA.CONFIG.SECURITY_LEVEL = Number(securityLevelData[5]);
-  }
-}
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

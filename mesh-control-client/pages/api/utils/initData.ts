@@ -37,7 +37,7 @@ export async function init()  {
 },
 
     CONFIG: {
-        "SECURITY_LEVEL":undefined,
+        "SECURITY_LEVEL":1, // No need to get the value from meshctl, it is the same for every new instance
         "NODES":[],
         "PROCESS":{"STATUS":false,"PROGRESS":0,"LOGS":[], "ERROR":false}
 },
