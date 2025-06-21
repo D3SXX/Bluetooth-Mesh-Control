@@ -38,7 +38,7 @@ const KeysElement = () => {
   const [keysData, setKeysData] = React.useState<ServerResponse["keys"]>();
 
 
-  const { data, error, isLoading } = useSWR<ServerResponse["keys"]>(
+  const { data, error, isLoading } = useSWR<{keys: ServerResponse["keys"]}>(
     "/keys",
     fetcherGET,
     {
@@ -47,8 +47,8 @@ const KeysElement = () => {
   );
 
   React.useEffect(() => {
-    if(data) {
-      setKeysData(data);
+    if(data && data.keys) {
+      setKeysData(data.keys);
     }
     console.log(data);
   }, [data]);
@@ -66,7 +66,7 @@ const KeysElement = () => {
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
       setValue(newValue);
     };
-
+    
   return (
     <Box sx={{ width: {xs: "100%", md: "60%"}, borderRadius: "10px", border: {xs: "none", md: "1px solid lightgray"},overflow: "hidden" }}>
           <Tabs variant='fullWidth' value={value} onChange={handleChange} centered>
@@ -165,10 +165,10 @@ const KeysElement = () => {
                     <Typography>Publish</Typography>
                   </Grid>
                   <Grid size={3}>
-                    <Typography>{data?.BIND[bind as keyof typeof data.BIND].MODEL}</Typography>
+                    <Typography>{keysData?.BIND[bind as keyof typeof keysData.BIND].MODEL}</Typography>
                   </Grid>
                   <Grid size={3}>
-                    <Typography>{data?.PUBLISH[bind as keyof typeof data.PUBLISH].ADDRESS}</Typography>
+                    <Typography>{keysData?.PUBLISH[bind as keyof typeof keysData.PUBLISH].ADDRESS}</Typography>
                   </Grid>
                 </ListItemButton>
               )}

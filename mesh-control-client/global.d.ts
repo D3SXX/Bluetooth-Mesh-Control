@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { spawn, ChildProcess } from "child_process";
 
 interface ServerData {
     STATUS: boolean;
@@ -50,7 +50,23 @@ interface ConfigData {
 
 interface KeysData {
     APPKEYS: any[];
-    NETKEYS: any[];
+    NETKEYS: Array<{
+        ASSIGNED_NODES?: string[];
+        ASSIGNED_NODES_UNICAST_ADDRESS?: string[];
+        [key: string]: any;
+    }>;
+    BIND: Record<string, {
+        MODEL: string;
+        APPKEY_INDEX: number;
+    }>;
+    PUBLISH: Record<string, {
+        ADDRESS: string;
+        APPKEY_INDEX: number;
+        TTL: number;
+    }>;
+    SUBSCRIBE: Record<string, {
+        ADDRESS_LIST: string[];
+    }>;
 }
 
 interface TerminalSessionData {

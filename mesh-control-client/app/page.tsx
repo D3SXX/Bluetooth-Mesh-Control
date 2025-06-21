@@ -95,7 +95,7 @@ export default function Home() {
               onClick={() => handleOpen("bluetooth-adapter")}
             >
               Bluetooth adapter:{" "}
-              {data.controller.DEFAULT && data.controller.DEFAULT || "not found"}
+              {data?.controller.DEFAULT && data?.controller.DEFAULT || "not found"}
             </Button>
             <Button
               variant="outlined"
@@ -134,7 +134,7 @@ export default function Home() {
           </Select>
           <Stack
             direction="row"
-            sx={{ width: "100%", justifyContent: "center" }}
+            sx={{ width: "100%"}}
             spacing={1.5}
           >
             <List>

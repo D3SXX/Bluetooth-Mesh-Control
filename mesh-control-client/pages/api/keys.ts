@@ -1,15 +1,14 @@
 import { GlobalStyles } from "@mui/material";
 import { NextApiRequest, NextApiResponse } from "next";
 
-import {getNodes, loadConfig} from "./utils/readProvdb"
-import {init} from "./utils/initData"
-import { NodeConfig } from "../../app/interfaces/server"
+import { getKeysData } from "./utils/readProvdb"
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  global.DATA.KEYS = getKeysData()
 
   if (request.method === 'GET') {
     let query;

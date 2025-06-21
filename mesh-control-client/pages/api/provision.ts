@@ -37,10 +37,13 @@ export default async function handler(request: NextApiRequest, response: NextApi
     console.log(request.body)
     const { discovery, failback_scan_status, provision_node } = request.body;
     if (discovery != undefined){
-      // Commented for debug purposes
       global.DATA.PROVISION.UNPROVISIONED_NODES = {}
       global.DATA.PROVISION.SCAN_ACTIVE = discovery
       if (discovery){
+        if (global.DATA.CONTROLLER.POWER == false){
+          global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("power on\n")
+          await delay(500)
+        }
         global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("discover-unprovisioned on\n")
         global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = true
       }
