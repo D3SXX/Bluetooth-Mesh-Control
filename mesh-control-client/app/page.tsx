@@ -28,7 +28,7 @@ import { ServerResponse } from "./interfaces/server";
 export default function Home() {
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
-  const { data, isLoading, error } = useSWR<ServerResponse>("/meshctl", fetcherGET, {
+  const { data, isLoading, error } = useSWR<ServerResponse>("/config", fetcherGET, {
     refreshInterval: 3000,
   });
 
@@ -62,7 +62,7 @@ export default function Home() {
         <Box sx={{ display: "flex", mt: 2, borderRadius: "10px" }}>
           <Stack direction="row" spacing={1.5}>
             <Button size="small" variant="outlined" color="secondary">
-              Available Nodes: {Object.keys(data?.config.NODES).length}
+              Available Nodes: {data?.config.NODES.nodes.length}
             </Button>
             <Button size="small" variant="outlined" color="secondary">
               Available Application Keys: {data?.keys.APPKEYS.length}
@@ -116,7 +116,7 @@ export default function Home() {
         fullWidth
       >
         <DialogTitle>Bluetooth adapter</DialogTitle>
-        {data?.controller.LIST.length >= 1 && <DialogContent>
+        {data?.controller.LIST && data?.controller.LIST.length >= 1 && <DialogContent>
           <Select
             value={data?.controller.DEFAULT_INDEX}
             sx={{ width: "100%" }}
@@ -124,7 +124,7 @@ export default function Home() {
             {Object.entries(data?.controller.LIST || {}).map(([key, value]) => (
               <MenuItem key={key} value={key}>
                 {" "}
-                {key == data?.controller.DEFAULT_INDEX ? (
+                {key == data?.controller.DEFAULT_INDEX.toString() ? (
                   <b>Default Adapter: {value.Address} ({value.Name})</b>
                 ) : (
                   `${value.Address} (${value.Name})`

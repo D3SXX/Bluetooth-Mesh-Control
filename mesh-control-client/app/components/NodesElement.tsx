@@ -67,7 +67,7 @@ const NodesElement = () => {
     [key: string]: { [key: string]: boolean };
   }>({});
 
-  const [setupData, setSetupData] = React.useState<SetupData>({});
+  const [setupData, setSetupData] = React.useState<Record<string, SetupData["setupData"]>>({});
 
   const setDefaultValues = (
     node: string,
@@ -79,7 +79,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             bind: {
               unicastAddress: { index: 0, value: node },
               model: { index: 0, value: defaultModel },
@@ -93,7 +93,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             publish: {
               unicastAddress: { index: 0, value: node },
               model: { index: 0, value: defaultModel },
@@ -119,7 +119,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             subscribe: {
               unicastAddress: { index: 0, value: node },
               model: { index: 0, value: defaultModel },
@@ -137,7 +137,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             identity: {
               unicastAddress: { index: 0, value: node },
               netKeyIndex: 0,
@@ -151,7 +151,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             beacon: {
               unicastAddress: { index: 0, value: node },
               saved: false,
@@ -164,7 +164,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             heartbeat_publish: {
               unicastAddress: { index: 0, value: node },
               saved: false,
@@ -194,7 +194,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             heartbeat_subscribe: {
               unicastAddress: { index: 0, value: node },
               saved: false,
@@ -223,7 +223,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             relay: {
               unicastAddress: { index: 0, value: node },
               saved: false,
@@ -238,7 +238,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             proxy: {
               unicastAddress: { index: 0, value: node },
               saved: false,
@@ -251,7 +251,7 @@ const NodesElement = () => {
         setSetupData((prev) => ({
           ...prev,
           [node]: {
-            ...prev[node],
+            ...prev[node as keyof typeof prev],
             ttl: {
               unicastAddress: { index: 0, value: node },
               saved: false,
@@ -267,10 +267,10 @@ const NodesElement = () => {
 
   const handleClickOpen = (
     node: string,
-    type: keyof SetupData[string],
+    type: keyof SetupData["setupData"],
     defaultModel: string
   ) => {
-    if (!setupData[node]?.[type]?.saved) {
+    if (!(setupData[node] as any)?.[type]?.saved) {
       console.log("reset!");
       setDefaultValues(node, type, defaultModel);
     }
@@ -285,12 +285,12 @@ const NodesElement = () => {
 
   const handleClose = (
     node: string,
-    type: keyof SetupData[string],
+    type: keyof SetupData["setupData"],
     defaultModel: string,
     reset: boolean = true
   ) => {
-    if (!setupData[node]?.[type]?.saved && reset) {
-      console.log(setupData[node]?.[type]?.saved);
+    if (!(setupData[node] as any)?.[type]?.saved && reset) {
+      console.log((setupData[node] as any)?.[type]?.saved);
       console.log("reset!");
       setDefaultValues(node, type, defaultModel);
     }
@@ -305,16 +305,16 @@ const NodesElement = () => {
 
   const handleChange = (
     node: string,
-    type: keyof SetupData[string],
+    type: keyof SetupData["setupData"],
     key: string,
     value: any
   ) => {
     setSetupData((prev) => ({
       ...prev,
       [node]: {
-        ...prev[node],
+        ...(prev[node] as any),
         [type]: {
-          ...(prev[node]?.[type] || {}),
+          ...((prev[node] as any)?.[type] || {}),
           [key]: value,
         },
       },
@@ -386,7 +386,7 @@ const NodesElement = () => {
     if (data && data.NODES && data.NODES.nodes) {
       data.NODES.nodes.forEach((node) => {
         const nodeAddress = node.configuration.elements[0].unicastAddress;
-        if (!setupData[nodeAddress]) {
+        if (!(setupData as any)[nodeAddress]) {
           setDefaultValues(
             nodeAddress,
             "bind",
@@ -911,7 +911,7 @@ const NodesElement = () => {
                           sx={{ width: "100%" }}
                           label="Unicast Address"
                           value={
-                            setupData[
+                            (setupData as any)[
                               node.data.configuration.elements[0].unicastAddress
                             ]?.bind?.unicastAddress.index
                           }

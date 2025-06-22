@@ -47,15 +47,17 @@ interface Node {
     configuration: {
         elements: NodeConfigurationElement[];
         netKeys: string[];
+        appKeys: string[];
+        defaultTTL?: number;
     };
     deviceKey: string;
     sequenceNumber: number;
 }
 
 interface NodesConfig {
-    STATUS: boolean;
-    appKeys: AppKey[];
     nodes: Node[];
+    appKeys: AppKey[];
+    netKeys: NetKey[];
 }
 
 interface ProcessStatus {
@@ -71,50 +73,43 @@ interface Config {
     SECURITY_LEVEL: number;
 }
 
-interface UUID {
-    [key: string]: string;
-}
-
-interface ControllerDefaultData {
+interface ControllerDevice {
+    UUID: string[];
+    Address: string;
+    Name: string;
     Alias: string;
     Class: string;
-    "Default-adapter": string;
-    Discoverable: string;
-    Discovering: string;
-    Modalias: string;
-    Name: string;
     Powered: string;
-    UUID: UUID;
-}
-
-interface ControllerList {
-    [key: string]: string;
+    Discoverable: string;
+    Modalias: string;
+    Discovering: string;
+    Default: boolean;
 }
 
 interface Controller {
     DEFAULT: string;
-    DEFAULT_DATA: ControllerDefaultData;
-    LIST: ControllerList;
+    DEFAULT_INDEX: number;
     POWER: boolean;
+    LIST: ControllerDevice[];
     PROCESS: {
         STATUS: boolean;
     };
 }
 
 interface NetKey {
-    ASSIGNED_NODES: string[];
-    ASSIGNED_NODES_UNICAST_ADDRESS: string[];
     index: number;
     key: string;
     keyRefresh: number;
+    ASSIGNED_NODES?: string[];
+    ASSIGNED_NODES_UNICAST_ADDRESS?: string[];
 }
 
 interface Keys {
     APPKEYS: AppKey[];
-    BIND: Bind;
     NETKEYS: NetKey[];
-    PUBLISH: Record<string, Publish>;
-    SUBSCRIBE: Record<string, Subscribe>;
+    BIND?: Bind;
+    PUBLISH?: Record<string, Publish>;
+    SUBSCRIBE?: Record<string, Subscribe>;
 }
 
 interface Bind {
@@ -151,9 +146,9 @@ interface Provision {
 
 interface ServerError {
     EXTRA_DATA: Record<string, unknown>;
-    MESSAGE: string | null;
     STATUS: boolean;
-    TYPE: string | null;
+    MESSAGE?: string | null;
+    TYPE?: string | null;
 }
 
 interface Server {
@@ -161,8 +156,35 @@ interface Server {
     ERROR: ServerError;
     MESHCTL: string;
     NAME: string;
-    STATUS: string;
+    STATUS?: string;
     VERSION: string;
+}
+
+interface TerminalSession {
+    STATUS: boolean;
+    OUTPUT: string[];
+    PROCESS?: any;
+    PROCESS_PID?: string;
+    LOCK?: boolean;
+}
+
+interface TerminalSessions {
+    MESHCTL: TerminalSession;
+    CONFIG: TerminalSession;
+    CONTROLLER: TerminalSession;
+    PROVISION: TerminalSession;
+    SERVER: TerminalSession;
+}
+
+interface CompanyIdentifier {
+    value: number;
+    name: string;
+}
+
+interface ModelUUID {
+    name: string;
+    uuid: number;
+    type: string;
 }
 
 export interface NodeConfig {
@@ -178,4 +200,8 @@ export interface ServerResponse {
     keys: Keys;
     provision: Provision;
     server: Server;
+    terminal_sessions: TerminalSessions;
+    COMPANY_IDENTIFIERS: CompanyIdentifier[];
+    MMDL_MODEL_UUIDS: ModelUUID[];
+    MESH_MODEL_UUIDS: ModelUUID[];
 }

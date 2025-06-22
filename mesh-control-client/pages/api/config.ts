@@ -16,18 +16,31 @@ export default async function handler(
 
 
   if (request.method === "GET") {
-    let query = request.query["query"];
-    
-    if (query) {
-      return response.status(200).json({ [query]: global.DATA.CONFIG[query] });
-    }
+
     if (global.DATA == undefined){
       global.DATA = await init();
       updateConfig()
       updateController()
     }
 
-    return response.status(200).json({ MESSAGE: "config control backend api" });
+    let query = request.query["query"];
+    
+    if (query && typeof query === "string") {
+      // Ensure query is a valid key of CONFIG
+      if (query in global.DATA.CONFIG) {
+        return response.status(200).json({ [query]: global.DATA.CONFIG[query as keyof typeof global.DATA.CONFIG] });
+      } else {
+        return response.status(400).json({ error: "Invalid query parameter" });
+      }
+    }
+    else {
+      return response.status(200).json({
+        "server": global.DATA.SERVER, "controller": global.DATA.CONTROLLER, "provision": global.DATA.PROVISION, "config": global.DATA.CONFIG, "keys": global.DATA.KEYS, "terminal_sessions": global.DATA.TERMINAL_SESSIONS,
+        "COMPANY_IDENTIFIERS": global.DATA.COMPANY_IDENTIFIERS,
+        "MMDL_MODEL_UUIDS": global.DATA.MMDL_MODEL_UUIDS,
+        "MESH_MODEL_UUIDS": global.DATA.MESH_MODEL_UUIDS,
+      });
+    }
   }
 
   if (request.method === "POST") {
@@ -130,7 +143,7 @@ export default async function handler(
       }
 
 
-      configureMesh(addressQueue, commandQueue, waitList);
+      configureMesh(addressQueue.map(addr => String(addr)), commandQueue, waitList);
       return response.status(200).json({
         status: "success",
         message: "Initiated process",
@@ -142,16 +155,20 @@ export default async function handler(
 async function configureMesh(addressQueue: string[], commandQueue: string[][], waitList: (string)[][]) {
   function stopProcess(error = false) {
     console.log("stopProcess() called!")
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write(
-      "\nback\ndisconnect\n"
-    );
+    if (global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin) {
+      global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write(
+        "\nback\ndisconnect\n"
+      );
+    }
     global.DATA.CONFIG.PROCESS.PROGRESS = 100;
     global.DATA.CONFIG.PROCESS.ERROR = error;
     global.DATA.CONFIG.PROCESS.STATUS = false;
     global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = false;
   }
   async function executeCommand(command: string, timeout: number, waitFor: string) {
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write(command);
+    if (global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin) {
+      global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write(command);
+    }
     while (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter((str) => str.includes(waitFor as string)).length < 1) {
       await delay(50);
       timeout -= 50;

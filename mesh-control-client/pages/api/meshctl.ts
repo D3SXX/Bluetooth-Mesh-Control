@@ -17,15 +17,7 @@ export default function handler(request: NextApiRequest, response: NextApiRespon
         return response.status(200).json({ [query]: global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS });
       }
 
-      return response.status(200).json({ [query]: global.DATA.CONFIG[query] });
-    }
-    else {
-      return response.status(200).json({
-        "server": global.DATA.SERVER, "controller": global.DATA.CONTROLLER, "provision": global.DATA.PROVISION, "config": global.DATA.CONFIG, "keys": global.DATA.KEYS, "terminal_sessions": global.DATA.TERMINAL_SESSIONS,
-        "COMPANY_IDENTIFIERS": global.DATA.COMPANY_IDENTIFIERS,
-        "MMDL_MODEL_UUIDS": global.DATA.MMDL_MODEL_UUIDS,
-        "MESH_MODEL_UUIDS": global.DATA.MESH_MODEL_UUIDS,
-      });
+      return response.status(200).json({"STATUS": global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS });
     }
 
   }

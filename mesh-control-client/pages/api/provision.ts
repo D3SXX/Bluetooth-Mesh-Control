@@ -1,12 +1,6 @@
-import { GlobalStyles } from "@mui/material";
 import { NextApiRequest, NextApiResponse } from "next";
-
-import {getNodes, loadConfig} from "./utils/readProvdb"
-import {init} from "./utils/initData"
-import { NodeConfig } from "../../app/interfaces/server"
-import { Global } from "@emotion/react";
 import {delay} from "./utils/common"
-
+import { ServerResponse } from "../../app/interfaces/server"
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -15,16 +9,16 @@ export default async function handler(request: NextApiRequest, response: NextApi
       scan_unprovisioned()
   if (request.method === 'GET') {
     let query = request.query['query'];
-    let returnObj = {}
+    let returnObj: any = {}
 
     if (query){
       if (typeof query == "object"){
           query.forEach(element => {
-            returnObj[element] = global.DATA.PROVISION[element]
+            returnObj[element] = global.DATA.PROVISION[element as keyof typeof global.DATA.PROVISION]
     });
       }
       else{
-        returnObj[query] = global.DATA.PROVISION[query]
+        returnObj[query] = global.DATA.PROVISION[query as keyof typeof global.DATA.PROVISION]
       }
 
     
@@ -41,14 +35,14 @@ export default async function handler(request: NextApiRequest, response: NextApi
       global.DATA.PROVISION.SCAN_ACTIVE = discovery
       if (discovery){
         if (global.DATA.CONTROLLER.POWER == false){
-          global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("power on\n")
+          global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("power on\n")
           await delay(500)
         }
-        global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("discover-unprovisioned on\n")
+        global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned on\n")
         global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = true
       }
       else{
-        global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("discover-unprovisioned off\n")
+        global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")
         global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = false
       }
       return response.status(200).json({"status": "success", "message": `Discovery status is set to ${discovery}` });
@@ -105,7 +99,7 @@ async function update_provision(){
   await delay(500)
   global.DATA.PROVISION.PROCESS.LOGS = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT
   global.DATA.PROVISION.PROCESS.LOGS.push("Succesfully provisioned node!")
-  global.DATA.PROVISION.PROCESS.LOGS = global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("disconnect\n")
+  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("disconnect\n")
   stop_provision()
 }
 
@@ -116,10 +110,10 @@ function provision(node: string){
   }
   if (global.DATA.PROVISION.SCAN_ACTIVE){
     global.DATA.PROVISION.SCAN_ACTIVE = false
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("discover-unprovisioned off\n")   
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")   
   }
   if (global.DATA.CONTROLLER.POWER == false){
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write("power on\n")
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("power on\n")
   }
   global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = true
   global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT = []
@@ -128,7 +122,7 @@ function provision(node: string){
   global.DATA.PROVISION.PROCESS.ERROR = false
   global.DATA.PROVISION.PROCESS.START_TIME = new Date().getUTCDate()
 
-  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write(`provision ${node}\n`)
+  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write(`provision ${node}\n`)
 
   update_provision()
 

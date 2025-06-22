@@ -142,10 +142,10 @@ const KeysElement = () => {
                     <Typography>Bind</Typography>
                   </Grid>
                   <Grid size={3}>
-                    <Typography>{keysData.BIND[bind as keyof typeof keysData.BIND].MODEL}</Typography>
+                    <Typography>{keysData?.BIND?.[bind as keyof typeof keysData.BIND]?.MODEL}</Typography>
                   </Grid>
                   <Grid size={3}>
-                    <Typography>{keysData.BIND[bind as keyof typeof keysData.BIND].APPKEY_INDEX}</Typography>
+                    <Typography>{keysData?.BIND?.[bind as keyof typeof keysData.BIND]?.APPKEY_INDEX}</Typography>
                   </Grid>
 
                 </ListItemButton>
@@ -165,7 +165,7 @@ const KeysElement = () => {
                     <Typography>Publish</Typography>
                   </Grid>
                   <Grid size={3}>
-                    <Typography>{keysData?.BIND[bind as keyof typeof keysData.BIND].MODEL}</Typography>
+                    <Typography>{keysData?.BIND?.[bind as keyof typeof keysData.BIND]?.MODEL}</Typography>
                   </Grid>
                   <Grid size={3}>
                     <Typography>{keysData?.PUBLISH[bind as keyof typeof keysData.PUBLISH].ADDRESS}</Typography>
@@ -188,7 +188,7 @@ const KeysElement = () => {
                     <Typography>Subscribe</Typography>
                   </Grid>
                   <Grid size={3}>
-                    <Typography>{keysData.BIND[bind as keyof typeof keysData.BIND].MODEL}</Typography>
+                    <Typography>{keysData?.BIND?.[bind as keyof typeof keysData.BIND]?.MODEL}</Typography>
                   </Grid>
                   <Grid size={3}>
                     <Typography>{keysData.SUBSCRIBE[bind as keyof typeof keysData.SUBSCRIBE].ADDRESS_LIST?.map((address) => (
@@ -259,7 +259,7 @@ const KeysElement = () => {
                   }}
                 >
                   <Grid size={6}>
-                    <Typography>{key.ASSIGNED_NODES_UNICAST_ADDRESS.map((address) => (
+                    <Typography>{key.ASSIGNED_NODES_UNICAST_ADDRESS?.map((address) => (
                       <Typography key={address}>{address}</Typography>
                     ))}</Typography>
                   </Grid>

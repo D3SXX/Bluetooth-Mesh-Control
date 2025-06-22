@@ -31,6 +31,7 @@ export const fetcherDELETE = async (url: string) => {
 };
 
 export const fetcherPUT = async (url: string) => {
+  console.log(url);
   const apiUrl = `http://${process.env.NEXT_PUBLIC_SERVER_IP}:3000/api${url}`;
   const res = await fetch(apiUrl, {
     method: "PUT",
