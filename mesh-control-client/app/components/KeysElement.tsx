@@ -1,5 +1,5 @@
 "use client"
-import { Divider, ListItemButton, Tab, Tabs, Typography } from '@mui/material'
+import { Button,  DialogTitle, Dialog, Divider, ListItemButton, Stack, Tab, Tabs, Typography, DialogContent } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import { Box } from '@mui/material'
 import React from 'react'
@@ -36,6 +36,11 @@ function CustomTabPanel(props: TabPanelProps) {
 const KeysElement = () => {
 
   const [keysData, setKeysData] = React.useState<ServerResponse["keys"]>();
+  const [open, setOpen] = React.useState<Record<string, boolean>>({});
+
+  const handleClose = (name: string) => {
+    setOpen((prev) => ({ ...prev, [name]: false }));
+  };
 
 
   const { data, error, isLoading } = useSWR<{keys: ServerResponse["keys"]}>(
@@ -202,6 +207,60 @@ const KeysElement = () => {
               
             </Grid>
           </Box>
+          <Box sx={{borderColor: "divider" }}>
+          <p style={{fontSize: "24px"}}>Keys configuration</p>
+          <Divider sx={{marginTop: "10px", marginBottom: "10px"}}/>
+          <Stack direction="row" spacing={2} sx={{width: "100%", justifyContent: "center"}}>
+          <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Add key
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Edit key
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "30%",
+                      borderRadius: "18px",
+                      fontSize: "1.1rem",
+                      border: { md: "1px solid lightgray", xs: "0px" },
+                      color: "black",
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      Delete key
+                    </Typography>
+                  </Button>
+                  </Stack>
+                  </Box>
+                  <Dialog open={open["add-key"]} onClose={() => handleClose("add-key")}>
+                    <DialogTitle>Add key</DialogTitle>
+                    <DialogContent>
+                      <Typography>Add key</Typography>
+                    </DialogContent>
+                  </Dialog>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
           <Box>

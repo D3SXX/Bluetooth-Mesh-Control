@@ -21,7 +21,7 @@ import {
   Typography,
 } from "@mui/material";
 import useSWR from "swr";
-import { fetcherGET } from "./utils/fetcher";
+import { fetcherGET, fetcherPOST } from "./utils/fetcher";
 
 import { ServerResponse } from "./interfaces/server";
 
@@ -118,19 +118,25 @@ export default function Home() {
         <DialogTitle>Bluetooth adapter</DialogTitle>
         {data?.controller.LIST && data?.controller.LIST.length >= 1 && <DialogContent>
           <Select
-            value={data?.controller.DEFAULT_INDEX}
+            value={data?.controller.DEFAULT}
             sx={{ width: "100%" }}
+            onChange={(e) => {
+              fetcherPOST({
+                "defaultAdapter": e.target.value
+              })("/controller")
+            }}
           >
             {Object.entries(data?.controller.LIST || {}).map(([key, value]) => (
-              <MenuItem key={key} value={key}>
+              <MenuItem key={key} value={value.Address}>
                 {" "}
-                {key == data?.controller.DEFAULT_INDEX.toString() ? (
+                {value.Address == data?.controller.DEFAULT ? (
                   <b>Default Adapter: {value.Address} ({value.Name})</b>
                 ) : (
                   `${value.Address} (${value.Name})`
                 )}
               </MenuItem>
             ))}
+            <MenuItem value="placeholder">Placeholder</MenuItem>
           </Select>
           <Stack
             direction="row"

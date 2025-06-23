@@ -160,7 +160,7 @@ interface Server {
     VERSION: string;
 }
 
-interface TerminalSession {
+export interface TerminalSession {
     STATUS: boolean;
     OUTPUT: string[];
     PROCESS?: any;

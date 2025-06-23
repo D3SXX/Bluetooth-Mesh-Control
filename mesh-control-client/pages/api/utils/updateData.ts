@@ -1,10 +1,11 @@
-import { runCommmand } from "./runCommand";
+import { runCommand } from "./runCommand";
 import {getNodes} from "./readProvdb"
 import {delay} from "./common"
+import {NodeConfig} from "../../../app/interfaces/server"
 
 export function updateController(){
     let controllers = [];
-    const controllerData = runCommmand(["list"])
+    const controllerData = runCommand(["list"])
     const controllerArr = controllerData.split("\n")
     
     // Collect controllers data
@@ -15,7 +16,7 @@ export function updateController(){
             
             // More detailed data
 
-            const dataArr = runCommmand([`show`, `${obj[1]}`]).split("\n")
+            const dataArr = runCommand([`show`, `${obj[1]}`]).split("\n")
             
             let controllerObj = {"UUID":[], "Address":obj[1]}
             
@@ -75,7 +76,7 @@ export async function updateConfig() {
 
   // Get version from meshctl
 
-  const versionData = runCommmand(["version"]);
+  const versionData = runCommand(["version"]);
   const versionArr = versionData.split("\n");
 
   global.DATA.SERVER.MESHCTL = versionArr[1].split(" ")[1];

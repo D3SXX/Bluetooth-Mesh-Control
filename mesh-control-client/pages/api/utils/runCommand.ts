@@ -1,6 +1,6 @@
 import { spawnSync } from "child_process";
 
-export function runCommmand(commandArr: string[]){
+export function runCommand(commandArr: string[]){
 
   const process = spawnSync('meshctl', commandArr);
 

@@ -1,6 +1,6 @@
 
 import { NextApiRequest, NextApiResponse } from "next";
-import {runCommmand} from "./utils/runCommand"
+import {runCommand} from "./utils/runCommand"
 import { updateController } from "./utils/updateData";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
@@ -20,10 +20,12 @@ export default async function handler(request: NextApiRequest, response: NextApi
   }
 
   if (request.method === 'POST') {
-    console.log(request.body)
-    const { STATUS } = request.body;
-    console.log(STATUS)
-
+    
+    const { defaultAdapter } = request.body;
+    if (defaultAdapter != undefined){
+      runCommand([`select ${defaultAdapter}`])
+    }
+  
     return response.status(200).json({ "MESSAGE":"provision control backend api" });
   }
 }

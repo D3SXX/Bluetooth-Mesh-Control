@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { startProcess, stopProcess } from "./utils/process";
+import { TerminalSession } from "../../app/interfaces/server";
 
 export default function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,11 +14,7 @@ export default function handler(request: NextApiRequest, response: NextApiRespon
       query = request.query['query'];
     }
     if (query) {
-      if (query === "STATUS") {
-        return response.status(200).json({ [query]: global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS });
-      }
-
-      return response.status(200).json({"STATUS": global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS });
+      return response.status(200).json({ [query as string]: global.DATA.TERMINAL_SESSIONS.MESHCTL[query as keyof TerminalSession] });
     }
 
   }
