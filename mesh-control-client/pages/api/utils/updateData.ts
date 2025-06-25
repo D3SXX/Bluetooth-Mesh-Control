@@ -5,6 +5,7 @@ import {NodeConfig} from "../../../app/interfaces/server"
 
 export function updateController(){
     let controllers = [];
+    let defaultController, defaultControllerIndex, defaultControllerPower, defaultControllerDiscovering
     const controllerData = runCommand(["list"])
     const controllerArr = controllerData.split("\n")
     
@@ -35,15 +36,12 @@ export function updateController(){
                 
             }
             if (obj[3]){
-                controllerObj["Default"] = true
-                global.DATA.CONTROLLER.DEFAULT = obj[1]
-                global.DATA.CONTROLLER.DEFAULT_INDEX = i-1
-                global.DATA.CONTROLLER.POWER = controllerObj["Powered"] === "yes" ? true : false
-                const tmp = global.DATA.PROVISION.SCAN_ACTIVE
-                global.DATA.PROVISION.SCAN_ACTIVE = controllerObj["Discovering"] === "yes" ? true : false
-                if (tmp != global.DATA.PROVISION.SCAN_ACTIVE){
-                    global.DATA.PROVISION.UNPROVISIONED_NODES = {}
-                }
+                if (global.DATA.CONTROLLER.DEFAULT == ""){
+                    defaultController = obj[1]
+                    defaultControllerIndex = i-1
+                    defaultControllerPower = controllerObj["Powered"] === "yes" ? true : false
+                    defaultControllerDiscovering = controllerObj["Discovering"] === "yes" ? true : false
+            }
             }
             else{
                 controllerObj["Default"] = false
@@ -54,8 +52,28 @@ export function updateController(){
         }
     }
 
-    global.DATA.CONTROLLER.LIST = controllers
-    
+
+    if (global.DATA.CONTROLLER.LIST.length != controllers.length){
+        console.log("Updating controller list (different list length)")
+        global.DATA.CONTROLLER.LIST = controllers
+    }
+    if (global.DATA.CONTROLLER.DEFAULT == ""){
+        console.log("Setting default controller for global data object")
+        global.DATA.CONTROLLER.DEFAULT = defaultController
+        global.DATA.CONTROLLER.DEFAULT_INDEX = defaultControllerIndex
+        global.DATA.CONTROLLER.POWER = defaultControllerPower
+        global.DATA.CONTROLLER.DISCOVERING = defaultControllerDiscovering
+    }
+    else{
+        for (let i = 0; i < global.DATA.CONTROLLER.LIST.length; i++){
+            if (global.DATA.CONTROLLER.LIST[i].Address == defaultController){
+                global.DATA.CONTROLLER.DEFAULT_INDEX = i
+                global.DATA.CONTROLLER.POWER = defaultControllerPower
+                global.DATA.CONTROLLER.DISCOVERING = defaultControllerDiscovering
+                break
+            }
+        }
+    }
 
 }
 

@@ -8,9 +8,10 @@ export default async function handler(request: NextApiRequest, response: NextApi
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
       
-    updateController()
+    
 
   if (request.method === 'GET') {
+    updateController()
     let query = request.query['query'];
     
     if (query){
@@ -23,8 +24,11 @@ export default async function handler(request: NextApiRequest, response: NextApi
     
     const { defaultAdapter } = request.body;
     if (defaultAdapter != undefined){
-      runCommand([`select ${defaultAdapter}`])
-    }
+      global.DATA.CONTROLLER.DEFAULT_INDEX = defaultAdapter
+      global.DATA.CONTROLLER.DEFAULT = global.DATA.CONTROLLER.LIST[defaultAdapter].Address
+      global.DATA.CONTROLLER.POWER = global.DATA.CONTROLLER.LIST[defaultAdapter].Powered
+      global.DATA.PROVISION.SCAN_ACTIVE = global.DATA.CONTROLLER.LIST[defaultAdapter].Discovering === "yes" ? true : false
+      }
   
     return response.status(200).json({ "MESSAGE":"provision control backend api" });
   }
