@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {delay} from "./utils/common"
-import { ServerResponse } from "../../app/interfaces/server"
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');

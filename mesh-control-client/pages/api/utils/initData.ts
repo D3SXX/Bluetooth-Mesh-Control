@@ -37,8 +37,12 @@ export async function init()  {
 },
 
     CONFIG: {
-        "SECURITY_LEVEL":"1", // No need to get the value from meshctl, it is the same for every new instance
-        "NODES":[],
+        "SECURITY_LEVEL":1, // No need to get the value from meshctl, it is the same for every new instance
+        "NODES":{
+            "nodes":[],
+            "appKeys":[],
+            "netKeys":[]
+        },
         "PROCESS":{"STATUS":false,"PROGRESS":0,"LOGS":[], "ERROR":false}
 },
 
@@ -100,7 +104,7 @@ export function initBasic() {
 },
 
     CONFIG: {
-        "SECURITY_LEVEL":"1",
+        "SECURITY_LEVEL":null,
         "NODES":[],
         "PROCESS":{"STATUS":false,"PROGRESS":0,"LOGS":[], "ERROR":false}
 },

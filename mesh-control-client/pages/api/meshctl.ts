@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { startProcess, stopProcess } from "./utils/process";
-import { TerminalSession } from "../../app/interfaces/server";
+import { TerminalSession } from "../../interfaces/global";
 
 export default function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');

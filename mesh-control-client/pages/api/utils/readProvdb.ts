@@ -1,6 +1,6 @@
 import os from "os"
 import * as fs from "fs"
-import { NodeConfig } from "../../../app/interfaces/server"
+import { NodeConfig } from "../../../interfaces/global"
 import yaml from "yaml"
 
 const defaultNode =  {

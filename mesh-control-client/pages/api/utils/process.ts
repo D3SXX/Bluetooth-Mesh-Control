@@ -1,3 +1,4 @@
+import { TerminalSessions } from "@/interfaces/global";
 import {spawn} from "child_process"
 
 const re = /\x1b\[[0-9;]*m/g;
@@ -9,12 +10,16 @@ export function startProcess(type: string){
     }
     const process = spawn("meshctl")
 
+    // Apply config to process
+
+    process.stdin.write(`select ${global.DATA.CONTROLLER.DEFAULT}\nsecurity ${global.DATA.CONFIG.SECURITY_LEVEL}\n`)
+
     global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT = []
 
     process.stdout.on("data", (data) => {
         data = data.toString().split("\n")
         
-        data.forEach(element => {
+        data.forEach((element: string) => {
                 console.log(element.replace(re, ""))
             global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT.push(element.replace(re, ""))
         });
@@ -36,13 +41,17 @@ export function startProcess(type: string){
 
 export function stopProcess(type: string){
     
-    global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS.stdin.write("exit\n")
+    global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS?.stdin?.write("exit\n")
 
     if (global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].STATUS === false){
         return
     }
     console.log(`Killing process ${global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS_PID}`)
-    global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS.kill("SIGINT")
+    global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS?.kill("SIGINT")
     global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS_PID = null
     global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].STATUS = false
+}
+
+export function updateProcessConfig(type: keyof TerminalSessions){
+    global.DATA.TERMINAL_SESSIONS?.[type]?.PROCESS?.stdin?.write(`select ${global.DATA.CONTROLLER.DEFAULT}\nsecurity ${global.DATA.CONFIG.SECURITY_LEVEL}\n`)
 }

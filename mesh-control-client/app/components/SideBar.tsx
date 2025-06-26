@@ -36,7 +36,7 @@ import { usePathname } from 'next/navigation';
 import useSWR from 'swr';
 import { fetcherGET } from '../utils/fetcher';
 
-import { ServerResponse } from '../interfaces/server';
+import { ServerResponse } from '../../interfaces/global';
 
 const drawerWidth = 240;
 

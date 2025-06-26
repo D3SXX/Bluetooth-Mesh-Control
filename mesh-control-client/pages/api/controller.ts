@@ -2,6 +2,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {runCommand} from "./utils/runCommand"
 import { updateController } from "./utils/updateData";
+import { updateProcessConfig } from "./utils/process";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,7 +16,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     let query = request.query['query'];
     
     if (query){
-    return response.status(200).json({ [query]: global.DATA.CONTROLLER[query] });
+    return response.status(200).json({ [query as string]: global.DATA.CONTROLLER[query as keyof typeof global.DATA.CONTROLLER] });
     }
     return response.status(200).json({ "MESSAGE":"provision control backend api" });
   }
@@ -28,8 +29,9 @@ export default async function handler(request: NextApiRequest, response: NextApi
       global.DATA.CONTROLLER.DEFAULT = global.DATA.CONTROLLER.LIST[defaultAdapter].Address
       global.DATA.CONTROLLER.POWER = global.DATA.CONTROLLER.LIST[defaultAdapter].Powered
       global.DATA.PROVISION.SCAN_ACTIVE = global.DATA.CONTROLLER.LIST[defaultAdapter].Discovering === "yes" ? true : false
+      updateProcessConfig("MESHCTL")
       }
-  
+
     return response.status(200).json({ "MESSAGE":"provision control backend api" });
   }
 }

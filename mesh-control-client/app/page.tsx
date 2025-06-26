@@ -23,7 +23,7 @@ import {
 import useSWR from "swr";
 import { fetcherGET, fetcherPOST } from "./utils/fetcher";
 
-import { ServerResponse } from "./interfaces/server";
+import { ServerResponse } from "../interfaces/global";
 
 export default function Home() {
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -189,6 +189,11 @@ export default function Home() {
           <Box sx={{ m: 2,mt:4, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <Slider
             defaultValue={data?.config.SECURITY_LEVEL}
+            onChange={(e: any) => {
+              fetcherPOST({
+                "security":e.target.value
+              })("/config")
+            }}
             min={0}
             max={2}
             step={1}

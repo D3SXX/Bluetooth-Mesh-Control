@@ -4,7 +4,8 @@ import { init } from "./utils/initData";
 import { updateController, updateConfig } from "./utils/updateData";
 
 import {delay} from "./utils/common"
-import { SetupData } from "../../app/interfaces/client";
+import { SetupData } from "../../interfaces/global";
+import { updateProcessConfig } from "./utils/process";
 
 export default async function handler(
   request: NextApiRequest,
@@ -21,6 +22,9 @@ export default async function handler(
       global.DATA = await init();
       updateConfig()
       updateController()
+      return response.status(200).json({
+        "MESSAGE": "Initialized data"
+      });
     }
 
     let query = request.query["query"];
@@ -44,7 +48,16 @@ export default async function handler(
   }
 
   if (request.method === "POST") {
-    const { setupData }: { setupData: SetupData["setupData"] } = request.body;
+    const { setupData, security }: { setupData: SetupData["setupData"], security: number } = request.body;
+
+    if (security !== undefined) {
+      global.DATA.CONFIG.SECURITY_LEVEL = security
+      updateProcessConfig("MESHCTL")
+      return response.status(200).json({
+        "MESSAGE": `Security level updated to ${security}`,
+        "security": global.DATA.CONFIG.SECURITY_LEVEL
+      });
+    }
 
     if (setupData) {
 

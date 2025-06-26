@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import { fetcherGET } from "../utils/fetcher";
-import { ServerResponse } from "../interfaces/server";
+import { ServerResponse } from "../../interfaces/global";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import {
   Box,
@@ -29,7 +29,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import ExecuteDialog from "./ExecuteDialog";
-import { SetupData } from "../interfaces/client";
+import { SetupData } from "../../interfaces/global";
 
 interface TabPanelProps {
   children?: React.ReactNode;

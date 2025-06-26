@@ -5,7 +5,7 @@ import { Box } from '@mui/material'
 import React from 'react'
 import useSWR from 'swr'
 import { fetcherGET } from '../utils/fetcher'
-import { ServerResponse } from '../interfaces/server'
+import { ServerResponse } from '../../interfaces/global'
 
 import KeyIcon from '@mui/icons-material/Key';
 
