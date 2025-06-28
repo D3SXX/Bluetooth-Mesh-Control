@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {delay} from "./utils/common"
 import { updateConfig } from "./utils/updateData";
+import { startProcess } from "./utils/process";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -35,6 +36,11 @@ export default async function handler(request: NextApiRequest, response: NextApi
       global.DATA.PROVISION.UNPROVISIONED_NODES = {}
       global.DATA.PROVISION.SCAN_ACTIVE = discovery
       if (discovery){
+        if (global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS == false){
+          startProcess("MESHCTL")
+          await delay(500)
+        }
+
         if (global.DATA.CONTROLLER.POWER == false){
           global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("power on\n")
           await delay(500)
@@ -69,6 +75,7 @@ function stop_provision(error = false){
   global.DATA.PROVISION.PROCESS.STATUS = false
   global.DATA.PROVISION.PROCESS.ERROR = error
   global.DATA.PROVISION.PROCESS.PROGRESS = 100
+  global.DATA.PROVISION.UNPROVISIONED_NODES = {}
   updateConfig()
 }
 
