@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {delay} from "./utils/common"
+import { updateConfig } from "./utils/updateData";
+
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -67,7 +69,7 @@ function stop_provision(error = false){
   global.DATA.PROVISION.PROCESS.STATUS = false
   global.DATA.PROVISION.PROCESS.ERROR = error
   global.DATA.PROVISION.PROCESS.PROGRESS = 100
-
+  updateConfig()
 }
 
 async function update_provision(){

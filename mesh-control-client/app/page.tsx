@@ -21,7 +21,7 @@ import {
   Typography,
 } from "@mui/material";
 import useSWR from "swr";
-import { fetcherGET, fetcherPOST } from "./utils/fetcher";
+import { fetcherDELETE, fetcherGET, fetcherPOST } from "./utils/fetcher";
 
 import { ServerResponse } from "../interfaces/global";
 
@@ -107,7 +107,30 @@ export default function Home() {
             </Button>
           </Stack>
         </Box>
-
+      </Box>
+      <Box         sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          border: "1px solid lightgray",
+          borderRadius: "10px",
+          p: 2,
+          mt: 2,
+        }}>
+      <Box sx={{ display: "flex", borderRadius: "10px" }}>
+          <Stack direction="row" spacing={1.5}>
+            <Button size="small" variant="outlined" color="error" onClick={() => handleOpen("reset-nodes-list")}>
+              Reset nodes list
+            </Button>
+            <Button size="small" variant="outlined" color="error" onClick={() => handleOpen("reset-appkeys-list")}>
+              Reset Application Keys list
+            </Button>
+            <Button size="small" variant="outlined" color="error" onClick={() => handleOpen("reset-netkeys-list")}>
+              Reset Network Keys list
+            </Button>
+          </Stack>
+        </Box>
       </Box>
       <Dialog
         open={open["bluetooth-adapter"]}
@@ -226,6 +249,45 @@ export default function Home() {
             )
           </Typography>
           </Box>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={open["reset-nodes-list"]}
+        onClose={() => handleClose("reset-nodes-list")}
+        fullWidth
+      >
+        <DialogTitle>Reset nodes list</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>Warning: This action will remove all nodes from the nodes list in config file. If a node was not unprovisined beforehand, it will have to be reset manually.</Typography>
+          <Button sx={{ width: "100%" }} variant="outlined" color="error" onClick={() => {
+            fetcherDELETE("/config?type=nodes")
+          }}>Reset nodes list</Button>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={open["reset-appkeys-list"]}
+        onClose={() => handleClose("reset-appkeys-list")}
+        fullWidth
+      >
+        <DialogTitle>Reset Application Keys list</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>Warning: This action will remove all application keys from the application keys list in config file. This should be used only for debugging purposes.</Typography>
+          <Button sx={{ width: "100%" }} variant="outlined" color="error" onClick={() => {
+            fetcherDELETE("/config?type=appkeys")
+          }}>Reset application keys list</Button>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={open["reset-netkeys-list"]}
+        onClose={() => handleClose("reset-netkeys-list")}
+        fullWidth
+      >
+        <DialogTitle>Reset Network Keys list</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>Warning: This action will remove all network keys from the network keys list in config file. This should be used only for debugging purposes.</Typography>
+          <Button sx={{ width: "100%" }} variant="outlined" color="error" onClick={() => {
+            fetcherDELETE("/config?type=netkeys")
+          }}>Reset network keys list</Button>
         </DialogContent>
       </Dialog>
     </main>

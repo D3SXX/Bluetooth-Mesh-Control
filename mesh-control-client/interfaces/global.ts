@@ -113,7 +113,7 @@ interface Node {
     sequenceNumber: number;
 }
 
-interface NodesConfig {
+export interface NodesConfig {
     nodes: Node[];
     appKeys: AppKey[];
     netKeys: NetKey[];
@@ -160,7 +160,7 @@ export interface Config {
     SECURITY_LEVEL: number;
 }
 
-interface AppKey {
+export interface AppKey {
     boundNetKey: number;
     index: number;
     key: string;

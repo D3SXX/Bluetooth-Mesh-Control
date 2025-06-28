@@ -6,6 +6,7 @@ import { updateController, updateConfig } from "./utils/updateData";
 import {delay} from "./utils/common"
 import { SetupData } from "../../interfaces/global";
 import { updateProcessConfig } from "./utils/process";
+import { removeNode, resetNodesList, resetAppkeysList, resetNetkeysList } from "./utils/editProvdb";
 
 export default async function handler(
   request: NextApiRequest,
@@ -154,6 +155,7 @@ export default async function handler(
         waitList.push([`Default TTL`]);
         addressQueue.push(ttl.unicastAddress.index);
       }
+      
 
 
       configureMesh(addressQueue.map(addr => String(addr)), commandQueue, waitList);
@@ -162,6 +164,34 @@ export default async function handler(
         message: "Initiated process",
       });
     }
+  }
+  if (request.method === "DELETE") {
+    let address = request.query["address"];
+    let type = request.query["type"];
+    if (type == "nodes") {
+      global.DATA.CONFIG.NODES.nodes = [];
+      resetNodesList();
+    }
+    if (type == "appkeys") {
+      global.DATA.CONFIG.NODES.appKeys = [];
+      resetAppkeysList();
+    }
+    if (type == "netkeys") {
+      global.DATA.CONFIG.NODES.netKeys = [];
+      resetNetkeysList();
+    }
+    if (address) {
+      for (let node of global.DATA.CONFIG.NODES.nodes) {
+        if (node.configuration.elements[0].unicastAddress === address) {
+          console.log("Found node for the remove address " + address);
+          configureMesh([address], [["node-reset"]], [["reset status Success"]]);
+          break;
+        }
+      }
+    }
+    return response.status(200).json({
+      status: "success"
+    });
   }
 }
 
@@ -242,6 +272,11 @@ async function configureMesh(addressQueue: string[], commandQueue: string[][], w
         global.DATA.CONFIG.PROCESS.PROGRESS += progressIncrement;
       }
       addLog("Success!");
+    }
+    if (commandQueue[0][0] == "node-reset") {
+      addLog("Removing node from prov_db config");
+      removeNode(addressQueue[0]);
+      addLog("Node removed!");
     }
     addLog("Done all tasks!");
     stopProcess();
