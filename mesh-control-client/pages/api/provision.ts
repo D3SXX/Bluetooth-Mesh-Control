@@ -32,6 +32,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
   if (request.method === 'POST') {
     console.log(request.body)
     const { discovery, failback_scan_status, provision_node } = request.body;
+    
     if (discovery != undefined){
       global.DATA.PROVISION.UNPROVISIONED_NODES = {}
       global.DATA.PROVISION.SCAN_ACTIVE = discovery
@@ -85,9 +86,15 @@ async function update_provision(){
     const maxAttemps = 100
     global.DATA.PROVISION.PROCESS.PROGRESS = 0
     while (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Composition data for node")).length < 1){
-      if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Services resolved no")).length >= 1){
-        console.log("Got 'services resolved no' for provisioning..")
-        global.DATA.PROVISION.PROCESS.LOGS.push("Got 'services resolved no' for provisioning!")
+      if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Failed to connect")).length >= 1){
+        console.log("Got 'Failed to connect' for provisioning..")
+        global.DATA.PROVISION.PROCESS.LOGS.push("Got 'Failed to connect' for provisioning!")
+        stop_provision(true)
+        return  
+      }
+      if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Could not find device proxy")).length >= 1){
+        console.log("Got 'Could not find device proxy' for provisioning..")
+        global.DATA.PROVISION.PROCESS.LOGS.push("Got 'Could not find device proxy' for provisioning!")
         stop_provision(true)
         return  
       }
@@ -111,18 +118,14 @@ async function update_provision(){
   stop_provision()
 }
 
-function provision(node: string){
+async function provision(node: string){
   if (global.DATA.PROVISION.PROCESS.STATUS){
     console.log("Already provisioning, returning..")
     return
   }
-  if (global.DATA.PROVISION.SCAN_ACTIVE){
-    global.DATA.PROVISION.SCAN_ACTIVE = false
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")   
-  }
-  if (global.DATA.CONTROLLER.POWER == false){
-    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("power on\n")
-  }
+  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")
+  global.DATA.PROVISION.SCAN_ACTIVE = false
+
   global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = true
   global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT = []
 
@@ -130,6 +133,8 @@ function provision(node: string){
   global.DATA.PROVISION.PROCESS.ERROR = false
   global.DATA.PROVISION.PROCESS.START_TIME = new Date().getUTCDate()
 
+  await delay(500)
+  
   global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write(`provision ${node}\n`)
 
   update_provision()
@@ -173,6 +178,10 @@ function scan_unprovisioned(){
             name += `${data[i]} `
           }
           
+        }
+        if (!isNaN(UUID)){
+          console.log("Invalid UUID, skipping..")
+          continue
         }
         global.DATA.PROVISION.UNPROVISIONED_NODES[UUID] = {
                 "name": name,

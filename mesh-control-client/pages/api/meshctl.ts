@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { startProcess, stopProcess } from "./utils/process";
 import { TerminalSession } from "../../interfaces/global";
+import { delay } from "./utils/common"
 
-export default function handler(request: NextApiRequest, response: NextApiResponse) {
+export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -27,6 +28,8 @@ export default function handler(request: NextApiRequest, response: NextApiRespon
         startProcess("MESHCTL")
       }
       else {
+        global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")
+        await delay(200)
         stopProcess("MESHCTL")
       }
       return response.status(200).json({ status: global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS });

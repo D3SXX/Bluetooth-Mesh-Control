@@ -1,23 +1,23 @@
-import { runCommand } from "./runCommand";
+import { runCommand, runSeveralCommands } from "./runCommand";
 import {getNodes} from "./readProvdb"
 import {delay} from "./common"
 import {NodeConfig, ControllerDevice} from "../../../interfaces/global"
 
-export function updateController(){
+export async function updateController(){
     let controllers = [];
     let defaultController: string = "", defaultControllerIndex, defaultControllerPower: boolean = false, defaultControllerDiscovering: boolean = false
-    const controllerData = runCommand(["list"])
+    const controllerData = await runSeveralCommands([`select ${global.DATA.CONTROLLER.DEFAULT}`, "list"])
     const controllerArr = controllerData.split("\n")
     
     // Collect controllers data
-
+    
     for (let i = 0; i < controllerArr.length; i++){
         if (controllerArr[i].includes("Controller")){
             const obj = controllerArr[i].split(" ")
             
             // More detailed data
 
-            const dataArr = runCommand([`show`, `${obj[1]}`]).split("\n")
+            const dataArr = (await runSeveralCommands([`select ${global.DATA.CONTROLLER.DEFAULT}`, `show ${obj[1]}`])).split("\n")
             
             let controllerObj: ControllerDevice = {"UUID":[], "Address":obj[1], "Name":"", "Alias":"", "Class":"", "Powered":"", "Discoverable":"", "Modalias":"", "Discovering":"", "Default":false}
             
@@ -38,7 +38,7 @@ export function updateController(){
             if (obj[3]){
                 if (global.DATA.CONTROLLER.DEFAULT == ""){
                     defaultController = obj[1]
-                    defaultControllerIndex = i-1
+                    defaultControllerIndex = i-3
                     defaultControllerPower = controllerObj["Powered"] === "yes" ? true : false
                     defaultControllerDiscovering = controllerObj["Discovering"] === "yes" ? true : false
             }
@@ -67,6 +67,7 @@ export function updateController(){
     else{
         for (let i = 0; i < global.DATA.CONTROLLER.LIST.length; i++){
             if (global.DATA.CONTROLLER.LIST[i].Address == defaultController){
+                console.log("Setting default controller for global data object")
                 global.DATA.CONTROLLER.DEFAULT_INDEX = i
                 global.DATA.CONTROLLER.POWER = defaultControllerPower
                 global.DATA.PROVISION.SCAN_ACTIVE = defaultControllerDiscovering
