@@ -18,6 +18,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import CloseIcon from '@mui/icons-material/Close';
 
 import HomeIcon from '@mui/icons-material/Home';
 import HubIcon from '@mui/icons-material/Hub';
@@ -34,9 +38,10 @@ import DynamicIcon from './DynamicIcon';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import useSWR from 'swr';
-import { fetcherGET } from '../utils/fetcher';
+import { fetcherDELETE, fetcherGET } from '../utils/fetcher';
 
 import { ServerResponse } from '../../interfaces/global';
+import Button from '@mui/material/Button';
 
 const drawerWidth = 240;
 
@@ -136,8 +141,8 @@ const openedMixin = (theme: Theme): CSSObject => ({
 
 const SideBar = ({children}: {children: React.ReactNode}) => {
 
-    
     const [open, setOpen] = React.useState(false);
+    const [openLogs, setOpenLogs] = React.useState(false);
   
     const handleDrawerOpen = () => {
       setOpen(true);
@@ -147,6 +152,9 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
       setOpen(false);
     };
   
+    const { data: logsData, error: logsError, isLoading: logsLoading } = useSWR<any>("/meshctl?query=OUTPUT", fetcherGET, {
+      refreshInterval: 1000,
+  });
 
     const { data, error, isLoading } = useSWR<ServerResponse["config"]>("/config?query=NODES", fetcherGET, {
       refreshInterval: 3000,
@@ -237,7 +245,9 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
                 Mesh Control
               </Typography>
               <Stack direction="row" spacing={2} sx={{marginLeft: 'auto'}}>
-                <IconButton id="logs-button">
+                <IconButton id="logs-button" onClick={() => {
+                  setOpenLogs(true)
+                }}>
                   <EventNoteIcon/>
                 </IconButton>
                 {appBarElements.map((element, index) => (
@@ -364,6 +374,33 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
                 {children}
           </Box>
         </Box>
+        <Dialog fullScreen open={openLogs} onClose={() => setOpenLogs(false)}>
+          <DialogTitle>Logs ({logsData?.OUTPUT.length} items)</DialogTitle>
+          <IconButton
+          aria-label="close"
+          onClick={() => setOpenLogs(false)}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <Button onClick={() => {
+          fetcherDELETE("/meshctl?query=OUTPUT")
+        }}>Reset logs</Button>
+          <DialogContent> 
+            <List>
+              {logsData?.OUTPUT.map((log: string, index: number) => (
+                <ListItem key={index}>
+                  <Typography>{log}</Typography>
+                </ListItem>
+              ))}
+            </List>
+          </DialogContent>
+        </Dialog>
         </ThemeProvider>
       );
 };
