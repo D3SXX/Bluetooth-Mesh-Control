@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { startProcess, stopProcess } from "./utils/process";
 import { TerminalSession } from "../../interfaces/global";
 import { delay } from "./utils/common"
+import Debug from "./utils/debug";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,7 +24,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     const { status } = request.body;
 
     if (status != undefined) {
-      console.log(`Trying to ${status ? "start meshctl" : "stop meshctl"}`)
+      Debug.log(`Trying to ${status ? "start meshctl" : "stop meshctl"}`, "INFO", "Meshctl");
       if (status === true) {
         startProcess("MESHCTL")
       }

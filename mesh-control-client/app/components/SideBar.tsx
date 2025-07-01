@@ -41,6 +41,7 @@ import useSWR from 'swr';
 import { fetcherDELETE, fetcherGET } from '../utils/fetcher';
 
 import { ServerResponse } from '../../interfaces/global';
+import {ServerData} from '../../interfaces/global';
 import Button from '@mui/material/Button';
 
 const drawerWidth = 240;
@@ -152,10 +153,9 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
       setOpen(false);
     };
   
-    const { data: logsData, error: logsError, isLoading: logsLoading } = useSWR<any>("/meshctl?query=OUTPUT", fetcherGET, {
+    const { data: logsData, error: logsError, isLoading: logsLoading } = useSWR<ServerData>("/server?query=LOGS", fetcherGET, {
       refreshInterval: 1000,
   });
-
     const { data, error, isLoading } = useSWR<ServerResponse["config"]>("/config?query=NODES", fetcherGET, {
       refreshInterval: 3000,
   });
@@ -248,7 +248,7 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
                 <IconButton id="logs-button" onClick={() => {
                   setOpenLogs(true)
                 }}>
-                  <EventNoteIcon/>
+                  <EventNoteIcon sx={{color: logsData?.LOGS?.length && logsData?.LOGS?.length > 0 ? 'skyblue' : 'white'}}/>
                 </IconButton>
                 {appBarElements.map((element, index) => (
                     <DynamicIcon key={index} iconOn={element.iconOn} iconOff={element.iconOff} enableBlink={element.enableBlink} apiUrl={element.apiUrl} query={element.query} interval={element.interval} />
@@ -375,7 +375,7 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
           </Box>
         </Box>
         <Dialog fullScreen open={openLogs} onClose={() => setOpenLogs(false)}>
-          <DialogTitle>Logs ({logsData?.OUTPUT.length} items)</DialogTitle>
+          <DialogTitle>Logs ({logsData?.LOGS.length} items)</DialogTitle>
           <IconButton
           aria-label="close"
           onClick={() => setOpenLogs(false)}
@@ -389,11 +389,11 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
           <CloseIcon />
         </IconButton>
         <Button onClick={() => {
-          fetcherDELETE("/meshctl?query=OUTPUT")
+          fetcherDELETE("/server?query=LOGS")
         }}>Reset logs</Button>
           <DialogContent> 
             <List>
-              {logsData?.OUTPUT.map((log: string, index: number) => (
+              {logsData?.LOGS.map((log: string, index: number) => (
                 <ListItem key={index}>
                   <Typography>{log}</Typography>
                 </ListItem>

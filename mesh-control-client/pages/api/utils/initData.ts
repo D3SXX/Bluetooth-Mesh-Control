@@ -1,9 +1,7 @@
+import Debug from "./debug";
 import { getSigData } from "./readProvdb"
 
 export async function init()  {
-    
-
-    console.log("Initializing data for the first time..")
 
     const {companyIdentifiersData, mmdlModelUuidsData, meshModelUuidsData} = await getSigData()
     
@@ -18,7 +16,14 @@ export async function init()  {
              "MESSAGE": "",
              "TYPE": "",
              "EXTRA_DATA":{}
-             }
+             },
+    "LOGS": [],
+    "LOGS_SETTINGS": {
+        "ENABLE_LOGS": true,
+        "ENABLE_CONSOLE_LOGS": true,
+        "CAPTURE_PROCESSES": true,
+        "LOGS_LIMIT": 1000
+    }
     },
 
     CONTROLLER: {
@@ -72,7 +77,7 @@ export async function init()  {
 
 // Empty data structure (for Edge Runtime)
 export function initBasic() {
-    console.log("Initializing basic data structure (Edge Runtime compatible)..")
+    Debug.log("Initializing basic data structure (Edge Runtime compatible)..", "INFO", "InitData");
     
     return {
     SERVER: {

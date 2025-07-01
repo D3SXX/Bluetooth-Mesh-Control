@@ -43,7 +43,6 @@ export function editAppkey(keyData: AppKey): string {
     
     let editIndex: number | null = null;
     for (let i = 0; i < meshInfo.appKeys.length; i++) {
-      console.log(meshInfo.appKeys[i].index, keyData.index);
       if (meshInfo.appKeys[i].index === parseInt(keyData.index.toString())) {
         editIndex = i;
         break;
@@ -54,7 +53,6 @@ export function editAppkey(keyData: AppKey): string {
       return "Key index not found!";
     }
     
-    console.log(editIndex);
     meshInfo.appKeys[editIndex] = {
       index: parseInt(keyData.index.toString()),
       boundNetKey: parseInt(keyData.boundNetKey.toString()),

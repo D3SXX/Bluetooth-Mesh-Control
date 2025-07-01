@@ -3,6 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {runCommand} from "./utils/runCommand"
 import { updateController } from "./utils/updateData";
 import { updateProcessConfig } from "./utils/process";
+import { debug } from "console";
+import Debug from "./utils/debug";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,6 +27,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     
     const { defaultAdapter } = request.body;
     if (defaultAdapter != undefined){
+      Debug.log(`Updated default adapter to ${global.DATA.CONTROLLER.LIST[defaultAdapter].Address} (${global.DATA.CONTROLLER.LIST[defaultAdapter].Name})`, "INFO", "Controller");
       global.DATA.CONTROLLER.DEFAULT_INDEX = defaultAdapter
       global.DATA.CONTROLLER.DEFAULT = global.DATA.CONTROLLER.LIST[defaultAdapter].Address
       global.DATA.CONTROLLER.POWER = global.DATA.CONTROLLER.LIST[defaultAdapter].Powered

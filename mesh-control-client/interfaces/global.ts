@@ -7,7 +7,7 @@ interface ServerError {
     TYPE?: string | null;
 }
 
-interface ServerData {
+export interface ServerData {
     STATUS: boolean;
     VERSION: string;
     NAME: string;
@@ -19,15 +19,13 @@ interface ServerData {
         TYPE: string;
         EXTRA_DATA: Record<string, any>;
     };
-}
-
-interface Server {
-    ALLOW_PROCESSES: boolean;
-    ERROR: ServerError;
-    MESHCTL: string;
-    NAME: string;
-    STATUS?: string;
-    VERSION: string;
+    LOGS: string[];
+    LOGS_SETTINGS: {
+        ENABLE_LOGS: boolean;
+        ENABLE_CONSOLE_LOGS: boolean;
+        CAPTURE_PROCESSES: boolean;
+        LOGS_LIMIT: number;
+    };
 }
 
 export interface ControllerDevice {
@@ -400,7 +398,7 @@ export interface ServerResponse {
     controller: Controller;
     keys: Keys;
     provision: Provision;
-    server: Server;
+    server: ServerData;
     terminal_sessions: TerminalSessions;
     COMPANY_IDENTIFIERS: CompanyIdentifier[];
     MMDL_MODEL_UUIDS: ModelUUID[];

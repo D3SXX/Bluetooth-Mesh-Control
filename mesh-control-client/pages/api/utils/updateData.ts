@@ -2,6 +2,7 @@ import { runCommand, runSeveralCommands } from "./runCommand";
 import {getNodes} from "./readProvdb"
 import {delay} from "./common"
 import {NodeConfig, ControllerDevice} from "../../../interfaces/global"
+import Debug from "./debug";
 
 export async function updateController(){
     let controllers = [];
@@ -54,11 +55,11 @@ export async function updateController(){
 
 
     if (global.DATA.CONTROLLER.LIST.length != controllers.length){
-        console.log("Updating controller list (different list length)")
+        Debug.log("Updating controller list (different list length)", "INFO", "UpdateData");
         global.DATA.CONTROLLER.LIST = controllers
     }
     if (global.DATA.CONTROLLER.DEFAULT == ""){
-        console.log("Setting default controller for global data object")
+        Debug.log("Setting default controller for global data object", "INFO", "UpdateData");
         global.DATA.CONTROLLER.DEFAULT = defaultController
         global.DATA.CONTROLLER.DEFAULT_INDEX = defaultControllerIndex || 0
         global.DATA.CONTROLLER.POWER = defaultControllerPower
@@ -67,7 +68,7 @@ export async function updateController(){
     else{
         for (let i = 0; i < global.DATA.CONTROLLER.LIST.length; i++){
             if (global.DATA.CONTROLLER.LIST[i].Address == defaultController){
-                console.log("Setting default controller for global data object")
+                Debug.log("Setting default controller for global data object", "INFO", "UpdateData");
                 global.DATA.CONTROLLER.DEFAULT_INDEX = i
                 global.DATA.CONTROLLER.POWER = defaultControllerPower
                 global.DATA.PROVISION.SCAN_ACTIVE = defaultControllerDiscovering

@@ -17,8 +17,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     }
     
     if (query){
-    console.log({ [query]: global.DATA.CONFIG[query] })
-    return response.status(200).json({ [query]: global.DATA.CONFIG[query] });
+    return response.status(200).json({ [query as keyof typeof global.DATA.KEYS]: global.DATA.KEYS[query as keyof typeof global.DATA.KEYS]  });
     }
     else{
       return response.status(200).json({ "keys":global.DATA.KEYS });
@@ -26,9 +25,6 @@ export default async function handler(request: NextApiRequest, response: NextApi
 }
 
   if (request.method === 'POST') {
-    console.log(request.body)
-    const { STATUS } = request.body;
-    console.log(STATUS)
 
 
   }

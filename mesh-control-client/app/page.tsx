@@ -10,6 +10,8 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
+  FormGroup,
   List,
   ListItem,
   ListItemButton,
@@ -18,6 +20,8 @@ import {
   Select,
   Slider,
   Stack,
+  Switch,
+  TextField,
   Typography,
 } from "@mui/material";
 import useSWR from "swr";
@@ -105,6 +109,14 @@ export default function Home() {
             >
               Security level: {data?.config.SECURITY_LEVEL}
             </Button>
+            <Button
+              variant="outlined"
+              color="info"
+              sx={{ width: "250px", height: "50px" }}
+              onClick={() => handleOpen("logs")}
+            >
+              Logs: {data?.server.LOGS_SETTINGS.ENABLE_LOGS ? "Enabled" : "Disabled"}
+            </Button>
           </Stack>
         </Box>
       </Box>
@@ -131,7 +143,9 @@ export default function Home() {
             </Button>
           </Stack>
         </Box>
+        
       </Box>
+      
       <Dialog
         open={open["bluetooth-adapter"]}
         onClose={() => handleClose("bluetooth-adapter")}
@@ -288,6 +302,63 @@ export default function Home() {
           <Button sx={{ width: "100%" }} variant="outlined" color="error" onClick={() => {
             fetcherDELETE("/config?type=netkeys")
           }}>Reset network keys list</Button>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={open["logs"]}
+        onClose={() => handleClose("logs")}
+        fullWidth
+      >
+        <DialogTitle>Logs Settings</DialogTitle>
+        <DialogContent>
+          <FormGroup>
+            <FormControlLabel
+              control={<Switch checked={data?.server.LOGS_SETTINGS.ENABLE_LOGS} />}
+              label="Enable logs capture"
+              onClick={() => {
+                fetcherPOST({
+                  "LOGS_SETTINGS":{
+                    ...data?.server.LOGS_SETTINGS,
+                    "ENABLE_LOGS":!data?.server.LOGS_SETTINGS.ENABLE_LOGS
+                  }
+                })("/server")
+              }}
+            />
+            <FormControlLabel
+              control={<Switch checked={data?.server.LOGS_SETTINGS.CAPTURE_PROCESSES} />}
+              label="Capture logs from processes (meshctl, etc.)"
+              onClick={() => {
+                  fetcherPOST({
+                    "LOGS_SETTINGS":{
+                      ...data?.server.LOGS_SETTINGS,
+                      "CAPTURE_PROCESSES":!data?.server.LOGS_SETTINGS.CAPTURE_PROCESSES
+                    }
+                  })("/server")
+              }}
+            />
+            <FormControlLabel
+              control={<Switch checked={data?.server.LOGS_SETTINGS.ENABLE_CONSOLE_LOGS} />}
+              label="Enable output to console"
+              onClick={() => {
+                fetcherPOST({
+                  "LOGS_SETTINGS":{
+                    ...data?.server.LOGS_SETTINGS,
+                    "ENABLE_CONSOLE_LOGS":!data?.server.LOGS_SETTINGS.ENABLE_CONSOLE_LOGS
+                  }
+                })("/server")
+              }}
+            />
+          </FormGroup>
+          <Stack direction="row" sx={{ alignItems: "center", display: "flex" }} spacing={1.5}>
+          <Typography>Logs limit: </Typography>          <TextField id="standard-basic" value={data?.server.LOGS_SETTINGS.LOGS_LIMIT} onChange={(e) => {
+            fetcherPOST({
+              "LOGS_SETTINGS":{
+                ...data?.server.LOGS_SETTINGS,
+                "LOGS_LIMIT":parseInt(e.target.value)
+              }
+            })("/server")
+          }} variant="standard" /> 
+          </Stack>
         </DialogContent>
       </Dialog>
     </main>

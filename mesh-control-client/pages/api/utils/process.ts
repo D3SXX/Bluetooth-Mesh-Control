@@ -1,5 +1,6 @@
 import { TerminalSessions } from "@/interfaces/global";
 import {spawn} from "child_process"
+import Debug from "./debug";
 
 const re = /\x1b\[[0-9;]*m/g;
 
@@ -20,7 +21,9 @@ export function startProcess(type: string){
         data = data.toString().split("\n")
         
         data.forEach((element: string) => {
-                console.log(element.replace(re, ""))
+            if (global.DATA.SERVER.LOGS_SETTINGS.CAPTURE_PROCESSES){
+                Debug.log(element.replace(re, ""), "INFO", "Process");
+            }
             global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].OUTPUT.push(element.replace(re, ""))
         });
         
@@ -46,7 +49,7 @@ export function stopProcess(type: string){
     if (global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].STATUS === false){
         return
     }
-    console.log(`Killing process ${global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS_PID}`)
+    Debug.log(`Killing process ${global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS_PID}`, "INFO", "Process");
     global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS?.kill("SIGINT")
     global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].PROCESS_PID = null
     global.DATA.TERMINAL_SESSIONS[type as keyof typeof global.DATA.TERMINAL_SESSIONS].STATUS = false

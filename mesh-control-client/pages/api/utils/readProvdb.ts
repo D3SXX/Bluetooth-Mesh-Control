@@ -2,6 +2,7 @@ import os from "os"
 import * as fs from "fs"
 import { NodeConfig } from "../../../interfaces/global"
 import yaml from "yaml"
+import Debug from "./debug"
 
 const defaultNode =  {
         "deviceKey": "unknown",
@@ -109,7 +110,7 @@ function addModelName(data: NodeConfig){
 
 
 export async function getSigData(){
-    console.log("Getting SIG data..")
+    
     const links = ["https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/company_identifiers/company_identifiers.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mmdl_model_uuids.yaml","https://bitbucket.org/bluetooth-SIG/public/raw/main/assigned_numbers/mesh/mesh_model_uuids.yaml"]
     const companyIdentifiers = await fetch(links[0])
     const companyIdentifiersData = yaml.parse(await companyIdentifiers.text()).company_identifiers

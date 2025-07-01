@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {delay} from "./utils/common"
 import { updateConfig } from "./utils/updateData";
 import { startProcess } from "./utils/process";
+import Debug from "./utils/debug";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,7 +31,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
   }
 
   if (request.method === 'POST') {
-    console.log(request.body)
+    
     const { discovery, failback_scan_status, provision_node } = request.body;
     
     if (discovery != undefined){
@@ -56,7 +57,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       return response.status(200).json({"status": "success", "message": `Discovery status is set to ${discovery}` });
     }
     if (provision_node != undefined){
-      console.log(`Trying to provision node ${provision_node}`);
+      Debug.log(`Trying to provision node ${provision_node}`, "INFO", "Provision");
       provision(provision_node)
       
       
@@ -71,7 +72,12 @@ export default async function handler(request: NextApiRequest, response: NextApi
 }
 
 function stop_provision(error = false){
-    console.log("Stopping provision process, error = " + error)
+    if (error){
+      Debug.log("Stopping provision process with error!", "ERROR", "Provision");
+    }
+    else {
+      Debug.log("Stopping provision process!", "INFO", "Provision");
+    }
     global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = false
   global.DATA.PROVISION.PROCESS.STATUS = false
   global.DATA.PROVISION.PROCESS.ERROR = error
@@ -87,13 +93,13 @@ async function update_provision(){
     global.DATA.PROVISION.PROCESS.PROGRESS = 0
     while (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Composition data for node")).length < 1){
       if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Failed to connect")).length >= 1){
-        console.log("Got 'Failed to connect' for provisioning..")
+        Debug.log("Got 'Failed to connect' for provisioning..", "ERROR", "Provision");
         global.DATA.PROVISION.PROCESS.LOGS.push("Got 'Failed to connect' for provisioning!")
         stop_provision(true)
         return  
       }
       if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.filter(str => str.includes("Could not find device proxy")).length >= 1){
-        console.log("Got 'Could not find device proxy' for provisioning..")
+        Debug.log("Got 'Could not find device proxy' for provisioning..", "ERROR", "Provision");
         global.DATA.PROVISION.PROCESS.LOGS.push("Got 'Could not find device proxy' for provisioning!")
         stop_provision(true)
         return  
@@ -103,14 +109,14 @@ async function update_provision(){
       i++;
       global.DATA.PROVISION.PROCESS.PROGRESS = i
       if (i > maxAttemps){
-        console.log("Got time limit for provisioning..")
+        Debug.log("Got time limit for provisioning..", "ERROR", "Provision");
         global.DATA.PROVISION.PROCESS.LOGS.push("Got time limit for provisioning!")
         stop_provision(true)
         return
       }
     
   }
-  console.log("Provisioned node!")
+  Debug.log("Provisioned node!", "INFO", "Provision");
   await delay(500)
   global.DATA.PROVISION.PROCESS.LOGS = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT
   global.DATA.PROVISION.PROCESS.LOGS.push("Succesfully provisioned node!")
@@ -120,7 +126,7 @@ async function update_provision(){
 
 async function provision(node: string){
   if (global.DATA.PROVISION.PROCESS.STATUS){
-    console.log("Already provisioning, returning..")
+    Debug.log("Already provisioning, returning..", "WARNING", "Provision");
     return
   }
   global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")
@@ -148,7 +154,7 @@ function scan_unprovisioned(){
     let address = ""
     for (let i = 0; i < global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT.length; i++){
       if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i].includes("OOB")){
-        console.log("Found node! (without name and address)")
+        Debug.log("Found node! (without name and address)", "INFO", "Provision");
         let data = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i-1].split(" ")
         UUID = UUID = data[data.length-1]
         data = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i].split(" ")
@@ -161,7 +167,7 @@ function scan_unprovisioned(){
       }
       
       if (global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i].includes("NEW")){
-        console.log("Found node!")
+        Debug.log("Found node!", "INFO", "Provision");
         let data = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i-2].split(" ")
         UUID = data[data.length-1]
         data = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i-1].split(" ")
@@ -169,7 +175,6 @@ function scan_unprovisioned(){
         data = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i].split(" ")
         const deviceIndex = data.indexOf("Device")
         address = data[deviceIndex+1]
-        console.log(data)
         for (let i = deviceIndex+2; i < data.length; i++){
           if (i == data.length){
             name += `${data[i]}`
@@ -180,7 +185,7 @@ function scan_unprovisioned(){
           
         }
         if (!isNaN(UUID)){
-          console.log("Invalid UUID, skipping..")
+          Debug.log("Invalid UUID for node, skipping..", "WARNING", "Provision");
           continue
         }
         global.DATA.PROVISION.UNPROVISIONED_NODES[UUID] = {
@@ -188,16 +193,9 @@ function scan_unprovisioned(){
                 "OOB": OOB,
                 "address": address
     }
-        console.log(global.DATA.PROVISION.UNPROVISIONED_NODES)
-        console.log(UUID, OOB, name, address)
+        Debug.log(`Added node ${name} (${address}) to nodes list!`, "INFO", "Provision");
         global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT = []
       }
     }
-    
-
   }
-  else{
-    
-  }
-
 }

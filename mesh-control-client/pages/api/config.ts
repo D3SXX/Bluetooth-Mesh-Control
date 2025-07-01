@@ -7,6 +7,7 @@ import {delay} from "./utils/common"
 import { SetupData } from "../../interfaces/global";
 import { updateProcessConfig } from "./utils/process";
 import { removeNode, resetNodesList, resetAppkeysList, resetNetkeysList } from "./utils/editProvdb";
+import Debug from "./utils/debug";
 
 export default async function handler(
   request: NextApiRequest,
@@ -183,7 +184,7 @@ export default async function handler(
     if (address) {
       for (let node of global.DATA.CONFIG.NODES.nodes) {
         if (node.configuration.elements[0].unicastAddress === address) {
-          console.log("Found node for the remove address " + address);
+          Debug.log("Found node for the remove address " + address, "INFO", "Config");
           configureMesh([address], [["node-reset"]], [["reset status Success"]]);
           break;
         }
@@ -197,7 +198,14 @@ export default async function handler(
 
 async function configureMesh(addressQueue: string[], commandQueue: string[][], waitList: (string)[][]) {
   function stopProcess(error = false) {
-    console.log("stopProcess() called!")
+    
+    if (error){
+      Debug.log("stopProcess() called with error!", "ERROR", "Config");
+    }
+    else {
+      Debug.log("stopProcess() called!", "INFO", "Config");
+    }
+
     if (global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin) {
       global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS.stdin.write(
         "\nback\ndisconnect\n"
@@ -227,7 +235,7 @@ async function configureMesh(addressQueue: string[], commandQueue: string[][], w
   }
 
   if (global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS == false){
-    console.log("Meshctl terminal session is not running, returning..")
+    Debug.log("Meshctl terminal session is not running, returning..", "WARNING", "Config");
     return
   }
 
