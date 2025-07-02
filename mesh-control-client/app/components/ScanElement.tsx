@@ -94,7 +94,7 @@ const ScanElement = () => {
             justifyContent: "space-between",
           }}
           onClick={() =>
-            handleCheckboxChange({ target: { checked: !scanStatus } })
+            handleCheckboxChange({ target: { checked: !scanStatus } } as React.ChangeEvent<HTMLInputElement>)
           }
         >
           {scanStatus ? (

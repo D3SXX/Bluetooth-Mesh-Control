@@ -24,6 +24,7 @@ export interface ServerData {
         ENABLE_LOGS: boolean;
         ENABLE_CONSOLE_LOGS: boolean;
         CAPTURE_PROCESSES: boolean;
+        CAPTURE_REQUESTS: boolean;
         LOGS_LIMIT: number;
     };
 }

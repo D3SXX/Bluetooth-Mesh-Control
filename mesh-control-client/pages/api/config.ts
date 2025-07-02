@@ -5,7 +5,7 @@ import { updateController, updateConfig } from "./utils/updateData";
 
 import {delay} from "./utils/common"
 import { SetupData } from "../../interfaces/global";
-import { updateProcessConfig } from "./utils/process";
+import { startProcess, updateProcessConfig } from "./utils/process";
 import { removeNode, resetNodesList, resetAppkeysList, resetNetkeysList } from "./utils/editProvdb";
 import Debug from "./utils/debug";
 
@@ -53,6 +53,7 @@ export default async function handler(
     const { setupData, security }: { setupData: SetupData["setupData"], security: number } = request.body;
 
     if (security !== undefined) {
+      Debug.log(`Updating security level to ${security}`, "INFO", "Config");
       global.DATA.CONFIG.SECURITY_LEVEL = security
       updateProcessConfig("MESHCTL")
       return response.status(200).json({
@@ -69,6 +70,7 @@ export default async function handler(
       const waitList = [];
 
       if (bind && bind.saved) {
+        Debug.log(`Adding bind for ${bind.unicastAddress.value}`, "INFO", "Config");
         commandQueue.push([
           `appkey-add ${bind.appKeyIndex}`,
           `bind ${bind.unicastAddress.index} ${bind.appKeyIndex} ${bind.model.value}`,
@@ -77,6 +79,7 @@ export default async function handler(
         addressQueue.push(bind.unicastAddress.value);
       }
       if (publish && publish.saved) {
+        Debug.log(`Adding publish for ${publish.unicastAddress.value}`, "INFO", "Config");
         commandQueue.push([
           `appkey-add ${publish.appKeyIndex}`,
           `pub-set ${publish.unicastAddress.value} ${
@@ -93,6 +96,7 @@ export default async function handler(
         addressQueue.push(publish.unicastAddress.value);
       }
       if (subscribe && subscribe.saved) {
+        Debug.log(`Adding subscribe for ${subscribe.unicastAddress.value}`, "INFO", "Config");
         commandQueue.push([
           `appkey-add ${subscribe.appKeyIndex}`,
           `sub-add ${subscribe.unicastAddress.value} ${subscribe.address.value} ${subscribe.model.value}`,
@@ -101,6 +105,7 @@ export default async function handler(
         addressQueue.push(subscribe.unicastAddress.value);
       }
       if (identity && identity.saved) {
+        Debug.log(`Adding identity for ${identity.unicastAddress.value}`, "INFO", "Config");
         commandQueue.push([
           `ident-set ${identity.netKeyIndex} 0x0${identity.state}`,
         ]);
@@ -108,6 +113,7 @@ export default async function handler(
         addressQueue.push(identity.unicastAddress.value);
       }
       if (beacon && beacon.saved) {
+        Debug.log(`Adding beacon for ${beacon.unicastAddress.value}`, "INFO", "Config");
         commandQueue.push([
           `beacon-set ${beacon.unicastAddress.value} ${beacon.state}`,
         ]);
@@ -115,7 +121,7 @@ export default async function handler(
         addressQueue.push(beacon.unicastAddress.value);
       }
       if (heartbeat_publish && heartbeat_publish.saved) {
-        
+        Debug.log(`Adding heartbeat publish for ${heartbeat_publish.unicastAddress.value}`, "INFO", "Config");
         // TODO: Check conversions from specifications
 
         commandQueue.push([
@@ -126,7 +132,7 @@ export default async function handler(
       }
       
       if (heartbeat_subscribe && heartbeat_subscribe.saved) {
-
+        Debug.log(`Adding heartbeat subscribe for ${heartbeat_subscribe.unicastAddress.value}`, "INFO", "Config");
         // TODO: Check conversions from specifications
 
         commandQueue.push([
@@ -136,6 +142,7 @@ export default async function handler(
         addressQueue.push(heartbeat_subscribe.unicastAddress.value);
       }
       if (relay && relay.saved) {
+        Debug.log(`Adding relay for ${relay.unicastAddress.value}`, "INFO", "Config");
         commandQueue.push([
           `relay-set ${relay.relay} ${parseInt(relay.count.toString(16))} ${parseInt(relay.step.toString(16))}`,
         ]);
@@ -143,6 +150,7 @@ export default async function handler(
         addressQueue.push(relay.unicastAddress.index);
       }
       if (proxy && proxy.saved) {
+        Debug.log(`Adding proxy for ${proxy.unicastAddress.value}`, "INFO", "Config");
         commandQueue.push([
           `proxy-set ${proxy.proxy}`,
         ]);
@@ -150,6 +158,7 @@ export default async function handler(
         addressQueue.push(proxy.unicastAddress.index);
       }
       if (ttl && ttl.saved) {
+        Debug.log(`Adding ttl for ${ttl.unicastAddress.value}`, "INFO", "Config");
         commandQueue.push([
           `ttl-set ${parseInt(ttl.ttl.toString(16))}`,
         ]);
@@ -170,25 +179,30 @@ export default async function handler(
     let address = request.query["address"];
     let type = request.query["type"];
     if (type == "nodes") {
+      Debug.log("Resetting nodes list", "INFO", "Config");
       global.DATA.CONFIG.NODES.nodes = [];
       resetNodesList();
     }
     if (type == "appkeys") {
+      Debug.log("Resetting appkeys list", "INFO", "Config");
       global.DATA.CONFIG.NODES.appKeys = [];
       resetAppkeysList();
     }
     if (type == "netkeys") {
+      Debug.log("Resetting netkeys list", "INFO", "Config");
       global.DATA.CONFIG.NODES.netKeys = [];
       resetNetkeysList();
     }
     if (address) {
+      Debug.log(`Trying to remove node for the address ${address}`, "INFO", "Config");
       for (let node of global.DATA.CONFIG.NODES.nodes) {
         if (node.configuration.elements[0].unicastAddress === address) {
-          Debug.log("Found node for the remove address " + address, "INFO", "Config");
+          Debug.log(`Found node for the remove address ${address}`, "INFO", "Config");
           configureMesh([address], [["node-reset"]], [["reset status Success"]]);
           break;
         }
       }
+      Debug.log(`Node for the address ${address} not found, cannot remove`, "ERROR", "Config");
     }
     return response.status(200).json({
       status: "success"
@@ -232,11 +246,19 @@ async function configureMesh(addressQueue: string[], commandQueue: string[][], w
   }
   async function addLog(log: string) {
     global.DATA.CONFIG.PROCESS.LOGS.push(log);
+    Debug.log(log, "INFO", "Config");
   }
 
   if (global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS == false){
-    Debug.log("Meshctl terminal session is not running, returning..", "WARNING", "Config");
-    return
+    Debug.log("Meshctl terminal session is not running, starting..", "WARNING", "Config");
+    startProcess("MESHCTL")
+    await delay(500)
+  }
+
+  if (global.DATA.CONTROLLER.POWER == false){
+    Debug.log("Controller power is off, turning on", "WARNING", "Config");
+    global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("power on\n")
+    await delay(500)
   }
 
   const progressMax = 100.0;
@@ -249,7 +271,7 @@ async function configureMesh(addressQueue: string[], commandQueue: string[][], w
   global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = true;
   global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT = [];
 
-  global.DATA.CONFIG.PROCESS.LOGS.push(
+ Debug.log(
     "Trying to connect to the mesh network (3 attempts)"
   );
 

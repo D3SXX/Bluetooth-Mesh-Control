@@ -93,19 +93,29 @@ const ExecuteDialog = ({
   };
 
   const handleStart = async () => {
+    setProcessOutput([]);
+    setProcessError(null);
+    setProgress(0);
+    
     handleNext();
 
-    let response;
+    try {
+      let response;
 
-    if (fetcherData.type === "POST") {
-      response = await fetcherPOST(fetcherData.data)(fetcherData.executeUrl);
-    } else if (fetcherData.type === "PUT") {
-      response = await fetcherPUT(fetcherData.executeUrl);
-    } else if (fetcherData.type === "DELETE") {
-      response = await fetcherDELETE(fetcherData.executeUrl);
+      if (fetcherData.type === "POST") {
+        response = await fetcherPOST(fetcherData.data)(fetcherData.executeUrl);
+      } else if (fetcherData.type === "PUT") {
+        response = await fetcherPUT(fetcherData.executeUrl);
+      } else if (fetcherData.type === "DELETE") {
+        response = await fetcherDELETE(fetcherData.executeUrl);
+      }
+      setProcessStatus(true);
+      console.log(response);
+    } catch (error) {
+      console.error('Error starting process:', error);
+      setProcessError(true);
+      setProcessStatus(false);
     }
-    setProcessStatus(true);
-    console.log(response);
   };
 
   useEffect(() => {
@@ -113,12 +123,22 @@ const ExecuteDialog = ({
 
     if (processStatus) {
       intervalId = setInterval(async () => {
-        const response = await fetcherGET(fetcherData.getDataUrl);
-        console.log(response);
-        setProcessOutput(response.PROCESS.LOGS);
-        setProgress(response.PROCESS.PROGRESS);
-        setProcessStatus(response.PROCESS.STATUS);
-        setProcessError(response.PROCESS.ERROR);
+        try {
+          const response = await fetcherGET(fetcherData.getDataUrl);
+          console.log(response);
+          setProcessOutput(response.PROCESS.LOGS);
+          setProgress(response.PROCESS.PROGRESS);
+          setProcessStatus(response.PROCESS.STATUS);
+          setProcessError(response.PROCESS.ERROR);
+          
+          if (!response.PROCESS.STATUS && response.PROCESS.PROGRESS === 100) {
+            console.log('Process completed with status:', response.PROCESS.ERROR ? 'ERROR' : 'SUCCESS');
+          }
+        } catch (error) {
+          console.error('Error fetching process status:', error);
+          setProcessError(true);
+          setProcessStatus(false);
+        }
       }, 500);
     }
 
@@ -218,7 +238,13 @@ const ExecuteDialog = ({
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>
           {processOutput && processOutput.length > 0 ? (
-            <></>
+            <Button 
+              onClick={handleStart}
+              disabled={processStatus}
+              color={processError ? "error" : "primary"}
+            >
+              {processError ? "Retry" : processStatus ? "Running..." : "Retry"}
+            </Button>
           ) : (
             <Button onClick={handleStart}>Start</Button>
           )}

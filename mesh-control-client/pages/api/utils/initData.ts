@@ -22,6 +22,7 @@ export async function init()  {
         "ENABLE_LOGS": true,
         "ENABLE_CONSOLE_LOGS": true,
         "CAPTURE_PROCESSES": true,
+        "CAPTURE_REQUESTS": true,
         "LOGS_LIMIT": 1000
     }
     },

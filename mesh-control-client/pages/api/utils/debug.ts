@@ -13,12 +13,12 @@ class Debug {
             return
         }
 
-        const timestamp = new Date().toLocaleString();
+        const timestamp = new Date().toLocaleTimeString();
         const colorCode = this.colors[type as keyof typeof this.colors] || this.colors.INFO;
         const resetCode = this.colors.RESET;
         
-        const msg = `${timestamp} [${colorCode}${type}${resetCode}] [${from}] - ${message}`;
-        const plainMsg = `${timestamp} [${type}] [${from}] - ${message}`;
+        const msg = `${timestamp} - [${colorCode}${type}${resetCode}] - [${from}] - ${message}`;
+        const plainMsg = `${timestamp} - [${type}] - [${from}] - ${message}`;
         
         if (global.DATA.SERVER.LOGS_SETTINGS.ENABLE_LOGS){
             if (global.DATA.SERVER.LOGS.length >= global.DATA.SERVER.LOGS_SETTINGS.LOGS_LIMIT){

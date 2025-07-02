@@ -3,6 +3,8 @@ import {delay} from "./utils/common"
 import { updateConfig } from "./utils/updateData";
 import { startProcess } from "./utils/process";
 import Debug from "./utils/debug";
+import { getUuidInfo, isValidRawUuid, isValidStandardUuid, rawUuidToStandard, standardUuidToRaw } from "./utils/uuid";
+import { debug } from "console";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -38,19 +40,23 @@ export default async function handler(request: NextApiRequest, response: NextApi
       global.DATA.PROVISION.UNPROVISIONED_NODES = {}
       global.DATA.PROVISION.SCAN_ACTIVE = discovery
       if (discovery){
+        Debug.log("Starting discovery", "INFO", "Provision");
         if (global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS == false){
+          Debug.log("Meshctl process not running, starting for discovery", "WARNING", "Provision");
           startProcess("MESHCTL")
           await delay(500)
         }
 
         if (global.DATA.CONTROLLER.POWER == false){
+          Debug.log("Controller power is off, turning on", "WARNING", "Provision");
           global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("power on\n")
           await delay(500)
         }
         global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned on\n")
         global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = true
-      }
+      }  
       else{
+        Debug.log("Stopping discovery", "INFO", "Provision");
         global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")
         global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = false
       }
@@ -60,13 +66,11 @@ export default async function handler(request: NextApiRequest, response: NextApi
       Debug.log(`Trying to provision node ${provision_node}`, "INFO", "Provision");
       provision(provision_node)
       
-      
       return response.status(201).json({
                 "status": "success",
                 "message": `Started provisioning for node ${provision_node}`
             });
     }
-
 
   }
 }
@@ -126,7 +130,7 @@ async function update_provision(){
 
 async function provision(node: string){
   if (global.DATA.PROVISION.PROCESS.STATUS){
-    Debug.log("Already provisioning, returning..", "WARNING", "Provision");
+    Debug.log("Already provisioning, returning..", "ERROR", "Provision");
     return
   }
   global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")
@@ -141,7 +145,7 @@ async function provision(node: string){
 
   await delay(500)
   
-  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write(`provision ${node}\n`)
+  global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write(`provision ${standardUuidToRaw(node)}\n`)
 
   update_provision()
 
@@ -159,6 +163,13 @@ function scan_unprovisioned(){
         UUID = UUID = data[data.length-1]
         data = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT[i].split(" ")
         OOB = data[data.length-1]
+        if (isValidRawUuid(UUID)){
+          UUID = rawUuidToStandard(UUID)
+        }
+        else{
+          Debug.log("Invalid UUID for node, skipping..", "WARNING", "Provision");
+          continue
+        }
         global.DATA.PROVISION.UNPROVISIONED_NODES[UUID] = {
                 "name": UUID,
                 "OOB": OOB,
@@ -184,7 +195,10 @@ function scan_unprovisioned(){
           }
           
         }
-        if (!isNaN(UUID)){
+        if (isValidRawUuid(UUID)){
+          UUID = rawUuidToStandard(UUID)
+        }
+        else{
           Debug.log("Invalid UUID for node, skipping..", "WARNING", "Provision");
           continue
         }
