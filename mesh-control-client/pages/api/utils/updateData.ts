@@ -9,18 +9,21 @@ export async function updateController(){
     let defaultController: string = "", defaultControllerIndex, defaultControllerPower: boolean = false, defaultControllerDiscovering: boolean = false
     const controllerData = await runSeveralCommands([`select ${global.DATA.CONTROLLER.DEFAULT}`, "list"])
     const controllerArr = controllerData.split("\n")
-    
+    console.log(controllerArr)
     // Collect controllers data
     
+
+    let controllerIndex = -1;
     for (let i = 0; i < controllerArr.length; i++){
-        if (controllerArr[i].includes("Controller")){
+        if (controllerArr[i].includes("Controller") && !controllerArr[i-1].includes("select")){
+            // Second check should prevent controller duplicates
             const obj = controllerArr[i].split(" ")
-            
+            controllerIndex++;
             // More detailed data
 
             const dataArr = (await runSeveralCommands([`select ${global.DATA.CONTROLLER.DEFAULT}`, `show ${obj[1]}`])).split("\n")
             
-            let controllerObj: ControllerDevice = {"UUID":[], "Address":obj[1], "Name":"", "Alias":"", "Class":"", "Powered":"", "Discoverable":"", "Modalias":"", "Discovering":"", "Default":false}
+            let controllerObj: ControllerDevice = {"UUID":[], "Address":obj[1], "Name":"", "Alias":"", "Class":"", "Powered":"", "Discoverable":"", "Modalias":"", "Discovering":""}
             
             for (let k = 0; k<dataArr.length; k++){
 
@@ -39,13 +42,10 @@ export async function updateController(){
             if (obj[3]){
                 if (global.DATA.CONTROLLER.DEFAULT == ""){
                     defaultController = obj[1]
-                    defaultControllerIndex = i-3
+                    defaultControllerIndex = controllerIndex
                     defaultControllerPower = controllerObj["Powered"] === "yes" ? true : false
                     defaultControllerDiscovering = controllerObj["Discovering"] === "yes" ? true : false
             }
-            }
-            else{
-                controllerObj["Default"] = false
             }
             
             controllers.push(controllerObj)

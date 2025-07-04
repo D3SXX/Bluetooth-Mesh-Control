@@ -39,7 +39,6 @@ export interface ControllerDevice {
     Discoverable: string;
     Modalias: string;
     Discovering: string;
-    Default: boolean;
 }
 
 interface ControllerData {
