@@ -33,6 +33,9 @@ const ScanElement = () => {
   const [unprovisionedNodes, setUnprovisionedNodes] = useState<
     UnprovisionedNode[]
   >([]);
+  const [provisioningNodes, setProvisioningNodes] = useState<
+    UnprovisionedNode[]
+  >([]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -76,6 +79,26 @@ const ScanElement = () => {
     }
   };
 
+  const handleStartProvisioning = (node: UnprovisionedNode) => {
+    setProvisioningNodes(prev => {
+      if (!prev.find(n => n.UUID === node.UUID)) {
+        return [...prev, node];
+      }
+      return prev;
+    });
+  };
+
+  const handleProvisioningComplete = (nodeUUID: string) => {
+    setProvisioningNodes(prev => prev.filter(n => n.UUID !== nodeUUID));
+  };
+
+  const allNodes = [...unprovisionedNodes];
+  provisioningNodes.forEach(provNode => {
+    if (!allNodes.find(node => node.UUID === provNode.UUID)) {
+      allNodes.push(provNode);
+    }
+  });
+
   return (
     <Box sx={{ width: {xs: "100%", md: "60%"}, borderRadius: "10px", border: {xs: "none", md: "1px solid lightgray"},overflow: "hidden" }}>
       {scanStatus ? <LinearProgress sx={{ height: "6px" }} /> : <></>}
@@ -115,7 +138,7 @@ const ScanElement = () => {
       <Box>
         {scanStatus ? <Box sx={{ marginLeft: "8px", marginTop: "8px", marginBottom: "8px"}}>Available Nodes</Box> : <></>}
         <Stack spacing={2}>
-          {unprovisionedNodes.map((node) => (
+          {allNodes.map((node) => (
             <ExecuteDialog
               sx={{ color: "black", border: "0px", height: "50px", textAlign: "left", justifyContent: "flex-start"}}
               data={node}
@@ -135,6 +158,8 @@ const ScanElement = () => {
                 getDataUrl: "/provision?query=PROCESS",
                 data: { provision_node: node.UUID },
               }}
+              onStartProvisioning={() => handleStartProvisioning(node)}
+              onProvisioningComplete={() => handleProvisioningComplete(node.UUID)}
             />
           ))}
         </Stack>

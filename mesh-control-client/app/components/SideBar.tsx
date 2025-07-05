@@ -1,13 +1,12 @@
 "use client"
 import React from 'react';
 
-import { styled, useTheme, Theme, CSSObject, createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -79,8 +78,6 @@ const openedMixin = (theme: Theme): CSSObject => ({
     ...theme.mixins.toolbar,
   }));
 
-
-
   const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme }) => ({
       width: drawerWidth,
@@ -129,18 +126,8 @@ const openedMixin = (theme: Theme): CSSObject => ({
     ],
   }));
 
-  const theme = createTheme({
-    palette: {
-      primary: {
-        light: '#0082FC',
-        main: '#0082FC',
-        dark: '#0082FC',
-        contrastText: '#fff',
-      }
-    },
-  });
-
 const SideBar = ({children}: {children: React.ReactNode}) => {
+    const theme = useTheme();
 
     const [open, setOpen] = React.useState(false);
     const [openLogs, setOpenLogs] = React.useState(false);
@@ -220,11 +207,8 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
 
     const pathname = usePathname();
 
-
     return (
-        <ThemeProvider theme={theme}>
         <Box sx={{ display: 'flex' }}>
-          <CssBaseline />
           <AppBar position="fixed" open={open}>
             <Toolbar>
               <IconButton
@@ -373,7 +357,6 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
             <DrawerHeader />
                 {children}
           </Box>
-        </Box>
         <Dialog fullScreen open={openLogs} onClose={() => setOpenLogs(false)}>
           <DialogTitle>Logs ({logsData?.LOGS.length} items)</DialogTitle>
           <IconButton
@@ -401,7 +384,7 @@ const SideBar = ({children}: {children: React.ReactNode}) => {
             </List>
           </DialogContent>
         </Dialog>
-        </ThemeProvider>
+        </Box>
       );
 };
 

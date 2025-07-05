@@ -64,6 +64,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     }
     if (provision_node != undefined){
       Debug.log(`Trying to provision node ${provision_node}`, "INFO", "Provision");
+      //Debug.fakeProcess("provision", failback_scan_status)
       provision(provision_node)
       
       return response.status(201).json({
@@ -170,7 +171,7 @@ function scan_unprovisioned(){
           Debug.log("Invalid UUID for node, skipping..", "WARNING", "Provision");
           continue
         }
-        global.DATA.PROVISION.UNPROVISIONED_NODES[UUID] = {
+        global.DATA.PROVISION.UNPROVISIONED_NODES[UUID as keyof typeof global.DATA.PROVISION.UNPROVISIONED_NODES] = {
                 "name": UUID,
                 "OOB": OOB,
                 "address": address
@@ -202,7 +203,7 @@ function scan_unprovisioned(){
           Debug.log("Invalid UUID for node, skipping..", "WARNING", "Provision");
           continue
         }
-        global.DATA.PROVISION.UNPROVISIONED_NODES[UUID] = {
+        global.DATA.PROVISION.UNPROVISIONED_NODES[UUID as keyof typeof global.DATA.PROVISION.UNPROVISIONED_NODES] = {
                 "name": name,
                 "OOB": OOB,
                 "address": address

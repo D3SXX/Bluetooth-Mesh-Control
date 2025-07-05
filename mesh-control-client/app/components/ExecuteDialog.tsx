@@ -42,16 +42,18 @@ const ExecuteDialog = ({
   buttonTitle,
   dialogTitle,
   text,
-  key,
   fetcherData,
+  onStartProvisioning,
+  onProvisioningComplete,
 }: {
   sx: any;
   data?: any;
   buttonTitle: React.ReactNode;
   dialogTitle: string;
   text: React.ReactNode[];
-  key: string;
   fetcherData: fetcherData;
+  onStartProvisioning?: () => void;
+  onProvisioningComplete?: () => void;
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -90,6 +92,9 @@ const ExecuteDialog = ({
 
   const handleClose = () => {
     setOpen(false);
+    if (onProvisioningComplete) {
+      onProvisioningComplete();
+    }
   };
 
   const handleStart = async () => {
@@ -98,6 +103,10 @@ const ExecuteDialog = ({
     setProgress(0);
     
     handleNext();
+
+    if (onStartProvisioning) {
+      onStartProvisioning();
+    }
 
     try {
       let response;
@@ -159,7 +168,7 @@ const ExecuteDialog = ({
   const steps = ["Confirm", "Execute"];
 
   return (
-    <React.Fragment key={key}>
+    <React.Fragment>
       <Button variant="outlined" onClick={handleClickOpen} sx={sx}>
         {buttonTitle}
       </Button>
@@ -189,6 +198,7 @@ const ExecuteDialog = ({
             })}
           </Stepper>
           <DialogContentText
+            component="div"
             sx={{
               border: "1px solid lightgray",
               borderRadius: "10px",
@@ -237,13 +247,13 @@ const ExecuteDialog = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>
-          {processOutput && processOutput.length > 0 ? (
+          {processOutput && processOutput.length > 0  ? (
             <Button 
               onClick={handleStart}
               disabled={processStatus}
               color={processError ? "error" : "primary"}
             >
-              {processError ? "Retry" : processStatus ? "Running..." : "Retry"}
+              {processError ? "Retry" : processStatus ? "Running..." : "Do again"}
             </Button>
           ) : (
             <Button onClick={handleStart}>Start</Button>

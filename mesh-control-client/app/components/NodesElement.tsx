@@ -605,13 +605,11 @@ const NodesElement = () => {
                         <Typography variant="body2" fontWeight="bold">
                           {key}
                         </Typography>
-                        <Typography variant="body2">
                           {value ? (
                             <p className="text-green-500">Available</p>
                           ) : (
                             <p className="text-red-500">Not Available</p>
                           )}
-                        </Typography>
                       </Stack>
                     </ListItemButton>
                   </React.Fragment>
@@ -884,14 +882,11 @@ const NodesElement = () => {
                 <DialogTitle>Bind</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       Application Keys may be used within a single network only.
                       As such, there is an association between an Application
                       Key and a Network Key. This association is known as a Key
                       Binding. (From &quot;Bluetooth Mesh Glossary of
                       Terms&quot;)
-                    </p>
-                    <p></p>
                   </DialogContentText>
                   <Stack
                     direction="column"
@@ -1089,7 +1084,6 @@ const NodesElement = () => {
                 <DialogTitle>Publish</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       Messages sent and received across the mesh network conform
                       to a publish-subscribe model of communication. Sending
                       messages from one node to a set of one or more other nodes
@@ -1100,7 +1094,6 @@ const NodesElement = () => {
                       address to which messages are published is known as the
                       Publish Address. (From &quot;Bluetooth Mesh Glossary of
                       Terms&quot;)
-                    </p>
                   </DialogContentText>
                   <Box sx={{ padding: "10px" }}>
                     <Stack direction="column" spacing={1}>
@@ -1659,13 +1652,11 @@ const NodesElement = () => {
                 <DialogTitle>Subscribe</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       Messages sent and received across the mesh network conform
                       to a publish-subscribe model of communication. Configuring
                       a node to receive certain messages is known as
                       Subscribing. (From &quot;Bluetooth Mesh Glossary of
                       Terms&quot;)
-                    </p>
                   </DialogContentText>
                   <Box sx={{ padding: "10px" }}>
                     <Stack direction="column" spacing={1}>
@@ -1847,12 +1838,6 @@ const NodesElement = () => {
                             id="standard-error"
                             variant="standard"
                             sx={{ width: "100%" }}
-                            defaultValue={
-                              setupData[
-                                node.data.configuration.elements[0]
-                                  .unicastAddress
-                              ]?.subscribe?.address?.value
-                            }
                             value={
                               setupData[
                                 node.data.configuration.elements[0]
@@ -1993,7 +1978,6 @@ const NodesElement = () => {
                 <DialogTitle>Identity</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       Node Identity is the name of a field which is included in
                       the Service Data field within advertising packets
                       broadcast by Bluetooth mesh proxy nodes. Its value is
@@ -2001,7 +1985,6 @@ const NodesElement = () => {
                       Address and a network identifier, such as the network ID
                       for one of the subnets it is enabled on. (From
                       &quot;Bluetooth Mesh Glossary of Terms&quot;)
-                    </p>
                   </DialogContentText>
                   <Box sx={{ padding: "10px" }}>
                     <Stack direction="column" spacing={1}>
@@ -2197,11 +2180,9 @@ const NodesElement = () => {
                 <DialogTitle>Beacon</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       The Secure Network Beacon state determines if a node is
                       periodically broadcasting Secure Network beacon messages
                       (From &quot;Mesh Profile&quot;)
-                    </p>
                   </DialogContentText>
                   <Box sx={{ padding: "10px" }}>
                     <Stack direction="column" spacing={1}>
@@ -2357,7 +2338,6 @@ const NodesElement = () => {
                 <DialogTitle>Heartbeat Publish</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       Nodes can be configured to send a message known as a
                       Heartbeat message, periodically. The purpose of the
                       Heartbeat message is to indicate to other nodes that the
@@ -2366,7 +2346,6 @@ const NodesElement = () => {
                       terms of the number of hops needed to deliver the
                       Heartbeat message.(From &quot;Bluetooth Mesh Glossary of
                       Terms&quot;)
-                    </p>
                   </DialogContentText>
                   <Box sx={{ padding: "10px" }}>
                     <Stack direction="column" spacing={1}>
@@ -2912,7 +2891,6 @@ const NodesElement = () => {
                 <DialogTitle>Heartbeat Subscribe</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       Nodes can be configured to send a message known as a
                       Heartbeat message, periodically. The purpose of the
                       Heartbeat message is to indicate to other nodes that the
@@ -2921,7 +2899,6 @@ const NodesElement = () => {
                       terms of the number of hops needed to deliver the
                       Heartbeat message. (From &quot;Bluetooth Mesh Glossary of
                       Terms&quot;)
-                    </p>
                   </DialogContentText>
                   <Box sx={{ padding: "10px" }}>
                     <Stack direction="column" spacing={1}>
@@ -3344,14 +3321,12 @@ const NodesElement = () => {
                 <DialogTitle>Relay</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       The Relay Retransmit state is a composite state that
                       controls parameters of retransmission of the Network PDU
                       relayed by the node. The state includes a Relay Retransmit
                       Count and a Relay Retransmit Interval Steps states. There
                       is a single instance of this state for the node. (From
                       &quot;Mesh Profile 1.0.1&quot;)
-                    </p>
                   </DialogContentText>
                   <Box sx={{ padding: "10px" }}>
                     <Stack direction="column" spacing={1}>
@@ -3593,12 +3568,10 @@ const NodesElement = () => {
                 <DialogTitle>Proxy</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       The GATT Proxy state indicates if the Proxy feature (see
                       Section 3.4.6.2) is supported. If the feature is
                       supported, the state indicates and controls the Proxy
                       feature. (From &quot;Mesh Profile 1.0.1&quot;)
-                    </p>
                   </DialogContentText>
                   <Box sx={{ padding: "10px" }}>
                     <Stack direction="column" spacing={1}>
@@ -3765,12 +3738,10 @@ const NodesElement = () => {
                 <DialogTitle>TTL</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    <p>
                       The Default TTL state determines the TTL value used when
                       sending messages. The Default TTL is applied by the access
                       layer unless the application specifies a TTL. (From
                       &quot;Mesh Profile 1.0.1&quot;)
-                    </p>
                   </DialogContentText>
                   <Box sx={{ padding: "10px" }}>
                     <Stack direction="column" spacing={1}>

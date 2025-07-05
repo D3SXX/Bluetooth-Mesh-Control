@@ -318,9 +318,9 @@ const KeysElement = () => {
                   }}
                 >
                   <Grid size={6}>
-                    <Typography>{key.ASSIGNED_NODES_UNICAST_ADDRESS?.map((address) => (
+                    {key.ASSIGNED_NODES_UNICAST_ADDRESS?.map((address) => (
                       <Typography key={address}>{address}</Typography>
-                    ))}</Typography>
+                    ))}
                   </Grid>
                   <Grid size={6}>
                     <Typography>{key.index}</Typography>

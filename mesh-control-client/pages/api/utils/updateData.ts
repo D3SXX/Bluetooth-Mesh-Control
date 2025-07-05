@@ -9,9 +9,8 @@ export async function updateController(){
     let defaultController: string = "", defaultControllerIndex, defaultControllerPower: boolean = false, defaultControllerDiscovering: boolean = false
     const controllerData = await runSeveralCommands([`select ${global.DATA.CONTROLLER.DEFAULT}`, "list"])
     const controllerArr = controllerData.split("\n")
-    console.log(controllerArr)
-    // Collect controllers data
-    
+
+    // Collect controllers data    
 
     let controllerIndex = -1;
     for (let i = 0; i < controllerArr.length; i++){
