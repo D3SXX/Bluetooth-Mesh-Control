@@ -75,7 +75,7 @@ export default function Home() {
               Available Network Keys: {data?.keys.NETKEYS.length}
             </Button>
             <Button size="small" variant="outlined" color="secondary">
-              Meshctl version: {data?.server.MESHCTL}
+              Meshctl version: {data?.server.BLUEZ.MESHCTL.VERSION}
             </Button>
             <Button size="small" variant="outlined" color="secondary">
               Mesh Control version: {data?.server.VERSION}

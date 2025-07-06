@@ -12,7 +12,24 @@ export interface ServerData {
     VERSION: string;
     NAME: string;
     ALLOW_PROCESSES: boolean;
-    MESHCTL: string;
+    BLUEZ: {
+        MESHCTL: {
+            VERSION: string;
+            IS_NEWER_VERSION: boolean;
+            IS_UNKNOWN_VERSION: boolean;
+        },
+        MESH_CFGCLIENT: {
+            VERSION: string;
+            IS_NEWER_VERSION: boolean;
+            IS_UNKNOWN_VERSION: boolean;
+        }
+        LATEST_VERSION: {
+            VERSION: string;
+            CHANGELOG: string;
+            RELEASE_DATE: string;
+            RELEASE_URL: string;
+        };
+    };
     ERROR: {
         STATUS: boolean;
         MESSAGE: string;
@@ -422,4 +439,4 @@ declare global {
     var DATA: GlobalData;
 }
 
-export {};
+export { };

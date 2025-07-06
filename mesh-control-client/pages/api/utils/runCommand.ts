@@ -1,16 +1,16 @@
 import { spawn, spawnSync } from "child_process";
 import { delay } from "./common";
 
-export function runCommand(commandArr: string[]){
+export function runCommand(commandArr: string[], processName: string = "meshctl"){
 
-  const process = spawnSync('meshctl', commandArr);
+  const process = spawnSync(processName, commandArr);
 
   return process.stdout.toString()
 };
 
-export async function runSeveralCommands(commandArr: string[]): Promise<string> {
+export async function runSeveralCommands(commandArr: string[], processName: string = "meshctl"): Promise<string> {
   return new Promise((resolve, reject) => {
-    const process = spawn('meshctl');
+    const process = spawn(processName);
     let output = '';
     let errorOutput = '';
 

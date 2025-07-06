@@ -2,16 +2,33 @@ import Debug from "./debug";
 import { getSigData } from "./readProvdb"
 
 export async function init()  {
-
-    const {companyIdentifiersData, mmdlModelUuidsData, meshModelUuidsData} = await getSigData()
     
+    const {companyIdentifiersData, mmdlModelUuidsData, meshModelUuidsData} = await getSigData()
+     
     return {
     SERVER: {
     "STATUS": false,
     "VERSION": "1.0 (R.C. 1)",
     "NAME": "MeshControl",
     "ALLOW_PROCESSES":true,
-    "MESHCTL": "",
+    "BLUEZ": {
+        "MESHCTL": {
+        "VERSION": "Unknown",
+        "IS_NEWER_VERSION": false,
+        "IS_UNKNOWN_VERSION": false,
+        },
+        "MESH_CFGCLIENT": {
+            "VERSION": "Unknown",
+            "IS_NEWER_VERSION": false,
+            "IS_UNKNOWN_VERSION": false,
+        },
+        "LATEST_VERSION": {
+            "VERSION": "Unknown",
+            "CHANGELOG": "",
+            "RELEASE_DATE": "",
+            "RELEASE_URL": ""
+        }
+    },
     "ERROR":{"STATUS":false,
              "MESSAGE": "",
              "TYPE": "",

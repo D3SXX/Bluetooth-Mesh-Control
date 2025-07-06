@@ -95,9 +95,46 @@ export async function updateConfig() {
 
   // Get version from meshctl
 
-  const versionData = runCommand(["version"]);
-  const versionArr = versionData.split("\n");
+  const meshctlVersion = runCommand(["--version"], "meshctl");
+  const meshctlVersionArr = meshctlVersion.split("\n");
 
-  global.DATA.SERVER.MESHCTL = versionArr[1].split(" ")[1];
+  // Get version from mesh-cfgclient
+  
+  const meshCfgClientVersion = runCommand(["--version"], "mesh-cfgclient");
+  const meshCfgClientVersionArr = meshCfgClientVersion.split("\n");
+
+  global.DATA.SERVER.BLUEZ.MESHCTL.VERSION = meshctlVersionArr[0].split(" ")[1]
+  global.DATA.SERVER.BLUEZ.MESH_CFGCLIENT.VERSION = meshCfgClientVersionArr[0].split(" ")[1]
+
+  // Get the latest release from github
+
+  if (global.DATA.SERVER.BLUEZ.LATEST_VERSION.VERSION === "Unknown"){
+    const latestRelease = await fetch("https://api.github.com/repos/bluez/bluez/releases/latest")
+    const meshctlRelease = await fetch(`https://api.github.com/repos/bluez/bluez/releases/tags/${global.DATA.SERVER.BLUEZ.MESHCTL.VERSION}`)
+    const meshCfgClientRelease = await fetch(`https://api.github.com/repos/bluez/bluez/releases/tags/${global.DATA.SERVER.BLUEZ.MESH_CFGCLIENT.VERSION}`)
+    const data = await latestRelease.json()
+    const meshctlData = await meshctlRelease.json()
+    const meshCfgClientData = await meshCfgClientRelease.json()
+    if (meshctlData.message === "Not Found"){
+      global.DATA.SERVER.BLUEZ.MESHCTL.IS_UNKNOWN_VERSION = true
+    }
+    else{
+      global.DATA.SERVER.BLUEZ.MESHCTL.IS_UNKNOWN_VERSION = false
+    }
+
+    if (meshCfgClientData.message === "Not Found"){
+      global.DATA.SERVER.BLUEZ.MESH_CFGCLIENT.IS_UNKNOWN_VERSION = true
+    }
+    else{
+      global.DATA.SERVER.BLUEZ.MESH_CFGCLIENT.IS_UNKNOWN_VERSION = false
+    }
+
+    global.DATA.SERVER.BLUEZ.LATEST_VERSION.VERSION = data.tag_name || data.name
+    global.DATA.SERVER.BLUEZ.LATEST_VERSION.CHANGELOG = data.body
+    global.DATA.SERVER.BLUEZ.LATEST_VERSION.RELEASE_DATE = data.published_at
+    global.DATA.SERVER.BLUEZ.LATEST_VERSION.RELEASE_URL = data.html_url
+    global.DATA.SERVER.BLUEZ.MESHCTL.IS_NEWER_VERSION = parseFloat(global.DATA.SERVER.BLUEZ.MESHCTL.VERSION) < parseFloat(global.DATA.SERVER.BLUEZ.LATEST_VERSION.VERSION)
+    global.DATA.SERVER.BLUEZ.MESH_CFGCLIENT.IS_NEWER_VERSION = parseFloat(global.DATA.SERVER.BLUEZ.MESH_CFGCLIENT.VERSION) < parseFloat(global.DATA.SERVER.BLUEZ.LATEST_VERSION.VERSION)
+}
 
 }
