@@ -3,9 +3,10 @@ import { delay } from "./common";
 class Debug {
     // ANSI color codes
     private static colors = {
-        INFO: '\x1b[32m',    // Green
+        INFO: '\x1b[38;5;2m',    // Dark green
+        SUCCESS: '\x1b[32m', // Green
         ERROR: '\x1b[31m',   // Red  
-        WARNING: '\x1b[33m', // Yellow
+        WARNING: '\x1b[33m', // Yellow 
         RESET: '\x1b[0m'     // Default text color
     };
 
@@ -39,6 +40,9 @@ class Debug {
                 break;
             case "WARNING":
                 console.warn(msg);
+                break;
+            case "SUCCESS":
+                console.log(msg);
                 break;
             default:
                 console.log(msg);

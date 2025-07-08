@@ -7,16 +7,20 @@ import {
   AccordionSummary,
   Box,
   Button,
+  Chip,
   Dialog,
   DialogContent,
   DialogTitle,
+  FormControl,
   FormControlLabel,
   FormGroup,
+  InputLabel,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
   MenuItem,
+  OutlinedInput,
   Select,
   Slider,
   Stack,
@@ -117,6 +121,14 @@ export default function Home() {
             >
               Logs: {data?.server.LOGS_SETTINGS.ENABLE_LOGS ? "Enabled" : "Disabled"}
             </Button>
+            <Button
+              variant="outlined"
+              color="info"
+              sx={{ width: "250px", height: "50px" }}
+              onClick={() => handleOpen("toast-notifications")}
+            >
+              Toast notifications
+            </Button>
           </Stack>
         </Box>
       </Box>
@@ -140,6 +152,9 @@ export default function Home() {
             </Button>
             <Button size="small" variant="outlined" color="error" onClick={() => handleOpen("reset-netkeys-list")}>
               Reset Network Keys list
+            </Button>
+            <Button size="small" variant="outlined" color="error" onClick={() => handleOpen("init")}>
+              Re-initialize data
             </Button>
           </Stack>
         </Box>
@@ -305,6 +320,21 @@ export default function Home() {
         </DialogContent>
       </Dialog>
       <Dialog
+        open={open["init"]}
+        onClose={() => handleClose("init")}
+        fullWidth
+      >
+        <DialogTitle>Re-initialize data</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>Warning: This action will stop all processes and re-initialize the data.</Typography>
+          <Button sx={{ width: "100%" }} variant="outlined" color="error" onClick={() => {
+            fetcherPOST({
+              "start_init": true
+            })("/config")
+          }}>Re-initialize data</Button>
+        </DialogContent>
+      </Dialog>
+      <Dialog
         open={open["logs"]}
         onClose={() => handleClose("logs")}
         fullWidth
@@ -359,6 +389,73 @@ export default function Home() {
             })("/server")
           }} variant="standard" /> 
           </Stack>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={open["toast-notifications"]}
+        onClose={() => handleClose("toast-notifications")}
+        fullWidth
+      >
+        <DialogTitle>Toast notifications</DialogTitle>
+        <DialogContent>
+          <FormGroup>
+            <FormControlLabel
+              control={<Switch checked={data?.server.TOAST_NOTIFICATIONS.ENABLE_TOASTS} />}
+              label="Enable toast notifications"
+              onClick={() => {
+                fetcherPOST({
+                  "TOAST_NOTIFICATIONS":{
+                    ...data?.server.TOAST_NOTIFICATIONS,
+                    "ENABLE_TOASTS":!data?.server.TOAST_NOTIFICATIONS.ENABLE_TOASTS
+                  }
+                })("/server")
+              }}
+            />
+          </FormGroup>
+          <FormControl sx={{ m: 1, width: 300 }}>
+        <InputLabel id="select-toasts-data-label">Show data</InputLabel>
+        <Select
+          labelId="select-toasts-data-label"
+          id="select-toasts-data"
+          multiple
+          value={Object.keys(data?.server.TOAST_NOTIFICATIONS.SHOW_DATA || {}).filter((type) => data?.server.TOAST_NOTIFICATIONS.SHOW_DATA[type])}
+          onChange={(e) => {
+            fetcherPOST({
+              "TOAST_NOTIFICATIONS":{
+                ...data?.server.TOAST_NOTIFICATIONS,
+                "SHOW_DATA":{
+                  ...data?.server.TOAST_NOTIFICATIONS.SHOW_DATA,
+                  [e.target.value as keyof typeof data?.server.TOAST_NOTIFICATIONS.SHOW_DATA]:!data?.server.TOAST_NOTIFICATIONS.SHOW_DATA[e.target.value as keyof typeof data?.server.TOAST_NOTIFICATIONS.SHOW_DATA]
+                }
+              }
+            })("/server")
+          }}
+          input={<OutlinedInput id="select-toasts-data" label="Show data" />}
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((value) => (
+                <Chip key={value} label={value} />
+              ))}
+            </Box>
+          )}
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: 48 * 4.5 + 8,
+              },
+            },
+          }}
+        >
+          {Object.keys(data?.server.TOAST_NOTIFICATIONS.SHOW_DATA || {}).map((type) => (
+            <MenuItem
+              key={type}
+              value={type}
+            >
+              {type}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
         </DialogContent>
       </Dialog>
     </main>

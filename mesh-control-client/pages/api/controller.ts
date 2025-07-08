@@ -27,12 +27,12 @@ export default async function handler(request: NextApiRequest, response: NextApi
     
     const { defaultAdapter } = request.body;
     if (defaultAdapter != undefined){
-      Debug.log(`Updated default adapter to ${global.DATA.CONTROLLER.LIST[defaultAdapter].Address} (${global.DATA.CONTROLLER.LIST[defaultAdapter].Name})`, "INFO", "Controller");
       global.DATA.CONTROLLER.DEFAULT_INDEX = defaultAdapter
       global.DATA.CONTROLLER.DEFAULT = global.DATA.CONTROLLER.LIST[defaultAdapter].Address
       global.DATA.CONTROLLER.POWER = global.DATA.CONTROLLER.LIST[defaultAdapter].Powered
       global.DATA.PROVISION.SCAN_ACTIVE = global.DATA.CONTROLLER.LIST[defaultAdapter].Discovering === "yes" ? true : false
       updateProcessConfig("MESHCTL")
+      Debug.log(`Updated default adapter to ${global.DATA.CONTROLLER.LIST[defaultAdapter].Address} (${global.DATA.CONTROLLER.LIST[defaultAdapter].Name})`, "SUCCESS", "Controller");
       }
 
     return response.status(200).json({ "MESSAGE":"provision control backend api" });

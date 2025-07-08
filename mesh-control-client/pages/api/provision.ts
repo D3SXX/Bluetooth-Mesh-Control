@@ -54,11 +54,13 @@ export default async function handler(request: NextApiRequest, response: NextApi
         }
         global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned on\n")
         global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = true
+        Debug.log("Started discovery", "SUCCESS", "Provision");
       }  
-      else{
+      else if (discovery == false){
         Debug.log("Stopping discovery", "INFO", "Provision");
         global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")
         global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = false
+        Debug.log("Stopped discovery", "SUCCESS", "Provision");
       }
       return response.status(200).json({"status": "success", "message": `Discovery status is set to ${discovery}` });
     }
@@ -81,7 +83,7 @@ function stop_provision(error = false){
       Debug.log("Stopping provision process with error!", "ERROR", "Provision");
     }
     else {
-      Debug.log("Stopping provision process!", "INFO", "Provision");
+      Debug.log("Stopping provision process", "INFO", "Provision");
     }
     global.DATA.TERMINAL_SESSIONS.MESHCTL.LOCK = false
   global.DATA.PROVISION.PROCESS.STATUS = false
@@ -121,7 +123,7 @@ async function update_provision(){
       }
     
   }
-  Debug.log("Provisioned node!", "INFO", "Provision");
+  Debug.log("Provisioned node!", "SUCCESS", "Provision");
   await delay(500)
   global.DATA.PROVISION.PROCESS.LOGS = global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT
   global.DATA.PROVISION.PROCESS.LOGS.push("Succesfully provisioned node!")
@@ -131,7 +133,7 @@ async function update_provision(){
 
 async function provision(node: string){
   if (global.DATA.PROVISION.PROCESS.STATUS){
-    Debug.log("Already provisioning, returning..", "ERROR", "Provision");
+    Debug.log("Already provisioning, returning..", "WARNING", "Provision");
     return
   }
   global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin?.write("discover-unprovisioned off\n")
@@ -208,7 +210,7 @@ function scan_unprovisioned(){
                 "OOB": OOB,
                 "address": address
     }
-        Debug.log(`Added node ${name} (${address}) to nodes list!`, "INFO", "Provision");
+        Debug.log(`Added node ${name} (${address}) to undiscovered nodes list`, "INFO", "Provision");
         global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT = []
       }
     }

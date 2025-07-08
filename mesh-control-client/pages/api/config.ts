@@ -5,7 +5,7 @@ import { updateController, updateConfig } from "./utils/updateData";
 
 import {delay} from "./utils/common"
 import { SetupData } from "../../interfaces/global";
-import { startProcess, updateProcessConfig } from "./utils/process";
+import { startProcess, stopProcess, updateProcessConfig } from "./utils/process";
 import { removeNode, resetNodesList, resetAppkeysList, resetNetkeysList } from "./utils/editProvdb";
 import Debug from "./utils/debug";
 
@@ -19,15 +19,6 @@ export default async function handler(
 
 
   if (request.method === "GET") {
-
-    if (global.DATA == undefined){
-      global.DATA = await init();
-      updateConfig()
-      updateController()
-      return response.status(200).json({
-        "MESSAGE": "Initialized data"
-      });
-    }
 
     let query = request.query["query"];
     
@@ -50,14 +41,27 @@ export default async function handler(
   }
 
   if (request.method === "POST") {
-    const { setupData, security }: { setupData: SetupData["setupData"], security: number } = request.body;
+    const { setupData, security, start_init }: { setupData: SetupData["setupData"], security: number, start_init: boolean } = request.body;
+
+    if (start_init) {
+      if (global.DATA && global.DATA.TERMINAL_SESSIONS && global.DATA.TERMINAL_SESSIONS.MESHCTL && global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS){
+        stopProcess("MESHCTL")
+      }
+      global.DATA = await init()
+      Debug.log("Initialized data", "SUCCESS", "Config");
+      updateConfig()
+      updateController()
+      return response.status(200).json({
+        "MESSAGE": `Config is ready`,
+      });
+    }
 
     if (security !== undefined) {
-      Debug.log(`Updating security level to ${security}`, "INFO", "Config");
       global.DATA.CONFIG.SECURITY_LEVEL = security
       updateProcessConfig("MESHCTL")
+      Debug.log(`Updated security level to ${global.DATA.CONFIG.SECURITY_LEVEL}`, "SUCCESS", "Config");
       return response.status(200).json({
-        "MESSAGE": `Security level updated to ${security}`,
+        "MESSAGE": `Security level updated to ${global.DATA.CONFIG.SECURITY_LEVEL}`,
         "security": global.DATA.CONFIG.SECURITY_LEVEL
       });
     }
@@ -182,16 +186,19 @@ export default async function handler(
       Debug.log("Resetting nodes list", "INFO", "Config");
       global.DATA.CONFIG.NODES.nodes = [];
       resetNodesList();
+      Debug.log("Nodes list reset", "SUCCESS", "Config");
     }
     if (type == "appkeys") {
       Debug.log("Resetting appkeys list", "INFO", "Config");
       global.DATA.CONFIG.NODES.appKeys = [];
       resetAppkeysList();
+      Debug.log("Appkeys list reset", "SUCCESS", "Config");
     }
     if (type == "netkeys") {
       Debug.log("Resetting netkeys list", "INFO", "Config");
       global.DATA.CONFIG.NODES.netKeys = [];
       resetNetkeysList();
+      Debug.log("Netkeys list reset", "SUCCESS", "Config");
     }
     if (address) {
       Debug.log(`Trying to remove node for the address ${address}`, "INFO", "Config");
@@ -217,7 +224,7 @@ async function configureMesh(addressQueue: string[], commandQueue: string[][], w
       Debug.log("stopProcess() called with error!", "ERROR", "Config");
     }
     else {
-      Debug.log("stopProcess() called!", "INFO", "Config");
+      Debug.log("Stopping configure mesh process!", "INFO", "Config");
     }
 
     if (global.DATA.TERMINAL_SESSIONS.MESHCTL.PROCESS?.stdin) {
@@ -244,9 +251,9 @@ async function configureMesh(addressQueue: string[], commandQueue: string[][], w
     global.DATA.TERMINAL_SESSIONS.MESHCTL.OUTPUT = [];
     return true;
   }
-  async function addLog(log: string) {
+  async function addLog(log: string, type = "INFO") {
     global.DATA.CONFIG.PROCESS.LOGS.push(log);
-    Debug.log(log, "INFO", "Config");
+    Debug.log(log, type, "Config");
   }
 
   if (global.DATA.TERMINAL_SESSIONS.MESHCTL.STATUS == false){
@@ -301,14 +308,14 @@ async function configureMesh(addressQueue: string[], commandQueue: string[][], w
         addLog(waitList[addressIndex][commandIndex]);
         global.DATA.CONFIG.PROCESS.PROGRESS += progressIncrement;
       }
-      addLog("Success!");
+      addLog("Success!", "SUCCESS");
     }
     if (commandQueue[0][0] == "node-reset") {
       addLog("Removing node from prov_db config");
       removeNode(addressQueue[0]);
-      addLog("Node removed!");
+      addLog("Node removed!", "SUCCESS");
     }
-    addLog("Done all tasks!");
+    addLog("Done all tasks!", "SUCCESS");
     stopProcess();
     return;
 
@@ -316,7 +323,7 @@ async function configureMesh(addressQueue: string[], commandQueue: string[][], w
   }
   if (attempts >= 3) {
     stopProcess(true);
-    addLog("Failed to configure mesh network");
+    addLog("Failed to configure mesh network", "ERROR");
     return
   }
 }

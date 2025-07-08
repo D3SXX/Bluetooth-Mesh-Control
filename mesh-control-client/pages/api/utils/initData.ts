@@ -41,6 +41,20 @@ export async function init()  {
         "CAPTURE_PROCESSES": true,
         "CAPTURE_REQUESTS": true,
         "LOGS_LIMIT": 1000
+    },
+    "TOAST_NOTIFICATIONS": {
+        "ENABLE_TOASTS": true,
+        "SHOW_DATA": {
+            "INFO": false,
+            "ERROR": true,
+            "WARNING": false,
+            "SUCCESS": true
+        },
+        "TIMEOUT": 5000,
+        "POSITION": {
+            "vertical": "bottom",
+            "horizontal": "right"
+        }
     }
     },
 
