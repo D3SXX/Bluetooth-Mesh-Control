@@ -1,0 +1,42 @@
+{
+  "name": "Mesh-Control",
+  "version": "v1.0.0-Beta",
+  "private": true,
+  "scripts": {
+    "dev": "npx tsx pages/api/utils/ipAddress.ts && next dev --turbopack",
+    "quick-dev": "next dev",
+    "build": "next build",
+    "start": "npx tsx pages/api/utils/ipAddress.ts && next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@eslint/config-array": "^0.20.1",
+    "@eslint/object-schema": "^2.1.6",
+    "@fontsource/roboto": "^5.2.6",
+    "@mui/icons-material": "^7.1.1",
+    "@mui/material": "^7.1.1",
+    "@mui/material-nextjs": "^7.2.0",
+    "axios": "^1.9.0",
+    "next": "^15.3.3",
+    "notistack": "^3.0.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-tooltip": "^5.29.0",
+    "swr": "^2.3.3",
+    "yaml": "^2.8.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.10",
+    "@types/node": "^24.0.1",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "eslint": "^9.28.0",
+    "eslint-config-next": "^15.3.3",
+    "postcss": "^8",
+    "tailwindcss": "^4.1.10",
+    "tsx": "^4.20.3",
+    "typescript": "^5"
+  }
+}

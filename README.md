@@ -17,17 +17,9 @@ To install meshctl on Debian/Ubuntu, run the following command:
 sudo apt install bluez bluez-meshd
 ```
 
-## How to use (DevMode)
+## How to use
 
-#### Initial Setup (Debian/Ubuntu)
-
-##### Quick install by using script (recommended)
-
-```ruby
-curl -fsSL https://raw.githubusercontent.com/D3SXX/Bluetooth-Mesh-Control/refs/heads/main/quick_setup.sh | bash
-```
-
-##### Manual installation
+#### To build & run
 
 1. Clone the repository:
 
@@ -35,39 +27,35 @@ curl -fsSL https://raw.githubusercontent.com/D3SXX/Bluetooth-Mesh-Control/refs/h
 git clone https://github.com/D3SXX/Bluetooth-Mesh-Control.git
 ```
 
-2. Install npm:
+2. Install [Node.js](https://nodejs.org/en/download)
+
+3. Install dependencies:
 
 ```ruby
-sudo apt update && sudo apt install npm
-```
-3. Install client dependencies:
-
-```ruby
-cd bluetooth-mesh-client
 npm install
-cd ..
 ```
 
-4. Install Python dependencies:
+4. Build:
 
 ```ruby
-sudo apt install python3-yaml python3-flask-cors python3-requests
+npm run build
 ```
 
-#### Running the Application
-
-After setting up/updating the application, always run:
+4. Run:
 
 ```ruby
-sh ./run_after_update_or_first_install.sh
+npm run start
 ```
 
-To start the application, run:
+### To run in dev mode
+
+1. Run:
 
 ```ruby
-sh ./start_mesh_control.sh
+npm run dev
 ```
-Once the script is running, open your web browser and navigate to [IP address]:3000 to access the web app. If you are running the scripts on the same machine, use:
+
+2. Once the app is running, open your web browser and navigate to [IP address]:3000 to access the web app. If you are running the scripts on the same machine, use:
 
 ```ruby
 localhost:3000
