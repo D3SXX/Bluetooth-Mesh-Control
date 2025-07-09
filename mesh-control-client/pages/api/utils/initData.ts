@@ -42,7 +42,8 @@ export async function init()  {
         "CAPTURE_REQUESTS": true,
         "LOGS_LIMIT": 1000
     },
-    "TOAST_NOTIFICATIONS": {
+    "TOASTS": [],
+    "TOAST_SETTINGS": {
         "ENABLE_TOASTS": true,
         "SHOW_DATA": {
             "INFO": false,
@@ -52,8 +53,8 @@ export async function init()  {
         },
         "TIMEOUT": 5000,
         "POSITION": {
-            "vertical": "bottom",
-            "horizontal": "right"
+            "VERTICAL": "bottom",
+            "HORIZONTAL": "right"
         }
     }
     },

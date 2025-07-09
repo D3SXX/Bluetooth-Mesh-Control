@@ -14,6 +14,7 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  FormHelperText,
   InputLabel,
   List,
   ListItem,
@@ -30,7 +31,6 @@ import {
 } from "@mui/material";
 import useSWR from "swr";
 import { fetcherDELETE, fetcherGET, fetcherPOST } from "./utils/fetcher";
-
 import { ServerResponse } from "../interfaces/global";
 
 export default function Home() {
@@ -400,38 +400,106 @@ export default function Home() {
         <DialogContent>
           <FormGroup>
             <FormControlLabel
-              control={<Switch checked={data?.server.TOAST_NOTIFICATIONS.ENABLE_TOASTS} />}
+              control={<Switch checked={data?.server.TOAST_SETTINGS.ENABLE_TOASTS} />}
               label="Enable toast notifications"
               onClick={() => {
                 fetcherPOST({
-                  "TOAST_NOTIFICATIONS":{
-                    ...data?.server.TOAST_NOTIFICATIONS,
-                    "ENABLE_TOASTS":!data?.server.TOAST_NOTIFICATIONS.ENABLE_TOASTS
+                  "TOAST_SETTINGS":{
+                    ...data?.server.TOAST_SETTINGS,
+                    "ENABLE_TOASTS":!data?.server.TOAST_SETTINGS.ENABLE_TOASTS
                   }
                 })("/server")
               }}
             />
           </FormGroup>
-          <FormControl sx={{ m: 1, width: 300 }}>
-        <InputLabel id="select-toasts-data-label">Show data</InputLabel>
-        <Select
-          labelId="select-toasts-data-label"
-          id="select-toasts-data"
-          multiple
-          value={Object.keys(data?.server.TOAST_NOTIFICATIONS.SHOW_DATA || {}).filter((type) => data?.server.TOAST_NOTIFICATIONS.SHOW_DATA[type])}
-          onChange={(e) => {
+          <FormControl sx={{  width: "100%" }}>
+      <Typography>Timeout: {data?.server.TOAST_SETTINGS.TIMEOUT}ms ({data?.server.TOAST_SETTINGS.TIMEOUT ? `${data?.server.TOAST_SETTINGS.TIMEOUT/1000}s` : "Infinite"})</Typography>
+        <Slider
+          defaultValue={data?.server.TOAST_SETTINGS.TIMEOUT}
+          onChange={(e: any) => {
             fetcherPOST({
-              "TOAST_NOTIFICATIONS":{
-                ...data?.server.TOAST_NOTIFICATIONS,
-                "SHOW_DATA":{
-                  ...data?.server.TOAST_NOTIFICATIONS.SHOW_DATA,
-                  [e.target.value as keyof typeof data?.server.TOAST_NOTIFICATIONS.SHOW_DATA]:!data?.server.TOAST_NOTIFICATIONS.SHOW_DATA[e.target.value as keyof typeof data?.server.TOAST_NOTIFICATIONS.SHOW_DATA]
-                }
+              "TOAST_SETTINGS":{
+                ...data?.server.TOAST_SETTINGS,
+                "TIMEOUT":e.target.value
               }
             })("/server")
           }}
-          input={<OutlinedInput id="select-toasts-data" label="Show data" />}
-          renderValue={(selected) => (
+          min={0}
+          max={100000}
+          step={100}
+          valueLabelFormat={(value) => {
+            if (value == 0) {
+              return "Infinite";
+            } else {
+              return `${value}ms`;
+            }
+          }}
+          valueLabelDisplay="auto"
+        />
+        </FormControl>
+          <Typography>Toast position:</Typography>
+          <Stack direction="row" spacing={1.5}>
+          <FormControl sx={{width:"100%", height:"50px", display: "flex", alignItems: "center",}}>
+              <Select sx={{width:"100%", height:"50px"}} value={data?.server.TOAST_SETTINGS.POSITION.HORIZONTAL} onChange={(e) => {
+                fetcherPOST({
+                  "TOAST_SETTINGS":{
+                    ...data?.server.TOAST_SETTINGS,
+                    "POSITION":{
+                      ...data?.server.TOAST_SETTINGS.POSITION,
+                      "HORIZONTAL":e.target.value
+                    }
+                  }
+                })("/server")
+              }}>
+              <MenuItem value="horizontal" disabled>Horizontal position</MenuItem>
+              <MenuItem value="left">Left</MenuItem>
+                <MenuItem value="right">Right</MenuItem>
+                <MenuItem value="center">Center</MenuItem>
+              </Select>
+              <FormHelperText>Horizontal position</FormHelperText>
+              </FormControl>
+              <FormControl sx={{width:"100%", height:"50px", display: "flex", alignItems: "center"}}>
+              <Select sx={{width:"100%", height:"50px"}} value={data?.server.TOAST_SETTINGS.POSITION.VERTICAL} onChange={(e) => {
+                fetcherPOST({
+                  "TOAST_SETTINGS":{
+                    ...data?.server.TOAST_SETTINGS,
+                    "POSITION":{
+                      ...data?.server.TOAST_SETTINGS.POSITION,
+                      "VERTICAL":e.target.value
+                    }
+                  }
+                })("/server")
+              }}>
+              <MenuItem value="vertical" disabled>Vertical position</MenuItem>
+              <MenuItem value="top">Top</MenuItem>
+                <MenuItem value="bottom">Bottom</MenuItem>
+              </Select>
+              <FormHelperText>Vertical position</FormHelperText>
+            </FormControl>
+            </Stack>
+          <FormControl sx={{  width: "100%", mt: 5 }}>
+            <Typography sx={{mb: 1}}>Display tags:</Typography>
+        <Select
+          id="select-toasts-data"
+          multiple
+          value={Object.keys(data?.server.TOAST_SETTINGS.SHOW_DATA || {}).filter((type) => data?.server.TOAST_SETTINGS.SHOW_DATA[type])}
+          onChange={(e) => {
+            fetcherPOST({
+              "TOAST_SETTINGS":{
+                ...data?.server.TOAST_SETTINGS,
+                "SHOW_DATA":{
+                  ...Object.fromEntries(
+                    Object.keys(data?.server.TOAST_SETTINGS.SHOW_DATA || {}).map((type) => [
+                      type,
+                      (e.target.value as string[]).includes(type)
+                    ])
+                  )
+                }
+              }
+            })("/server");
+          }}
+          input={<OutlinedInput id="select-toasts-data" />}
+          renderValue={(selected: string[]) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {selected.map((value) => (
                 <Chip key={value} label={value} />
@@ -446,7 +514,7 @@ export default function Home() {
             },
           }}
         >
-          {Object.keys(data?.server.TOAST_NOTIFICATIONS.SHOW_DATA || {}).map((type) => (
+          {Object.keys(data?.server.TOAST_SETTINGS.SHOW_DATA || {}).map((type) => (
             <MenuItem
               key={type}
               value={type}

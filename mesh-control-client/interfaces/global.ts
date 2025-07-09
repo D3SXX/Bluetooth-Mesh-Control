@@ -44,16 +44,26 @@ export interface ServerData {
         CAPTURE_REQUESTS: boolean;
         LOGS_LIMIT: number;
     };
-    TOAST_NOTIFICATIONS: {
-        ENABLE_TOASTS: boolean;
-        SHOW_DATA: {
-            [key: string]: boolean; // LOGS Types to show (INFO, ERROR, WARNING, etc.)
-        };
-        TIMEOUT: number;
-        POSITION: {
-            vertical: string;
-            horizontal: string;
-        }; // anchor-origin https://mui.com/material-ui/react-snackbar/#position
+    TOASTS: Toast[];
+    TOAST_SETTINGS: ToastSettings;
+}
+
+export interface Toast {
+    ADD_TIME: string;
+    TYPE: string;
+    FROM: string;
+    TEXT: string;
+}
+
+export interface ToastSettings {
+    ENABLE_TOASTS: boolean;
+    TIMEOUT: number;
+    SHOW_DATA: {
+        [key: string]: boolean;
+    };
+    POSITION: {
+        VERTICAL: string;
+        HORIZONTAL: string;
     };
 }
 

@@ -1,3 +1,4 @@
+import { time } from "console";
 import { delay } from "./common";
 
 class Debug {
@@ -30,6 +31,17 @@ class Debug {
             global.DATA.SERVER.LOGS.push(plainMsg);
         }
         
+        if (global.DATA.SERVER.TOAST_SETTINGS.ENABLE_TOASTS){
+            this.removeOldToasts()
+            if (global.DATA.SERVER.TOAST_SETTINGS.SHOW_DATA[type]){
+            global.DATA.SERVER.TOASTS.push({
+                ADD_TIME: new Date().toISOString(),
+                TYPE: type,
+                FROM: from,
+                TEXT: message
+            })
+            }
+        }
         if (global.DATA.SERVER.LOGS_SETTINGS.ENABLE_CONSOLE_LOGS){
         switch (type) {
             case "INFO":
@@ -47,6 +59,13 @@ class Debug {
             default:
                 console.log(msg);
         }
+        }
+    }
+    static removeOldToasts(){
+        for (let i = 0; i < global.DATA.SERVER.TOASTS.length; i++){
+            if (new Date().getTime() - new Date(global.DATA.SERVER.TOASTS[i].ADD_TIME).getTime() > global.DATA.SERVER.TOAST_SETTINGS.TIMEOUT){
+                global.DATA.SERVER.TOASTS.splice(i, 1);
+            }
         }
     }
     static async fakeProcess(type: string, fail: boolean = false){

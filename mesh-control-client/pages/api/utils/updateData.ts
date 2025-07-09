@@ -10,6 +10,13 @@ export async function updateController(){
     const controllerData = await runSeveralCommands([`select ${global.DATA.CONTROLLER.DEFAULT}`, "list"])
     const controllerArr = controllerData.split("\n")
 
+    // CHeck if there are any controllers available
+    if (!controllerData.includes("Controller")){
+        Debug.log("No controllers available", "ERROR", "UpdateData");
+        return
+    }
+
+
     // Collect controllers data    
 
     let controllerIndex = -1;
